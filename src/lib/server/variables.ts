@@ -1,3 +1,4 @@
+import type { DB } from '$/types/database';
 import { JWT_SECRET, DATABASE_NAME, DATABASE_IP, DATABASE_PASSWORD, DATABASE_PORT, DATABASE_USER } from '$env/static/private';
 import { JWTCookies } from './cookies/main';
 import { Kysely, MysqlDialect } from 'kysely';
