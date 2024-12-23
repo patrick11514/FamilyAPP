@@ -1,0 +1,114 @@
+<script lang="ts">
+    import { API } from '$/lib/api';
+    import { SwalAlert } from '$/lib/functions';
+    import { getState, logged } from '$/lib/state.svelte';
+    import type { BootstrapIcon } from '$/types/bootstrap_icons';
+    import { goto } from '$app/navigation';
+    import { page } from '$app/state';
+    import Title from '../headers/Title.svelte';
+    import Icon from '../Icon.svelte';
+    import { Permissions, type Permission } from '$/lib/permissions';
+    import Group from '../group.svelte';
+
+    const BASE = '/app' as const;
+    const routes: {
+        name: string;
+        path: string;
+        icon: BootstrapIcon;
+        startsWith?: boolean;
+        permissions?: Permission[];
+    }[] = [
+        {
+            name: 'Domů',
+            path: '',
+            icon: 'bi-house-fill'
+        },
+        {
+            name: 'Test',
+            path: '/test',
+            icon: 'bi-terminal-split',
+            permissions: ['admin.test']
+        }
+    ];
+
+    let route = $state<(typeof routes)[number]>();
+
+    const _state = getState();
+
+    $effect(() => {
+        const pathname = page.url.pathname.replace(BASE, '');
+        route = routes.find((route) => (route.startsWith ? pathname.startsWith(route.path) : pathname === route.path));
+    });
+
+    $effect(() => {
+        _state.title = route ? route.name : '';
+    });
+
+    let opened = $state(false);
+
+    const logout = async () => {
+        const result = await API.auth.logout();
+        if (!result.status) {
+            SwalAlert({
+                icon: 'error',
+                title: 'Nepovedlo se odhlásit'
+            });
+            return;
+        }
+        SwalAlert({
+            icon: 'success',
+            title: 'Byl jsi úspěšně odhlášen'
+        });
+
+        _state.userState = {
+            logged: false
+        };
+
+        goto('/');
+    };
+
+    let permissions = $derived(new Permissions(logged(_state.userState) ? _state.userState.data : undefined));
+</script>
+
+<svelte:head>
+    <title>{route?.name ?? ''} | FamilyAPP</title>
+</svelte:head>
+
+<div class="block md:hidden">
+    <Icon
+        onclick={() => (opened = true)}
+        name="bi-list"
+        class="rounded-md border-[1px] border-primary bg-secondary px-1.5 py-0.5 text-3xl font-bold transition-colors duration-200 hover:bg-accent active:bg-accent"
+    />
+</div>
+
+<nav class:-translate-x-full={!opened} class="absolute left-0 top-0 flex h-screen w-1/2 min-w-96 flex-col bg-secondary p-2 transition-transform duration-500 md:hidden">
+    <div class="flex flex-row justify-between">
+        <Icon onclick={() => (opened = false)} name="bi-x-lg" class="text-3xl font-bold" />
+        <Icon onclick={logout} name="bi-box-arrow-in-right" class="text-3xl font-bold" />
+    </div>
+    <div class="flex flex-col items-center justify-center gap-2">
+        <Title>Uživatelské menu:</Title>
+        {#if logged(_state.userState)}
+            <h1 class="font-poppins font-bold">Přihlášen jako:</h1>
+            <h1>
+                {_state.userState.data.username}
+                {#if _state.userState.data.group}
+                    {@const group = _state.userState.data.group}
+                    <Group textColor={group.text_color} backgroundColor={group.bg_color}>{group.name}</Group>
+                {/if}
+            </h1>
+        {/if}
+    </div>
+    <hr class="my-4" />
+    <div class="flex flex-1 flex-col items-center justify-center gap-2">
+        <div class="flex h-full w-full flex-1 flex-col gap-2 overflow-y-auto">
+            {#each routes.filter((route) => (route.permissions ? route.permissions.some((perm) => permissions.hasPermission(perm)) : true)) as _route, i (i)}
+                <a class:border-b-2={_route.name == route?.name} href={_route.path} class="mx-auto w-max border-b-white font-poppins text-2xl font-bold">
+                    <Icon name={_route.icon} />
+                    {_route.name}
+                </a>
+            {/each}
+        </div>
+    </div>
+</nav>

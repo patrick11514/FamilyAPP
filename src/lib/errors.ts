@@ -3,6 +3,9 @@ export const ERRORS = {
         login: {
             username: 'Zadal jsi neplatné uživatelské jméno',
             password: 'Zadal jsi špatné heslo'
+        },
+        register: {
+            invalid: 'Lol'
         }
     }
 } as const;
@@ -27,4 +30,8 @@ export const extractError = (error: string): string => {
     });
 
     return base;
+};
+
+export const matchError = (error: string, errorToMatch: ErrorList): error is typeof errorToMatch => {
+    return error === errorToMatch;
 };

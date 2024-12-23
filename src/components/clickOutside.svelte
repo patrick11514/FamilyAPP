@@ -6,7 +6,10 @@
      */
     function clickOutside(node: HTMLElement) {
         const handleClick = (event: MouseEvent) => {
-            if (node && !node.contains(event.target as Node | null) && !event.defaultPrevented) {
+            const target = event.target as HTMLElement | null;
+            if (!target) return;
+
+            if (node && !node.contains(target) && !event.defaultPrevented && !ignore.some((cls) => target.classList.contains(cls))) {
                 clickoutside();
             }
         };
@@ -23,11 +26,13 @@
     const {
         children,
         class: cls = '',
-        clickoutside
+        clickoutside,
+        ignore = []
     }: {
         children: Snippet;
         class?: string;
         clickoutside: () => void;
+        ignore?: string[];
     } = $props();
 </script>
 
