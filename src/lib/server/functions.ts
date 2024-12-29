@@ -1,6 +1,7 @@
 import type { UserData, UserState } from '$/types/types';
 import type { Cookies } from '@sveltejs/kit';
 import { conn, jwt } from './variables';
+import { z } from 'zod';
 
 export const getCookieData = (cookies: Cookies): UserState => {
     const cookie = cookies.get('session');
@@ -41,3 +42,19 @@ export const getUserPermissions = async (id: number) => {
         permissions: perms.map((p) => p.permission)
     };
 };
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const hexColor = z.custom<string>((data: any) => {
+    if (typeof data !== 'string') return false;
+    if (data === null || data === undefined) return false;
+
+    if (data.length != 4 && data.length != 7) return false;
+    if (data[0] !== '#') return false;
+
+    const isHexDigit = (char: string) => '0123456789ABCDEF'.split('').includes(char);
+
+    return !data
+        .substring(1)
+        .split('')
+        .some((ch) => !isHexDigit(ch));
+});

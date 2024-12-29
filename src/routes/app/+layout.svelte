@@ -3,11 +3,14 @@
     import Navigation from '$/components/navigation/Navigation.svelte';
     import { getState, logged } from '$/lib/state.svelte';
     import { API } from '$/lib/api';
+    import { goto } from '$app/navigation';
+    import Title from '$/components/headers/Title.svelte';
+    import Footer from '$/components/navigation/Footer.svelte';
 
     const { children }: { children: Snippet } = $props();
 
     const _state = getState();
-    const PERMS_UPDATE = 30 * 1000; //5minutes
+    const PERMS_UPDATE = 5 * 60 * 1000; //5minutes
 
     onMount(() => {
         if (!logged(_state.userState)) return;
@@ -15,7 +18,14 @@
 
         const interval = setInterval(async () => {
             const fetched = await API.permissions.get();
-            if (!fetched.status) return;
+            if (!fetched.status) {
+                //logged out
+                _state.userState = {
+                    logged: false
+                };
+                goto('/');
+                return;
+            }
 
             data.permissions = fetched.data.permissions;
             data.group = fetched.data.group;
@@ -27,9 +37,11 @@
     });
 </script>
 
-<section class="flex flex-col p-2 md:flex-row">
+<section class="flex flex-1 flex-col md:flex-row">
     <Navigation />
-    <div class="flex h-full w-full flex-1 flex-col">
+    <div class="flex h-full w-full flex-1 flex-col p-2">
+        <Title class="m-0 hidden md:block">{_state.title}</Title>
         {@render children()}
+        <Footer />
     </div>
 </section>

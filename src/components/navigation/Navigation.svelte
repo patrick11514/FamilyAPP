@@ -9,6 +9,8 @@
     import Icon from '../Icon.svelte';
     import { Permissions, type Permission } from '$/lib/permissions';
     import Group from '../group.svelte';
+    import ClickOutside from '../clickOutside.svelte';
+    import { twMerge } from 'tailwind-merge';
 
     const BASE = '/app' as const;
     const routes: {
@@ -24,10 +26,43 @@
             icon: 'bi-house-fill'
         },
         {
-            name: 'Test',
-            path: '/test',
-            icon: 'bi-terminal-split',
-            permissions: ['admin.test']
+            name: 'Rozvrhovník',
+            path: '/timetable',
+            icon: 'bi-calendar2-week'
+        },
+        {
+            name: 'Vánočník',
+            path: '/presents',
+            icon: 'bi-tree-fill'
+        },
+        {
+            name: 'Dlužníček',
+            path: '/debt',
+            icon: 'bi-cash-coin'
+        },
+        {
+            name: 'Datumovník',
+            path: '/calendar',
+            icon: 'bi-calendar3'
+        },
+        {
+            name: 'Poznámkovník',
+            path: '/notes',
+            icon: 'bi-stickies-fill'
+        },
+        {
+            name: 'Správa skupin',
+            path: '/groups',
+            startsWith: true,
+            icon: 'bi-people-fill',
+            permissions: ['admin.groups']
+        },
+        {
+            name: 'Správa uživatelů',
+            path: '/users',
+            startsWith: true,
+            icon: 'bi-key-fill',
+            permissions: ['admin.users']
         }
     ];
 
@@ -74,24 +109,31 @@
     <title>{route?.name ?? ''} | FamilyAPP</title>
 </svelte:head>
 
-<div class="block md:hidden">
+<div class="flex gap-2 p-2 md:hidden">
     <Icon
         onclick={() => (opened = true)}
         name="bi-list"
         class="rounded-md border-[1px] border-primary bg-secondary px-1.5 py-0.5 text-3xl font-bold transition-colors duration-200 hover:bg-accent active:bg-accent"
     />
+    <Title>{_state.title}</Title>
 </div>
 
-<nav class:-translate-x-full={!opened} class="absolute left-0 top-0 flex h-screen w-1/2 min-w-96 flex-col bg-secondary p-2 transition-transform duration-500 md:hidden">
-    <div class="flex flex-row justify-between">
-        <Icon onclick={() => (opened = false)} name="bi-x-lg" class="text-3xl font-bold" />
+<ClickOutside
+    clickoutside={() => (opened = false)}
+    class={twMerge(
+        'absolute left-0 top-0 flex h-screen w-1/2 min-w-96 flex-col bg-secondary p-2 transition-transform duration-500 md:static md:w-auto md:translate-x-0',
+        !opened ? '-translate-x-full' : ''
+    )}
+>
+    <div class="flex flex-row justify-between px-2 md:justify-end">
+        <Icon onclick={() => (opened = false)} name="bi-x-lg" class="text-3xl font-bold md:hidden" />
         <Icon onclick={logout} name="bi-box-arrow-in-right" class="text-3xl font-bold" />
     </div>
     <div class="flex flex-col items-center justify-center gap-2">
         <Title>Uživatelské menu:</Title>
         {#if logged(_state.userState)}
-            <h1 class="font-poppins font-bold">Přihlášen jako:</h1>
-            <h1>
+            <h1 class="font-poppins text-xl font-bold">Přihlášen jako:</h1>
+            <h1 class="font-poppins font-bold">
                 {_state.userState.data.username}
                 {#if _state.userState.data.group}
                     {@const group = _state.userState.data.group}
@@ -102,13 +144,19 @@
     </div>
     <hr class="my-4" />
     <div class="flex flex-1 flex-col items-center justify-center gap-2">
-        <div class="flex h-full w-full flex-1 flex-col gap-2 overflow-y-auto">
+        <div class="flex h-full w-max flex-1 flex-col gap-2 overflow-y-auto">
             {#each routes.filter((route) => (route.permissions ? route.permissions.some((perm) => permissions.hasPermission(perm)) : true)) as _route, i (i)}
-                <a class:border-b-2={_route.name == route?.name} href={_route.path} class="mx-auto w-max border-b-white font-poppins text-2xl font-bold">
+                <a
+                    class:border-b-2={_route.name == route?.name}
+                    class:hover:after:scale-x-100={_route.name != route?.name}
+                    href="/app{_route.path}"
+                    onclick={() => (opened = false)}
+                    class="w-max border-b-text font-poppins text-2xl font-bold after:block after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-text after:transition-transform after:duration-200"
+                >
                     <Icon name={_route.icon} />
                     {_route.name}
                 </a>
             {/each}
         </div>
     </div>
-</nav>
+</ClickOutside>

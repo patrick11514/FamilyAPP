@@ -40,7 +40,7 @@ export default procedure.POST.input(
     const cookie = jwt.setCookie(userData);
     cookies.set('session', cookie, {
         path: '/',
-        maxAge: parseInt(COOKIE_EXPIRE) * 1000
+        maxAge: parseInt(COOKIE_EXPIRE)
     });
 
     return {

@@ -10,14 +10,18 @@ export const ERRORS = {
     }
 } as const;
 
-type FilterKey<$key extends string | symbol | number> = $key extends string ? $key : never;
-type FilterValue<$value> = $value extends string | { [key: string]: string } ? $value : never;
-type Append<$base extends string, $key extends string, $value extends string | { [key: string]: string }> = $value extends string
-    ? `${$base}.${$key}`
-    : Append<`${$base}.${$key}`, FilterKey<keyof $value>, FilterValue<$value[keyof $value]>>;
-type Base<$key extends string, $value extends string | { [key: string]: unknown }> = Append<`${$key}`, FilterKey<keyof $value>, FilterValue<$value[keyof $value]>>;
+// Recursive helper to traverse the object and build paths
+type ExtractPaths<$CurrentObject, $Path extends string = ''> = $CurrentObject extends string
+    ? $Path // If T is a string, return the accumulated path
+    : // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    $CurrentObject extends Record<string, any>
+    ? {
+        [K in keyof $CurrentObject]: ExtractPaths<$CurrentObject[K], `${$Path}${$Path extends '' ? '' : '.'}${K & string}`>;
+    }[keyof $CurrentObject] // Recurse into object keys
+    : never;
 
-export type ErrorList = Base<keyof typeof ERRORS, (typeof ERRORS)[keyof typeof ERRORS]>;
+// Final type
+export type ErrorList = ExtractPaths<typeof ERRORS>;
 
 export const extractError = (error: string): string => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

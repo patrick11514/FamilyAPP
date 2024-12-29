@@ -1,5 +1,6 @@
 import typography from '@tailwindcss/typography';
 import type { Config } from 'tailwindcss';
+import plugin from 'tailwindcss/plugin';
 
 export default {
     content: ['./src/**/*.{html,js,svelte,ts}'],
@@ -20,5 +21,10 @@ export default {
         }
     },
 
-    plugins: [typography]
+    plugins: [
+        typography,
+        plugin(function({ addVariant }) {
+            addVariant('swatch', ['&::-moz-color-swatch', '&::-webkit-color-swatch-wrapper', '&::-webkit-color-swatch']);
+        })
+    ]
 } satisfies Config;

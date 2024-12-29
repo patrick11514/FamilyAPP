@@ -7,7 +7,6 @@
     import { type Snippet } from 'svelte';
     import type { LayoutData } from './$types';
     import { logged, setState } from '$/lib/state.svelte';
-    import Link from '$/components/Link.svelte';
 
     let { children, data }: { children: Snippet; data: LayoutData } = $props();
 
@@ -27,9 +26,6 @@
     });
 </script>
 
-<main class="xl:font-xl flex h-full min-h-screen w-full flex-col overflow-x-hidden bg-background font-roboto text-lg text-text">
-    <section class="flex flex-1 flex-col">
-        {@render children()}
-    </section>
-    <footer class="text-center font-bold">Created by <Link link="https://patrick115.eu">Patrik Mintěl</Link></footer>
+<main class="xl:font-xl flex h-full min-h-screen w-full flex-col overflow-x-hidden bg-background font-roboto text-lg text-text lg:text-xl">
+    {@render children()}
 </main>
