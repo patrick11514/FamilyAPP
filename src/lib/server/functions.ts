@@ -48,12 +48,13 @@ export const hexColor = z.custom<string>((data: any) => {
     if (typeof data !== 'string') return false;
     if (data === null || data === undefined) return false;
 
-    if (data.length != 4 && data.length != 7) return false;
+    if (data.length !== 4 && data.length !== 7) return false;
     if (data[0] !== '#') return false;
 
-    const isHexDigit = (char: string) => '0123456789ABCDEF'.split('').includes(char);
+    const isHexDigit = (char: string) => '0123456789abcdef'.split('').includes(char);
 
     return !data
+        .toLowerCase()
         .substring(1)
         .split('')
         .some((ch) => !isHexDigit(ch));

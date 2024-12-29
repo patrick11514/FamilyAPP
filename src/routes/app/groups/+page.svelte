@@ -1,6 +1,7 @@
 <script lang="ts">
     import GroupTag from '$/components/group.svelte';
     import Icon from '$/components/Icon.svelte';
+    import { API } from '$/lib/api';
     import { SwalAlert } from '$/lib/functions';
     import type { Group } from '$/types/database';
     import type { NormalizeId } from '$/types/types';
@@ -32,12 +33,80 @@
 
     resolveGroups(data.groups);
 
-    const updateGroup = (groupId: number) => {};
+    const updateGroup = async (groupIdx: number) => {
+        if (!groups![groupIdx]) return;
 
-    const addGroup = (groupId: number) => {};
+        const response = await API.groups.PATCH(groups![groupIdx]);
+        if (!response.status) {
+            SwalAlert({
+                icon: 'error',
+                title: response.message
+            });
+            return;
+        }
+        SwalAlert({
+            icon: 'success',
+            title: 'Skupina úspěšně upravena'
+        });
 
-    const tryUpdateGroup = (groupId: number) => {
-        if (groupStatuses?.[groupId] === false) {
+        staticGroups![groupIdx] = { ...groups![groupIdx] };
+    };
+
+    const addGroup = async (groupIdx: number) => {
+        if (!groups![groupIdx]) return;
+        const response = await API.groups.PUT({ ...groups![groupIdx] });
+        if (!response.status) {
+            SwalAlert({
+                icon: 'error',
+                title: response.message
+            });
+            return;
+        }
+
+        SwalAlert({
+            icon: 'success',
+            title: 'Skupina úspěšně přidána'
+        });
+
+        const currentData = groups![groupIdx];
+        currentData.id = response.data;
+        staticGroups?.push(currentData);
+    };
+
+    const removeGroup = async (groupId: number) => {
+        const alert = await SwalAlert({
+            toast: false,
+            position: 'center',
+            title: 'Opravdu chceš smazat tuto skupinu?',
+            showCancelButton: true,
+            cancelButtonText: 'Ne',
+            showConfirmButton: true,
+            confirmButtonText: 'Ano',
+            timer: 0
+        });
+
+        if (!alert.isConfirmed) return;
+
+        const response = await API.groups.DELETE(groupId);
+        if (!response.status) {
+            SwalAlert({
+                icon: 'error',
+                title: response.message
+            });
+            return;
+        }
+
+        SwalAlert({
+            icon: 'success',
+            title: 'Spukina úspěšně odebrána'
+        });
+
+        staticGroups = staticGroups!.filter((group) => group.id !== groupId);
+        groups = groups!.filter((group) => group.id !== groupId);
+    };
+
+    const tryUpdateGroup = (groupIdx: number) => {
+        if (groupStatuses?.[groupIdx] === false) {
             SwalAlert({
                 icon: 'error',
                 text: 'Tato skupina nemá žádnou novou úpravu'
@@ -45,7 +114,7 @@
             return;
         }
 
-        return staticGroups![groupId] === undefined ? addGroup(groupId) : updateGroup(groupId);
+        return staticGroups![groupIdx] === undefined ? addGroup(groupIdx) : updateGroup(groupIdx);
     };
 
     const resetGroup = (groupId: number) => {
@@ -120,7 +189,7 @@
                                         <Icon onclick={() => resetGroup(idx)} name="bi-arrow-counterclockwise" class="text-red-600" />
                                     {/if}
                                 {/if}
-                                <Icon name="bi-trash-fill" class="text-red-500" />
+                                <Icon onclick={() => removeGroup(group.id)} name="bi-trash-fill" class="text-red-500" />
                             </div>
                         </td>
                     </tr>
