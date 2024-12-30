@@ -21,6 +21,12 @@ export interface GroupPermissions {
   permission: string;
 }
 
+export interface Invitation {
+  code: string;
+  created_at: Generated<Date>;
+  id: Generated<number>;
+}
+
 export interface User {
   id: Generated<number>;
   password: string;
@@ -35,6 +41,7 @@ export interface UserGroup {
 export interface DB {
   group: Group;
   group_permissions: GroupPermissions;
+  invitation: Invitation;
   user: User;
   user_group: UserGroup;
 }

@@ -5,6 +5,7 @@
     import { SwalAlert } from '$/lib/functions';
     import type { Group } from '$/types/database';
     import type { NormalizeId } from '$/types/types';
+    import { goto } from '$app/navigation';
     import type { PageData, Snapshot } from './$types';
 
     const { data }: { data: PageData } = $props();
@@ -151,7 +152,7 @@
     }>;
 </script>
 
-<div class="divide-y-white mt-2 h-full w-full flex-1 gap-2 divide-y-2">
+<div class="mt-2 h-full w-full flex-1">
     {#if groups}
         <table class="w-full border-collapse border-2 border-text">
             <thead>
@@ -190,6 +191,7 @@
                                     {/if}
                                 {/if}
                                 <Icon onclick={() => removeGroup(group.id)} name="bi-trash-fill" class="text-red-500" />
+                                <Icon onclick={() => goto(`/app/groups/${group.id}`)} name="bi-gear-fill" class="text-gray-500" />
                             </div>
                         </td>
                     </tr>

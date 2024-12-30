@@ -6,6 +6,6 @@ export const load = (async (ev) => {
     return {
         api: Server.hydrateToClient(),
         userState: getCookieData(ev.cookies),
-        permissions: await Server.ssr.permissions.get(ev)
+        permissions: await Server.ssr.permissions.GET(ev)
     };
 }) satisfies LayoutServerLoad;

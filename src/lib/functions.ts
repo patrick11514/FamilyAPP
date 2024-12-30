@@ -5,14 +5,14 @@ export const sleep = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-export const SwalAlert = (data: SweetAlertOptions) => {
+export const SwalAlert = <$Type = unknown>(data: SweetAlertOptions) => {
     if (!browser) {
         return {
             isConfirmed: false
-        };
+        } as const;
     }
 
-    return Swal.fire({
+    return Swal.fire<$Type>({
         toast: true,
         position: 'top-end',
         timer: 2000,

@@ -17,7 +17,7 @@
         const data = _state.userState.data;
 
         const interval = setInterval(async () => {
-            const fetched = await API.permissions.get();
+            const fetched = await API.permissions.GET();
             if (!fetched.status) {
                 //logged out
                 _state.userState = {
