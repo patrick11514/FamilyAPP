@@ -98,8 +98,8 @@
                     <tr class="border-2 border-text">
                         <td class="border-2 border-text">{user.id}</td>
                         <td class="border-2 border-text">{user.username}</td>
-                        <td class="border-2 border-text">
-                            <Select class="w-full border-none text-center" bind:value={user.group_id} onchange={() => updateGroup(user.id, user.group_id)}>
+                        <td class="flex justify-center">
+                            <Select class="w-full border-none text-center lg:w-auto" bind:value={user.group_id} onchange={() => updateGroup(user.id, user.group_id)}>
                                 <option value={null} selected>Žádná</option>
                                 {#each groups as group}
                                     <option value={group.id}>{group.name}</option>

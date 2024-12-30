@@ -39,7 +39,7 @@
 
 <section class="flex flex-1 flex-col md:flex-row">
     <Navigation />
-    <div class="flex h-full w-full flex-1 flex-col p-2">
+    <div class="flex w-full flex-1 flex-col p-2">
         <Title class="m-0 hidden md:block">{_state.title}</Title>
         {@render children()}
         <Footer />
