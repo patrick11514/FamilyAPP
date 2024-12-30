@@ -30,8 +30,6 @@
         );
     });
 
-    $effect(() => console.log(groupStatuses));
-
     resolveGroups(data.groups);
 
     const updateGroup = async (groupIdx: number) => {
