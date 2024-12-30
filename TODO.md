@@ -1,7 +1,7 @@
 # Features
 
 - Rozvrhávač
-- Vánočník
+- Dárkovník
 - Dlužníček
 - Datumovník
 - Poznámkovník

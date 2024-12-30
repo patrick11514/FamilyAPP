@@ -5,8 +5,11 @@ export const ERRORS = {
             password: 'Zadal jsi špatné heslo'
         },
         register: {
-            invalid: 'Lol'
+            username: 'Toto uživatelské jméno již je zabráno'
         }
+    },
+    invitation: {
+        code: 'Kód pozvánky je neplatný, pravděpodobně ho již někdo využil'
     }
 } as const;
 
