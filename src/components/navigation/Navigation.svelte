@@ -31,9 +31,9 @@
             icon: 'bi-calendar2-week'
         },
         {
-            name: 'Vánočník',
+            name: 'Dárkovník',
             path: '/presents',
-            icon: 'bi-tree-fill'
+            icon: 'bi-gift-fill'
         },
         {
             name: 'Dlužníček',
@@ -132,11 +132,13 @@
     <div class="flex flex-col items-center justify-center gap-2">
         <Title>Uživatelské menu:</Title>
         {#if logged(_state.userState)}
+            {@const data = _state.userState.data}
             <h1 class="font-poppins text-xl font-bold">Přihlášen jako:</h1>
             <h1 class="font-poppins font-bold">
-                {_state.userState.data.username}
-                {#if _state.userState.data.group}
-                    {@const group = _state.userState.data.group}
+                {data.firstname}
+                {data.lastname}
+                {#if data.group}
+                    {@const group = data.group}
                     <Group textColor={group.text_color} backgroundColor={group.bg_color}>{group.name}</Group>
                 {/if}
             </h1>

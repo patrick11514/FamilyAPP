@@ -9,8 +9,11 @@
     import { SwalAlert } from '$/lib/functions';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
+    import type { PageData } from './$types';
 
-    const fields = ['username', 'password', 'password2'] as const;
+    const { data: pageData }: { data: PageData } = $props();
+
+    const fields = ['username', 'firstname', 'lastname', 'password', 'password2'] as const;
     type DataType = Record<
         (typeof fields)[number],
         {
@@ -27,7 +30,12 @@
         if (!data.username.value) {
             data.username.error = 'Vyplň prosím uživatelské jméno';
         }
-
+        if (!data.firstname.value) {
+            data.firstname.error = 'Vyplň prosím jméno';
+        }
+        if (!data.lastname.value) {
+            data.lastname.error = 'Vyplň prosím příjmení';
+        }
         if (!data.password.value) {
             data.password.error = 'Vyplň prosím heslo';
         }
@@ -46,6 +54,8 @@
 
         const response = await API.invitation.POST({
             username: data.username.value,
+            firstname: data.firstname.value,
+            lastname: data.lastname.value,
             password: data.password.value,
             code: page.params.code
         });
@@ -74,9 +84,15 @@
 
 <section class="flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-[0] md:rounded-md md:border-2 md:border-accent md:bg-secondary md:p-8">
     <Title class="text-center text-3xl lg:text-4xl">Registrace</Title>
-    <h3>Na pozvánku: <strong>{page.params.code}</strong></h3>
+    <h3>Na pozvánku: <strong>{page.params.code}</strong> od {pageData.invitation.firstname} {pageData.invitation.lastname}</h3>
     <Entry id="username" label="Uživatelské jméno" error={data.username.error}>
         <Input id="username" bind:value={data.username.value} invalid={data.username.error} />
+    </Entry>
+    <Entry id="firstname" label="Jméno" error={data.firstname.error}>
+        <Input id="firstname" bind:value={data.firstname.value} invalid={data.firstname.error} />
+    </Entry>
+    <Entry id="lastname" label="Příjmení" error={data.lastname.error}>
+        <Input id="lastname" bind:value={data.lastname.value} invalid={data.lastname.error} />
     </Entry>
     <Entry id="password" label="Heslo" error={data.password.error}>
         <Input id="password" type="password" bind:value={data.password.value} invalid={data.password.error} />

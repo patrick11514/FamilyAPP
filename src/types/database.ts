@@ -25,10 +25,13 @@ export interface Invitation {
   code: string;
   created_at: Generated<Date>;
   id: Generated<number>;
+  user_id: number;
 }
 
 export interface User {
+  firstname: string;
   id: Generated<number>;
+  lastname: string;
   password: string;
   username: string;
 }

@@ -10,14 +10,15 @@ import bcrypt from 'bcrypt';
 import { HASH_ROUNDS } from '$env/static/private';
 
 export default [
-    userProcedure.GET.query(async () => {
+    userProcedure.GET.query(async ({ ctx }) => {
         const code = crypto.randomBytes(5).toString('hex');
 
         try {
             await conn
                 .insertInto('invitation')
                 .values({
-                    code
+                    code,
+                    user_id: ctx.id
                 })
                 .execute();
 
@@ -37,6 +38,8 @@ export default [
     procedure.POST.input(
         z.object({
             username: z.string(),
+            firstname: z.string(),
+            lastname: z.string(),
             password: z.string(),
             code: z.string()
         })
@@ -69,6 +72,8 @@ export default [
                 .insertInto('user')
                 .values({
                     username: input.username,
+                    firstname: input.firstname,
+                    lastname: input.lastname,
                     password: hashed
                 })
                 .execute();
