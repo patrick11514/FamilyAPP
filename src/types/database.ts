@@ -5,9 +5,21 @@
 
 import type { ColumnType } from "kysely";
 
+export type Decimal = ColumnType<string, number | string>;
+
 export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
+
+export interface Debt {
+  id: Generated<number>;
+  photo: Generated<string | null>;
+  price: Decimal;
+  resolved_on: Generated<Date | null>;
+  when: Generated<Date>;
+  who: number;
+  whom: number;
+}
 
 export interface Group {
   bg_color: string;
@@ -42,6 +54,7 @@ export interface UserGroup {
 }
 
 export interface DB {
+  debt: Debt;
   group: Group;
   group_permissions: GroupPermissions;
   invitation: Invitation;
