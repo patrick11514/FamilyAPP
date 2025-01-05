@@ -22,3 +22,17 @@ export const SwalAlert = <$Type = unknown>(data: SweetAlertOptions) => {
         ...data
     });
 };
+
+export const toDate = (date: number | string | Date) => {
+    const d = new Date(date);
+
+    const day = d.getDate();
+    const month = d.getMonth() + 1;
+    const year = d.getFullYear();
+
+    const hours = d.getHours().toString().padStart(2, '0');
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+    const seconds = d.getSeconds().toString().padStart(2, '0');
+
+    return `${hours}:${minutes}:${seconds} ${day}.${month}.${year}`;
+};
