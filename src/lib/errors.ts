@@ -10,6 +10,12 @@ export const ERRORS = {
     },
     invitation: {
         code: 'Kód pozvánky je neplatný, pravděpodobně ho již někdo využil'
+    },
+    debt: {
+        input: "Neplatný vstup",
+        negative: "Zadej prosím platnou hodnotu",
+        file: "Vyber platný soubor",
+        size: "Vybral jsi moc velký soubor"
     }
 } as const;
 
@@ -33,7 +39,6 @@ export const extractError = (error: string): string => {
         if (key in base) {
             base = base[key];
         }
-        return '';
     });
 
     return base;
