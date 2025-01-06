@@ -38,7 +38,8 @@
         {
             name: 'Dlužníček',
             path: '/debt',
-            icon: 'bi-cash-coin'
+            icon: 'bi-cash-coin',
+            startsWith: true
         },
         {
             name: 'Datumovník',
@@ -121,7 +122,7 @@
 <ClickOutside
     clickoutside={() => (opened = false)}
     class={twMerge(
-        'absolute left-0 top-0 flex h-screen w-1/2 min-w-96 flex-col bg-secondary p-2 transition-transform duration-500 md:static md:w-auto md:translate-x-0',
+        'absolute left-0 top-0 flex min-h-screen w-1/2 min-w-96 flex-col bg-secondary p-2 transition-transform duration-500 md:static md:w-auto md:translate-x-0',
         !opened ? '-translate-x-full' : ''
     )}
 >
