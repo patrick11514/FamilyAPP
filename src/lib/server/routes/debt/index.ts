@@ -1,4 +1,4 @@
-import { array, z } from 'zod';
+import { z } from 'zod';
 import { loggedProcedure } from '../../api';
 import { FormDataInput, type ErrorApiResponse } from '@patrick115/sveltekitapi';
 import fs from 'node:fs';

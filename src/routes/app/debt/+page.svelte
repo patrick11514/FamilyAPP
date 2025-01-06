@@ -4,6 +4,7 @@
     import Table from '$/components/Table.svelte';
     import { toDate } from '$/lib/functions';
     import type { DeArray } from '$/types/types';
+    import { goto } from '$app/navigation';
     import type { PageData } from './$types';
 
     const { data }: { data: PageData } = $props();
@@ -19,15 +20,11 @@
 
         grouppedData[whom].push(rest);
     }
-
-    const addDebt = () => {
-        console.log('Added');
-    };
 </script>
 
 {#snippet add()}
     <div class="flex w-full justify-center">
-        <Icon onclick={addDebt} name="bi-plus-lg" class="text-green-600" />
+        <Icon onclick={() => goto('/app/debt/new')} name="bi-plus-lg" class="text-green-600" />
     </div>
 {/snippet}
 
@@ -75,7 +72,7 @@
                 };
             }),
             {
-                whom: {
+                who: {
                     colspan: 4,
                     value: add
                 }
