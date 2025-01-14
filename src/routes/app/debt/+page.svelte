@@ -1,8 +1,9 @@
 <script lang="ts">
     import Title from '$/components/headers/Title.svelte';
     import Icon from '$/components/Icon.svelte';
-    import Table from '$/components/Table.svelte';
-    import { toDate } from '$/lib/functions';
+    import { Table, Th, Tr, Td } from '$/components/table';
+    import { API } from '$/lib/api';
+    import { SwalAlert, toDate } from '$/lib/functions';
     import type { DeArray } from '$/types/types';
     import { goto } from '$app/navigation';
     import type { PageData } from './$types';
@@ -12,6 +13,7 @@
     type PersonDebt = Omit<DeArray<(typeof data)['who']>, 'whom'>[];
 
     const grouppedData: Record<number, PersonDebt> = {};
+    let whom = $state(data.whom);
 
     for (const { whom, ...rest } of data.who.filter((item) => item.resolved_on === null)) {
         if (!(whom in grouppedData)) {
@@ -20,63 +22,103 @@
 
         grouppedData[whom].push(rest);
     }
-</script>
 
-{#snippet add()}
-    <div class="flex w-full justify-center">
-        <Icon onclick={() => goto('/app/debt/new')} name="bi-plus-lg" class="text-green-600" />
-    </div>
-{/snippet}
+    const remove = async (id: number) => {
+        const alert = await SwalAlert({
+            toast: false,
+            title: 'Opravdu chceteš smazat tento záznam?',
+            position: 'center',
+            timer: 0,
+            showConfirmButton: true,
+            confirmButtonText: 'Ano',
+            showCancelButton: true,
+            cancelButtonText: 'Ne'
+        });
+
+        if (!alert.isConfirmed) {
+            return;
+        }
+
+        const response = await API.debt.DELETE(id);
+        if (!response.status) {
+            SwalAlert({
+                icon: 'error',
+                title: response.message
+            });
+            return;
+        }
+
+        SwalAlert({
+            icon: 'success',
+            title: 'Záznam byl úspěšně smazán'
+        });
+
+        whom = whom.filter((item) => item.id !== id);
+    };
+</script>
 
 <div class="flex flex-1 flex-col">
     <Title class="my-2">Dlužíš</Title>
     {#if Object.values(grouppedData).length === 0}
         <h1 class="text-center font-poppins text-xl font-bold lg:text-2xl">Nikomu nic nedlužíš :)</h1>
     {:else}
-        <Table
-            head={{
-                who: 'Kdo',
-                amount: 'Kolik',
-                icons: ''
-            }}
-            data={Object.entries(grouppedData).map(([who, list]) => {
-                const user = data.users.find((user) => user.id === parseInt(who))!;
-                return {
-                    who: `${user.firstname} ${user.lastname}`,
-                    amount: list
-                        .map((record) => parseFloat(record.price))
-                        .reduce((a, b) => a + b, 0)
-                        .toFixed(2),
-                    icons: ''
-                };
-            })}
-        />
+        <Table>
+            <thead>
+                <Tr>
+                    <Th>Kdo</Th>
+                    <Th>Kolik</Th>
+                    <Th></Th>
+                </Tr>
+            </thead>
+            <tbody class="text-center">
+                {#each Object.entries(grouppedData) as [who, list]}
+                    {@const user = data.users.find((user) => user.id === parseInt(who))!}
+                    <Tr>
+                        <Td>{user.firstname} {user.lastname}</Td>
+                        <Td>
+                            {list
+                                .map((record) => parseFloat(record.price))
+                                .reduce((a, b) => a + b, 0)
+                                .toFixed(2)}
+                        </Td>
+                        <Td></Td>
+                    </Tr>
+                {/each}
+            </tbody>
+        </Table>
     {/if}
-    <Title class="my-2">Tobě je dluženo</Title>
-    <Table
-        head={{
-            who: 'Od koho',
-            amount: 'Kolik',
-            when: 'Kdy',
-            payed: 'Zaplaceno',
-            icons: ''
-        }}
-        data={[
-            ...data.whom.map((item) => {
-                const user = data.users.find((user) => user.id === item.who)!;
-                return {
-                    who: `${user.firstname} ${user.lastname}`,
-                    amount: item.price,
-                    when: toDate(item.when),
-                    payed: item.resolved_on === null ? 'Ne' : toDate(item.resolved_on)
-                };
-            }),
-            {
-                who: {
-                    colspan: 4,
-                    value: add
-                }
-            }
-        ]}
-    />
+    <Title class="mb-2 mt-12">Tobě je dluženo</Title>
+    <Table>
+        <thead>
+            <Tr>
+                <Th>Kdo</Th>
+                <Th>Kolik</Th>
+                <Th>Kdy</Th>
+                <Th>Zaplaceno</Th>
+                <Th></Th>
+            </Tr>
+        </thead>
+        <tbody class="text-center">
+            {#each whom as item}
+                {@const user = data.users.find((user) => user.id === item.who)!}
+                <Tr>
+                    <Td>{user.firstname} {user.lastname}</Td>
+                    <Td>{item.price}</Td>
+                    <Td>{toDate(item.when)}</Td>
+                    <Td>{item.resolved_on === null ? 'Ne' : toDate(item.resolved_on)}</Td>
+                    <Td>
+                        <Icon onclick={() => goto(`/app/debt/edit/${item.id}`)} name="bi-pencil-fill" class="text-gray-400" />
+                        <Icon onclick={() => remove(item.id)} name="bi-trash-fill" class="text-red-500" />
+                    </Td>
+                </Tr>
+            {/each}
+            <Tr>
+                <Td colspan={5}>
+                    <div class="flex w-full justify-center">
+                        <Icon onclick={() => goto('/app/debt/new')} name="bi-plus-lg" class="text-green-600" />
+                    </div>
+                </Td>
+            </Tr>
+        </tbody>
+    </Table>
 </div>

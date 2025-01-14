@@ -1,14 +1,10 @@
 <script lang="ts">
-    import Entry from '$/components/form/Entry.svelte';
-    import Select from '$/components/form/Select.svelte';
+    import { Entry, Select, Input, FileSelect, Button } from '$/components/form';
     import Title from '$/components/headers/Title.svelte';
     import Icon from '$/components/Icon.svelte';
     import { goto } from '$app/navigation';
     import type { Snapshot } from '@sveltejs/kit';
     import type { PageData } from './$types.js';
-    import Input from '$/components/form/Input.svelte';
-    import FileSelect from '$/components/form/FileSelect.svelte';
-    import Button from '$/components/form/Button.svelte';
     import { SwalAlert, toLocalDateString } from '$/lib/functions.js';
     import { API } from '$/lib/api.js';
     import { extractError, matchError } from '$/lib/errors.js';

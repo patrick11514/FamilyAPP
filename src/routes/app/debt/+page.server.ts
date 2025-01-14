@@ -11,6 +11,7 @@ export const load = (async ({ cookies }) => {
         .selectFrom('debt')
         .selectAll()
         .where((eb) => eb.or([eb('who', '=', data.data.id), eb('whom', '=', data.data.id)]))
+        .orderBy('when desc')
         .execute();
 
     return {

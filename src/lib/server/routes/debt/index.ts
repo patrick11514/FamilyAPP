@@ -86,13 +86,30 @@ export default [
 
             return {
                 status: true
-            } satisfies Response
+            } satisfies Response;
         } catch (err) {
             console.error(err);
             return {
                 status: false,
                 code: 500,
                 message: 'Něco se nepovedlo na serveru'
+            } satisfies ErrorApiResponse;
+        }
+    }),
+    loggedProcedure.DELETE.input(z.number()).query(async ({ ctx, input }) => {
+        try {
+            conn.deleteFrom('debt')
+                .where((eb) => eb.and([eb('id', '=', input), eb('whom', '=', ctx.id)]))
+                .execute();
+            return {
+                status: true
+            } satisfies Response;
+        } catch (err) {
+            console.error(err);
+            return {
+                status: false,
+                code: 500,
+                message: ''
             } satisfies ErrorApiResponse;
         }
     })
