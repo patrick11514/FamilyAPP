@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Select from '$/components/form/Select.svelte';
+    import { Select } from '$/components/form';
     import Icon from '$/components/Icon.svelte';
     import { API } from '$/lib/api';
     import { SwalAlert } from '$/lib/functions';

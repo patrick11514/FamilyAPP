@@ -1,9 +1,5 @@
 <script lang="ts">
-    import Button from '$/components/form/Button.svelte';
-    import Entry from '$/components/form/Entry.svelte';
-    import Input from '$/components/form/Input.svelte';
-    import Title from '$/components/headers/Title.svelte';
-    import Footer from '$/components/navigation/Footer.svelte';
+    import { Button, Entry, Input, Title, Footer } from '$/components/form';
     import { API } from '$/lib/api';
     import { extractError, matchError } from '$/lib/errors';
     import { SwalAlert } from '$/lib/functions';
