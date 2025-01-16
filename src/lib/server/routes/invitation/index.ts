@@ -37,10 +37,10 @@ export default [
     }),
     procedure.POST.input(
         z.object({
-            username: z.string(),
-            firstname: z.string(),
-            lastname: z.string(),
-            password: z.string(),
+            username: z.string().trim(),
+            firstname: z.string().trim(),
+            lastname: z.string().trim(),
+            password: z.string().trim(),
             code: z.string()
         })
     ).query(async ({ input }) => {
