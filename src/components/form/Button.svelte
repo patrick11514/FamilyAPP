@@ -7,7 +7,10 @@
 
 <button
     {...props}
-    class={twMerge('bg-accent font-poppins hover:bg-secondary w-full rounded-md px-4 py-2 font-bold transition-all duration-200 active:translate-y-1 disabled:grayscale', cls)}
+    class={twMerge(
+        'w-full rounded-md bg-accent px-4 py-2 font-poppins font-bold transition-all duration-200 hover:bg-secondary active:translate-y-1 disabled:grayscale',
+        cls?.toString()
+    )}
 >
     {@render children?.()}
 </button>

@@ -14,8 +14,8 @@
     bind:this={el}
     {...props}
     class={twMerge(
-        'bg-secondary text-text placeholder:text-text invalid:border-accent focus:border-primary rounded-md border-2 border-white px-4 py-1 text-2xl font-bold outline-none transition-colors duration-200 lg:text-3xl',
-        cls
+        'rounded-md border-2 border-white bg-secondary px-4 py-1 text-2xl font-bold text-text outline-none transition-colors duration-200 placeholder:text-text invalid:border-accent focus:border-primary lg:text-3xl',
+        cls?.toString()
     )}
     bind:value
 />
