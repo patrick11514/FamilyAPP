@@ -1,4 +1,4 @@
-import { error, json, type RequestHandler } from '@sveltejs/kit';
+import { error, type RequestHandler } from '@sveltejs/kit';
 import Path from 'node:path';
 import fs from 'node:fs';
 import { FILE_FOLDER } from '$env/static/private';
