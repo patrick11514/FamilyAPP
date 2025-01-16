@@ -88,7 +88,17 @@ export default [
                 status: true
             } satisfies Response;
         } catch (err) {
-            console.error(err);
+            if (err instanceof Error) {
+                if ('code' in err) {
+                    if (err.code === 'ER_WARN_DATA_OUT_OF_RANGE') {
+                        return {
+                            status: false,
+                            code: 401,
+                            message: 'debt.range' satisfies ErrorList
+                        } satisfies ErrorApiResponse;
+                    }
+                }
+            }
             return {
                 status: false,
                 code: 500,

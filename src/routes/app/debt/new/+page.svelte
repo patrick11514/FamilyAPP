@@ -72,6 +72,8 @@
                 data.image.error = extractError(response.message);
             } else if (matchError(response.message, 'debt.size')) {
                 data.image.error = extractError(response.message);
+            } else if (matchError(response.message, 'debt.range')) {
+                data.amount.error = extractError(response.message);
             } else {
                 SwalAlert({
                     icon: 'error',
@@ -117,7 +119,7 @@
         </Select>
     </Entry>
     <Entry id="amount" label="Částka" note="(používá se desetinná tečka)" error={data.amount.error}>
-        <Input id="amount" type="number" step="any" bind:value={data.amount.value} invalid={data.amount.error} />
+        <Input id="amount" type="number" step={0.00001} bind:value={data.amount.value} invalid={data.amount.error} />
     </Entry>
     <Entry id="when" label="Kdy" note="(proběhla například platba/placení)" error={data.when.error}>
         <Input id="when" type="datetime-local" bind:value={data.when.value} invalid={data.when.error} />
