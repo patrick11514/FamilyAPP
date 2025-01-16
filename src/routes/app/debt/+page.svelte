@@ -65,7 +65,7 @@
         <Table>
             <thead>
                 <Tr>
-                    <Th>Kdo</Th>
+                    <Th>Komu</Th>
                     <Th>Kolik</Th>
                     <Th></Th>
                 </Tr>
@@ -81,7 +81,9 @@
                                 .reduce((a, b) => a + b, 0)
                                 .toFixed(2)}
                         </Td>
-                        <Td></Td>
+                        <Td>
+                            <Icon onclick={() => goto(`/app/debt/view/${user.id}`)} name="bi-eye-fill" class="text-sky-500" />
+                        </Td>
                     </Tr>
                 {/each}
             </tbody>
@@ -103,7 +105,7 @@
                 {@const user = data.users.find((user) => user.id === item.who)!}
                 <Tr>
                     <Td>{user.firstname} {user.lastname}</Td>
-                    <Td>{item.price}</Td>
+                    <Td class="break-all">{item.price}</Td>
                     <Td>{toDate(item.when)}</Td>
                     <Td>{item.resolved_on === null ? 'Ne' : toDate(item.resolved_on)}</Td>
                     <Td>
