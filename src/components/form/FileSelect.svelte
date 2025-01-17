@@ -125,7 +125,7 @@
                     </div>
                 {/if}
                 <div class="justfiy-center flex flex-col items-center p-1">
-                    <h1 class="text-lg lg:text-xl">
+                    <h1 class="break-all text-lg lg:text-xl">
                         {file.name}
                     </h1>
                     <h2 class="text-base font-medium lg:text-lg">{formatSize(file.size)}</h2>
