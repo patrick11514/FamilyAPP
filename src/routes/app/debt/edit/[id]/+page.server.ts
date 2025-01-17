@@ -3,7 +3,9 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { conn } from '$/lib/server/variables';
 
-export const load = (async ({ cookies, params }) => {
+export const load = (async ({ cookies, params, parent }) => {
+    const parentData = await parent();
+
     const data = getCookieData(cookies);
     if (!data.logged) redirect(302, '/');
 
@@ -13,10 +15,15 @@ export const load = (async ({ cookies, params }) => {
     //check if the user is the owner of the debt
     const found = await conn
         .selectFrom('debt')
-        .select('id')
-        .where((eb) => eb.and([eb('id', '=', id), eb('whom', '=', data.data.id)]))
+        .selectAll()
+        .where((eb) => eb.and([eb('debt.id', '=', id), eb('debt.whom', '=', data.data.id)]))
         .executeTakeFirst();
     if (!found) {
         redirect(302, '/app/debt');
     }
+
+    return {
+        data: found,
+        users: parentData.users
+    };
 }) satisfies PageServerLoad;
