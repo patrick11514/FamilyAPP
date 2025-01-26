@@ -29,3 +29,7 @@ pnpm-lock.yaml
 
 #files folder
 files
+
+#deploy files
+logs
+script
