@@ -14,6 +14,9 @@ const config = {
         adapter: adapter(),
         alias: {
             '$/*': 'src/*'
+        },
+        csrf: {
+            checkOrigin: process.env.NODE_ENV === 'production'
         }
     }
 };
