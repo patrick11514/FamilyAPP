@@ -6,12 +6,16 @@ export default defineConfig({
     plugins: [
         sveltekit(),
         SvelteKitPWA({
+            devOptions: {
+                enabled: true
+            },
             manifest: {
-                name: 'Family APP',
-                short_name: 'Family APP',
+                name: process.env.NODE_ENV === 'production' ? 'Family APP' : 'Family APP - DEV',
+                short_name: process.env.NODE_ENV === 'production' ? 'Family APP' : 'Family APP - DEV',
                 start_url: '/',
                 display: 'standalone',
                 background_color: '#0e0201',
+                theme_color: '#0e0201',
                 lang: 'cs',
                 scope: '/',
                 icons: [
