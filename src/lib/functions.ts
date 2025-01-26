@@ -48,3 +48,7 @@ export const toLocalDateString = (d?: Date) => {
 
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
+
+const capital = (s: string) => {
+    return s.charAt(0).toUpperCase() + s.slice(1);
+};

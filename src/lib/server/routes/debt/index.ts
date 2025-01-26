@@ -7,7 +7,7 @@ import Path from 'node:path';
 import type { ErrorList } from '$/lib/errors';
 import { FILE_FOLDER, MAX_FILE_SIZE } from '$env/static/private';
 import { conn } from '../../variables';
-import type { Response } from '$/types/types';
+import type { DePromise, Response, ResponseWithData } from '$/types/types';
 
 const uploadFile = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
@@ -20,6 +20,15 @@ const uploadFile = async (file: File) => {
 
     fs.writeFileSync(Path.join(FILE_FOLDER, name), Buffer.from(arrayBuffer));
     return name;
+};
+
+export const getDebtsByUserId = async (userId: number, who: number) => {
+    return await conn
+        .selectFrom('debt')
+        .selectAll()
+        .where((eb) => eb.and([eb('debt.whom', '=', userId), eb('debt.who', '=', who), eb('resolved_on', 'is', null)]))
+        .orderBy('when', 'desc')
+        .execute();
 };
 
 export default [
@@ -215,6 +224,34 @@ export default [
             return {
                 status: true
             } satisfies Response;
+        } catch (err) {
+            console.error(err);
+            return {
+                status: false,
+                code: 500,
+                message: ''
+            } satisfies ErrorApiResponse;
+        }
+    }),
+    loggedProcedure.POST.input(
+        z.object({
+            whom: z.number(),
+            ids: z.array(z.number())
+        })
+    ).query(async ({ input, ctx }) => {
+        try {
+            await conn
+                .updateTable('debt')
+                .set({
+                    resolved_on: new Date()
+                })
+                .where((eb) => eb.and([eb('whom', '=', input.whom), eb('who', '=', ctx.id), eb('id', 'in', input.ids)]))
+                .execute();
+
+            return {
+                status: true,
+                data: await getDebtsByUserId(input.whom, ctx.id)
+            } satisfies ResponseWithData<DePromise<ReturnType<typeof getDebtsByUserId>>>;
         } catch (err) {
             console.error(err);
             return {
