@@ -6,14 +6,45 @@
     import { goto } from '$app/navigation';
     import Title from '$/components/headers/Title.svelte';
     import Footer from '$/components/navigation/Footer.svelte';
+    import { urlBase64ToUint8Array } from '$/lib/functions';
+    import { PUBLIC_VAPI_KEY } from '$env/static/public';
 
     const { children }: { children: Snippet } = $props();
 
     const _state = getState();
     const PERMS_UPDATE = 5 * 60 * 1000; //5minutes
 
+    const setupPush = async () => {
+        if (!('serviceWorker' in navigator || 'PushManager' in window)) {
+            console.log('Service workers are not supported or push manager is not supported');
+            return;
+        }
+
+        try {
+            const registration = await navigator.serviceWorker.register('/push-worker.js');
+            console.log(registration);
+            const subscription = await registration.pushManager.getSubscription();
+
+            if (!subscription) {
+                console.log('Subscribing to push notifications');
+                const subscription = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPI_KEY)
+                });
+
+                //eslint-disable-next-line
+                await API.push.subscribe(subscription as any);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
     onMount(() => {
         if (!logged(_state.userState)) return;
+
+        setupPush();
+
         const data = _state.userState.data;
 
         const interval = setInterval(async () => {

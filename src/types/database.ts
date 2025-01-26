@@ -53,6 +53,14 @@ export interface UserGroup {
   user_id: number;
 }
 
+export interface WebPush {
+  auth: string;
+  endpoint: string;
+  id: Generated<number>;
+  p256dh: string;
+  userId: number;
+}
+
 export interface DB {
   debt: Debt;
   group: Group;
@@ -60,4 +68,5 @@ export interface DB {
   invitation: Invitation;
   user: User;
   user_group: UserGroup;
+  web_push: WebPush;
 }

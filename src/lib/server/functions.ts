@@ -1,7 +1,10 @@
-import type { UserData, UserState } from '$/types/types';
+import type { NormalizeId, UserData, UserState } from '$/types/types';
 import type { Cookies } from '@sveltejs/kit';
 import { conn, jwt } from './variables';
 import { z } from 'zod';
+import type { Arrayable } from '@patrick115/sveltekitapi';
+import webPush from 'web-push';
+import type { WebPush } from '$/types/database';
 
 export const getCookieData = (cookies: Cookies): UserState => {
     const cookie = cookies.get('session');
@@ -59,3 +62,84 @@ export const hexColor = z.custom<string>((data: any) => {
         .split('')
         .some((ch) => !isHexDigit(ch));
 });
+
+type NotificationPayload = {
+    title: string;
+    body: string;
+    icon?: string;
+    badge?: string;
+    action?: Arrayable<{
+        action: string;
+        title: string;
+        url: string;
+    }>;
+    timestamp?: number;
+    priority?: 'high' | 'normal' | 'low';
+    tag?: string;
+    silent?: boolean;
+};
+
+export const sendSingleNotification = async (payload: string, push: NormalizeId<WebPush>) => {
+    const obj = {
+        endpoint: push.endpoint,
+        keys: {
+            p256dh: push.p256dh,
+            auth: push.auth
+        }
+    };
+
+    try {
+        await webPush.sendNotification(obj, payload);
+        console.log('Sended');
+        return true;
+    } catch (e) {
+        console.log(e);
+        if (e !== null && typeof e === 'object' && 'statusCode' in e)
+            if (e.statusCode === 410) {
+                return false;
+            }
+    }
+};
+
+export const batchNotifications = async (notification: NotificationPayload, pushes: NormalizeId<WebPush>[]) => {
+    const payload = JSON.stringify({
+        icon: '/icons/favicon-196x196.png',
+        badge: '/icons/favicon-196x196.png',
+        timestamp: Date.now(),
+        ...notification
+    });
+
+    const promises = pushes.map((push) => sendSingleNotification(payload, push));
+    const results = await Promise.all(promises);
+
+    const removeIds = results
+        .map((result, idx) => {
+            if (result === false) {
+                return pushes[idx].id;
+            }
+            return false;
+        })
+        .filter((id) => id !== false);
+
+    if (removeIds.length === 0) return;
+
+    await conn.deleteFrom('web_push').where('id', 'in', removeIds).execute();
+};
+
+export const sendNotification = async (userId: number, notification: NotificationPayload) => {
+    const pushes = await conn.selectFrom('web_push').selectAll().where('userId', '=', userId).execute();
+
+    await batchNotifications(notification, pushes);
+};
+
+export const sendNotificationToMultiple = async (userIds: number[], notification: NotificationPayload) => {
+    const pushes = await conn.selectFrom('web_push').selectAll().where('userId', 'in', userIds).execute();
+
+    await batchNotifications(notification, pushes);
+};
+
+export const sendNotificationToAll = async (notification: NotificationPayload) => {
+    const pushes = await conn.selectFrom('web_push').selectAll().execute();
+
+    await batchNotifications(notification, pushes);
+};
