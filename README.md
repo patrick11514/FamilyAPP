@@ -1,44 +1,43 @@
-# Info
+# FamilyAPP
 
-TODO
+Appka, kterou používáme v rodině.
 
-## Dev mode
+## Features
+
+- [ ] Rozvrhávač - zobrazování rozvrhů pro jednotlivé dny
+- [ ] Dárkovník - seznam dárků, které chceme na narozeniny/vánoce
+- [x] Dlužníček - seznam dluhů v rodině (například koupím nákup a zadám taťkovi, že mi dluží za něho peníze)
+- [ ] Datumovník - kalednář s akcema, které jdou přidávat do google kalendáře
+- [ ] Poznámkovník - seznam osobních, nebo veřejných poznámek, do kterých lze přispívat
+
+## Technologies
+
+- [SvelteKit](https://svelte.dev) - Frontend + Backend
+- MariaDB - Databáze
+- [SvelteKitPWA](https://github.com/vite-pwa/sveltekit) - PWA pro mobilní appku
+- [Svelte Adapter Node](https://svelte.dev/docs/kit/adapter-node) - Build pro Node.js server
+
+## Development
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-
-npm run dev -- --open
+git clone https://github.com/patrick11514/familyapp.git # clone repa
+cd familyapp
+npm install # instalace dependencies
 ```
 
-## Build
-
-Building app:
+Nyní je důležité si nastavit env variables.
 
 ```bash
-npm run build
+cp .env.example .env
 ```
 
-Show builded preview: \`npm run preview\`.
-Start builded app using `npm run start` with [Node Adapter](https://kit.svelte.dev/docs/adapter-node) or config command in package.json using your own [Adapter](https://kit.svelte.dev/docs/adapters)
+Development + build
 
-## Example ENV file (.env.example)
+```bash
+npm run dev # spuštění dev serveru
 
-```YAML
-HOST=0.0.0.0
-PORT=5178
-ORIGIN=http://localhost:5178
-DATABASE_IP=10.10.10.223
-DATABASE_PORT=3306
-DATABASE_USER=superclovek
-DATABASE_PASSWORD=tajnyheslo123456
-DATABASE_NAME=db
-DATABASE_URL=mysql://superclovek:tajnyheslo123456@10.10.10.223:3306/db
-JWT_SECRET=text
-#v sekundách (10 min =  10 * 60)
-#expiruje pouze pokud uživatel danou dobu nic nedělá (neprochází stránky)
-COOKIE_EXPIRE=1200
-#v sekundách (5 minut = 5 * 60)
-PUBLIC_CHECK_COOKIE_INTERVAL=300
+npm run build # build aplikace
+npm run start # spuštění produkčního serveru
 ```
+
+_Při buildu jsou environment variables static, tedy se nahradí v kódu. Pokud toto chování nechcete, importujte si env variables přes $env/dynamic/private místo $env/static/private_
