@@ -14,9 +14,6 @@ const config = {
         adapter: adapter(),
         alias: {
             '$/*': 'src/*'
-        },
-        files: {
-            serviceWorker: 'static/push-worker.js'
         }
     }
 };

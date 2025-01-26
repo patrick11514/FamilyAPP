@@ -8,6 +8,8 @@ import type { ErrorList } from '$/lib/errors';
 import { FILE_FOLDER, MAX_FILE_SIZE } from '$env/static/private';
 import { conn } from '../../variables';
 import type { DePromise, Response, ResponseWithData } from '$/types/types';
+import { sendNotification } from '../../functions';
+import { toDate } from '$/lib/functions';
 
 const uploadFile = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
@@ -95,6 +97,14 @@ export default [
                     when: new Date(data.data.when)
                 })
                 .execute();
+
+            await sendNotification(data.data.who, {
+                title: 'Máš nový dluh',
+                body: `${ctx.firstname} ${ctx.lastname} chce po tobě ${data.data.amount} Kč`,
+                data: {
+                    url: '/app/debt/view/' + ctx.id
+                }
+            });
 
             return {
                 status: true
@@ -247,6 +257,22 @@ export default [
                 })
                 .where((eb) => eb.and([eb('whom', '=', input.whom), eb('who', '=', ctx.id), eb('id', 'in', input.ids)]))
                 .execute();
+
+            const list = await conn.selectFrom('debt').selectAll().where('id', 'in', input.ids).orderBy('when', 'desc').execute();
+
+            let baseBody = `${ctx.firstname} ${ctx.lastname} ti splatil nějaké dluhy.`;
+
+            for (const item of list) {
+                baseBody += `\n- ${toDate(item.when)} - ${parseFloat(item.price)} Kč`;
+            }
+
+            await sendNotification(input.whom, {
+                title: 'Byl ti splacen dluh',
+                body: baseBody,
+                data: {
+                    url: '/app/debt'
+                }
+            });
 
             return {
                 status: true,

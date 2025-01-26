@@ -2,7 +2,6 @@ import type { NormalizeId, UserData, UserState } from '$/types/types';
 import type { Cookies } from '@sveltejs/kit';
 import { conn, jwt } from './variables';
 import { z } from 'zod';
-import type { Arrayable } from '@patrick115/sveltekitapi';
 import webPush from 'web-push';
 import type { WebPush } from '$/types/database';
 
@@ -68,15 +67,15 @@ type NotificationPayload = {
     body: string;
     icon?: string;
     badge?: string;
-    action?: Arrayable<{
+    actions?: {
         action: string;
         title: string;
-        url: string;
-    }>;
+    }[];
     timestamp?: number;
     priority?: 'high' | 'normal' | 'low';
     tag?: string;
     silent?: boolean;
+    data?: Record<string, unknown>;
 };
 
 export const sendSingleNotification = async (payload: string, push: NormalizeId<WebPush>) => {
@@ -93,7 +92,6 @@ export const sendSingleNotification = async (payload: string, push: NormalizeId<
         console.log('Sended');
         return true;
     } catch (e) {
-        console.log(e);
         if (e !== null && typeof e === 'object' && 'statusCode' in e)
             if (e.statusCode === 410) {
                 return false;
@@ -106,6 +104,7 @@ export const batchNotifications = async (notification: NotificationPayload, push
         icon: '/icons/favicon-196x196.png',
         badge: '/icons/favicon-196x196.png',
         timestamp: Date.now(),
+        silent: false,
         ...notification
     });
 

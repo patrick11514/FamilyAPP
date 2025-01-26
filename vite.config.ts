@@ -35,5 +35,10 @@ export default defineConfig({
                 }))
             }
         })
-    ]
+    ],
+    server: {
+        fs: {
+            allow: ['static/webworker/']
+        }
+    }
 });

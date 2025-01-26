@@ -21,7 +21,7 @@
         }
 
         try {
-            const registration = await navigator.serviceWorker.register('/push-worker.js');
+            const registration = await navigator.serviceWorker.register('/webworker/push-worker.js');
             console.log(registration);
             const subscription = await registration.pushManager.getSubscription();
 
