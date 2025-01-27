@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
+    import type { ClassValue } from 'svelte/elements';
 
     /**
      * Source: https://svelte.dev/repl/0ace7a508bd843b798ae599940a91783?version=3.16.7
@@ -30,7 +31,7 @@
         ignore = []
     }: {
         children: Snippet;
-        class?: string;
+        class?: ClassValue;
         clickoutside: () => void;
         ignore?: string[];
     } = $props();

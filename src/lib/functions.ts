@@ -1,5 +1,6 @@
 import { browser } from '$app/environment';
 import Swal, { type SweetAlertOptions } from 'sweetalert2';
+import type { ClassValue } from 'svelte/elements';
 
 export const sleep = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -65,4 +66,85 @@ export const urlBase64ToUint8Array = (base64String: string) => {
     }
 
     return outputArray;
+};
+
+//eslint-disable-next-line
+type Degenerator<Type> = Type extends Generator<infer Value, any, any> ? Value : never;
+
+export class Calendar {
+    private today = new Date();
+
+    getFirstDayOfMonth() {
+        return new Date(this.today.getFullYear(), this.today.getMonth(), 1);
+    }
+
+    getLastDayOfMonth() {
+        return new Date(this.today.getFullYear(), this.today.getMonth() + 1, 0);
+    }
+
+    *monthDayIterator() {
+        const firstDay = this.getFirstDayOfMonth();
+
+        //get the first day of the week
+        firstDay.setDate(firstDay.getDate() - firstDay.getDay());
+
+        //get the last day of the month
+        const lastDay = this.getLastDayOfMonth();
+        lastDay.setDate(lastDay.getDate() + 6 - lastDay.getDay());
+
+        const currentDay = new Date(firstDay);
+        while (true) {
+            yield {
+                date: new Date(currentDay),
+                isCurrentMonth: currentDay.getMonth() === this.today.getMonth(),
+                isToday: currentDay.toDateString() === this.today.toDateString()
+            };
+
+            currentDay.setDate(currentDay.getDate() + 1);
+
+            if (currentDay > lastDay) {
+                break;
+            }
+        }
+    }
+
+    *monthWeekIterator() {
+        const iterator = this.monthDayIterator();
+        let week: Degenerator<ReturnType<typeof this.monthDayIterator>>[] = [];
+
+        for (const day of iterator) {
+            week.push(day);
+
+            if (day.date.getDay() === 6) {
+                yield week;
+                week = [];
+            }
+        }
+
+        if (week.length > 0) {
+            yield week;
+        }
+    }
+}
+
+export const resolveSvelteClass = (classes: ClassValue): string => {
+    if (typeof classes === 'string') {
+        return classes;
+    }
+
+    if (Array.isArray(classes)) {
+        return classes
+            .filter((item) => typeof item === 'string')
+            .map(resolveSvelteClass)
+            .join(' ');
+    }
+
+    if (typeof classes === 'object') {
+        return Object.entries(classes)
+            .filter(([, value]) => value)
+            .map(([key]) => key)
+            .join(' ');
+    }
+
+    return '';
 };
