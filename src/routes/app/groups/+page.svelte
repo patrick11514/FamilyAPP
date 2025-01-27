@@ -169,7 +169,7 @@
                     <tr class="border-2 border-text">
                         <td class="border-2 border-text">{group.id}</td>
                         <td class="border-2 border-text">
-                            <input class="w-full border-none bg-transparent text-center outline-none" bind:value={group.name} size={1} />
+                            <input class="w-full border-none bg-transparent text-center outline-hidden" bind:value={group.name} size={1} />
                         </td>
                         <td onclick={() => inputs.text?.click()} class="border-2 border-text" style="background-color: {group.text_color};">
                             <input bind:this={inputs.text} bind:value={group.text_color} hidden type="color" />

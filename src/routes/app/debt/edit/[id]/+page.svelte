@@ -131,7 +131,7 @@
 </script>
 
 <Icon onclick={() => goto('/app/debt')} name="bi-arrow-return-left" class="text-2xl lg:text-3xl" />
-<section class="flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-[0] md:rounded-md md:border-2 md:border-accent md:bg-secondary md:p-8">
+<section class="flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:border-accent md:bg-secondary md:p-8">
     <Title>Úprava dlužení č.{pageData.data.id}</Title>
     <Entry id="who" label="Dlužník" error={data.who.error}>
         <Select id="who" bind:value={data.who.value} invalid={data.who.error}>
