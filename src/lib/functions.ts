@@ -72,32 +72,70 @@ export const urlBase64ToUint8Array = (base64String: string) => {
 type Degenerator<Type> = Type extends Generator<infer Value, any, any> ? Value : never;
 
 export class Calendar {
-    private today = new Date();
+    private _today = new Date();
 
+    /**
+     * Gets the first day of month (1. day of the month)
+     */
     getFirstDayOfMonth() {
-        return new Date(this.today.getFullYear(), this.today.getMonth(), 1);
+        return new Date(this._today.getFullYear(), this._today.getMonth(), 1);
     }
 
+    /**
+     * Gets the last day of month (last day of the month - 30. or 31. or 28. or 29.)
+     */
     getLastDayOfMonth() {
-        return new Date(this.today.getFullYear(), this.today.getMonth() + 1, 0);
+        return new Date(this._today.getFullYear(), this._today.getMonth() + 1, 0);
     }
 
-    *monthDayIterator() {
+    /**
+     * Gets first day of calendar. Calendar starts from Monday, so
+     * if month stars from Tuesday, we need to include day before as
+     * Monday and this will be returned.
+     */
+    getFirstDayOfCalendar() {
         const firstDay = this.getFirstDayOfMonth();
 
         //get the first day of the week
-        firstDay.setDate(firstDay.getDate() - firstDay.getDay());
+        //0 = Sunday, but we want to start from Monday
+        firstDay.setDate(firstDay.getDate() - firstDay.getDay() + 1);
+        return firstDay;
+    }
 
+    /**
+     * Gets last day of calendar. Calendar ends on Sunday, so
+     * if month ends on Saturday, we need to include day after as
+     * Sunday and this will be returned.
+     */
+    getLastDayOfCalendar() {
         //get the last day of the month
         const lastDay = this.getLastDayOfMonth();
-        lastDay.setDate(lastDay.getDate() + 6 - lastDay.getDay());
+        lastDay.setDate(lastDay.getDate() + 7 - lastDay.getDay());
+        return lastDay;
+    }
+
+    /**
+     * Gets the current day
+     */
+    get today() {
+        return new Date(this._today);
+    }
+
+    /**
+     * Itterate over days of the month
+     * This includes the days from previous month and next, if
+     * the month does not start on Monday and does not end on Sunday
+     */
+    *monthDayIterator() {
+        const firstDay = this.getFirstDayOfCalendar();
+        const lastDay = this.getLastDayOfCalendar();
 
         const currentDay = new Date(firstDay);
         while (true) {
             yield {
                 date: new Date(currentDay),
-                isCurrentMonth: currentDay.getMonth() === this.today.getMonth(),
-                isToday: currentDay.toDateString() === this.today.toDateString()
+                isCurrentMonth: currentDay.getMonth() === this._today.getMonth(),
+                isToday: currentDay.toDateString() === this._today.toDateString()
             };
 
             currentDay.setDate(currentDay.getDate() + 1);
@@ -108,6 +146,11 @@ export class Calendar {
         }
     }
 
+    /**
+     * Itterate over weeks of the month
+     * This includes the days from previous month and next, if
+     * the month does not start on Monday and does not end on Sunday
+     */
     *monthWeekIterator() {
         const iterator = this.monthDayIterator();
         let week: Degenerator<ReturnType<typeof this.monthDayIterator>>[] = [];
@@ -115,7 +158,7 @@ export class Calendar {
         for (const day of iterator) {
             week.push(day);
 
-            if (day.date.getDay() === 6) {
+            if (day.date.getDay() === 0) {
                 yield week;
                 week = [];
             }
@@ -147,4 +190,8 @@ export const resolveSvelteClass = (classes: ClassValue): string => {
     }
 
     return '';
+};
+
+export const formatUser = (user: { firstname: string; lastname: string }) => {
+    return `${user.firstname} ${user.lastname}`;
 };

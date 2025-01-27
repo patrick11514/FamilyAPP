@@ -1,6 +1,6 @@
 <script lang="ts">
     import { API } from '$/lib/api';
-    import { SwalAlert } from '$/lib/functions';
+    import { formatUser, SwalAlert } from '$/lib/functions';
     import { getState, logged } from '$/lib/state.svelte';
     import type { BootstrapIcon } from '$/types/bootstrap_icons';
     import { goto } from '$app/navigation';
@@ -114,7 +114,7 @@
     <Icon
         onclick={() => (opened = true)}
         name="bi-list"
-        class="rounded-md border-[1px] border-primary bg-secondary px-1.5 py-0.5 text-3xl font-bold transition-colors duration-200 hover:bg-accent active:bg-accent"
+        class="border-primary bg-secondary hover:bg-accent active:bg-accent rounded-md border-[1px] px-1.5 py-0.5 text-3xl font-bold transition-colors duration-200"
     />
     <Title>{_state.title}</Title>
 </div>
@@ -122,7 +122,7 @@
 <ClickOutside
     clickoutside={() => (opened = false)}
     class={twMerge(
-        'absolute left-0 top-0 flex min-h-screen w-1/2 min-w-96 flex-col bg-secondary p-2 transition-transform duration-500 md:static md:w-auto md:translate-x-0',
+        'bg-secondary absolute top-0 left-0 flex min-h-screen w-1/2 min-w-96 flex-col p-2 transition-transform duration-500 md:static md:w-auto md:translate-x-0',
         !opened ? '-translate-x-full' : ''
     )}
 >
@@ -136,8 +136,7 @@
             {@const data = _state.userState.data}
             <h1 class="font-poppins text-xl font-bold">Přihlášen jako:</h1>
             <h1 class="font-poppins font-bold">
-                {data.firstname}
-                {data.lastname}
+                {formatUser(data)}
                 {#if data.group}
                     {@const group = data.group}
                     <Group textColor={group.text_color} backgroundColor={group.bg_color}>{group.name}</Group>
@@ -154,7 +153,7 @@
                     class:hover:after:scale-x-100={_route.name != route?.name}
                     href="/app{_route.path}"
                     onclick={() => (opened = false)}
-                    class="w-max border-b-text font-poppins text-2xl font-bold after:block after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-text after:transition-transform after:duration-200"
+                    class="border-b-text font-poppins after:bg-text w-max text-2xl font-bold after:block after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:transition-transform after:duration-200"
                 >
                     <Icon name={_route.icon} />
                     {_route.name}

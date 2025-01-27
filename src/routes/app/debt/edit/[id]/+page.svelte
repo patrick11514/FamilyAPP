@@ -5,7 +5,7 @@
     import { goto } from '$app/navigation';
     import type { Snapshot } from '@sveltejs/kit';
     import type { PageData } from './$types.js';
-    import { SwalAlert, toLocalDateString } from '$/lib/functions.js';
+    import { formatUser, SwalAlert, toLocalDateString } from '$/lib/functions.js';
     import { API } from '$/lib/api.js';
     import { extractError, matchError } from '$/lib/errors.js';
 
@@ -131,13 +131,13 @@
 </script>
 
 <Icon onclick={() => goto('/app/debt')} name="bi-arrow-return-left" class="text-2xl lg:text-3xl" />
-<section class="flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:border-accent md:bg-secondary md:p-8">
+<section class="md:border-accent md:bg-secondary flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:p-8">
     <Title>Úprava dlužení č.{pageData.data.id}</Title>
     <Entry id="who" label="Dlužník" error={data.who.error}>
         <Select id="who" bind:value={data.who.value} invalid={data.who.error}>
             <option value={null} selected disabled>Vyber dlužníka</option>
             {#each pageData.users as user}
-                <option value={user.id}>{user.firstname} {user.lastname}</option>
+                <option value={user.id}>{formatUser(user)}</option>
             {/each}
         </Select>
     </Entry>

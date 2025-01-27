@@ -3,7 +3,7 @@
     import Icon from '$/components/Icon.svelte';
     import { Table, Th, Tr, Td } from '$/components/table';
     import { API } from '$/lib/api';
-    import { SwalAlert, toDate } from '$/lib/functions';
+    import { formatUser, SwalAlert, toDate } from '$/lib/functions';
     import type { DeArray } from '$/types/types';
     import { goto } from '$app/navigation';
     import type { PageData } from './$types';
@@ -60,7 +60,7 @@
 <div class="flex flex-1 flex-col">
     <Title class="my-2">Dlužíš</Title>
     {#if Object.values(grouppedData).length === 0}
-        <h1 class="text-center font-poppins text-xl font-bold lg:text-2xl">Nikomu nic nedlužíš :)</h1>
+        <h1 class="font-poppins text-center text-xl font-bold lg:text-2xl">Nikomu nic nedlužíš :)</h1>
     {:else}
         <Table>
             <thead>
@@ -74,7 +74,7 @@
                 {#each Object.entries(grouppedData) as [who, list]}
                     {@const user = data.users.find((user) => user.id === parseInt(who))!}
                     <Tr>
-                        <Td>{user.firstname} {user.lastname}</Td>
+                        <Td>{formatUser(user)}</Td>
                         <Td>
                             {list
                                 .map((record) => parseFloat(record.price))
@@ -89,7 +89,7 @@
             </tbody>
         </Table>
     {/if}
-    <Title class="mb-2 mt-12">Tobě je dluženo</Title>
+    <Title class="mt-12 mb-2">Tobě je dluženo</Title>
     <Table>
         <thead>
             <Tr>
@@ -104,7 +104,7 @@
             {#each whom as item}
                 {@const user = data.users.find((user) => user.id === item.who)!}
                 <Tr>
-                    <Td>{user.firstname} {user.lastname}</Td>
+                    <Td>{formatUser(user)}</Td>
                     <Td class="break-all">{item.price}</Td>
                     <Td>{toDate(item.when)}</Td>
                     <Td>{item.resolved_on === null ? 'Ne' : toDate(item.resolved_on)}</Td>
