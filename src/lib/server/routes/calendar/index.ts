@@ -4,6 +4,8 @@ import { conn } from '../../variables';
 import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
 import type { ResponseWithData, Response } from '$/types/types';
 import type { ErrorList } from '$/lib/errors';
+import { sendNotificationToAll } from '../../functions';
+import { formatUser, toDate } from '$/lib/functions';
 
 export default [
     loggedProcedure.POST.input(
@@ -63,6 +65,22 @@ export default [
                 })
                 .execute();
 
+            let baseText = `${formatUser(ctx)} přidal novou událost: ${input.name} `;
+
+            if (input.fullDay) {
+                baseText += `probíhající od ${toDate(input.from, true)} do ${toDate(input.to, true)}.`;
+            } else {
+                baseText += `probíhající od ${toDate(input.from)} do ${toDate(input.to)}.`;
+            }
+
+            sendNotificationToAll({
+                title: 'Nová událost',
+                body: baseText,
+                data: {
+                    url: '/app/calendar'
+                }
+            });
+
             return {
                 status: true
             } satisfies Response;
@@ -77,11 +95,33 @@ export default [
     }),
     loggedProcedure.DELETE.input(z.number()).query(async ({ input, ctx }) => {
         try {
-            await conn
-                .deleteFrom('calendar')
-                .where('id', '=', input)
-                .where('user_id', '=', ctx.id)
-                .execute();
+            const event = await conn.selectFrom('calendar').select('name').where('id', '=', input).executeTakeFirst();
+
+            if (!event) {
+                return {
+                    status: false,
+                    code: 401,
+                    message: 'calendar.delete' satisfies ErrorList
+                } satisfies ErrorApiResponse;
+            }
+
+            const data = await conn.deleteFrom('calendar').where('id', '=', input).where('user_id', '=', ctx.id).executeTakeFirst();
+
+            if (data.numDeletedRows == 0n) {
+                return {
+                    status: false,
+                    code: 401,
+                    message: 'calendar.delete' satisfies ErrorList
+                } satisfies ErrorApiResponse;
+            }
+
+            sendNotificationToAll({
+                title: 'Odstraněna událost',
+                body: `${formatUser(ctx)} odstranil událost ${event.name}`,
+                data: {
+                    url: '/app/calendar'
+                }
+            });
 
             return {
                 status: true

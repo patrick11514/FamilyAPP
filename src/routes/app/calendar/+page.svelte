@@ -425,6 +425,14 @@
 
         const response = await API.calendar.DELETE(eventId);
         if (!response.status) {
+            if (matchError(response.message, 'calendar.delete')) {
+                SwalAlert({
+                    icon: 'error',
+                    title: extractError(response.message)
+                });
+                return;
+            }
+
             SwalAlert({
                 icon: 'error',
                 title: response.message

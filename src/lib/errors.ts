@@ -19,7 +19,8 @@ export const ERRORS = {
         range: 'Zadal jsi moc velké číslo'
     },
     calendar: {
-        date: 'Zadal jsi neplatné datum'
+        date: 'Zadal jsi neplatné datum',
+        delete: 'Nemáš právo smazat tuto událost'
     }
 } as const;
 

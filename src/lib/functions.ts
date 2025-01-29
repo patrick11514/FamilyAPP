@@ -39,12 +39,16 @@ export const toTime = (date: number | string | Date, withSeconds = false) => {
     return `${hours}:${minutes}:${seconds}`;
 };
 
-export const toDate = (date: number | string | Date) => {
+export const toDate = (date: number | string | Date, withoutTime = false) => {
     const d = new Date(date);
 
     const day = d.getDate();
     const month = d.getMonth() + 1;
     const year = d.getFullYear();
+
+    if (withoutTime) {
+        return `${day}.${month}.${year}`;
+    }
 
     return `${toTime(d)} ${day}.${month}.${year}`;
 };
