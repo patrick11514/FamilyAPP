@@ -1,5 +1,6 @@
 import { browser } from '$app/environment';
 import Swal, { type SweetAlertOptions } from 'sweetalert2';
+import type { ClassValue } from 'svelte/elements';
 
 export const sleep = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -23,18 +24,33 @@ export const SwalAlert = <$Type = unknown>(data: SweetAlertOptions) => {
     });
 };
 
-export const toDate = (date: number | string | Date) => {
+export const toTime = (date: number | string | Date, withSeconds = false) => {
+    const d = new Date(date);
+
+    const hours = d.getHours().toString().padStart(2, '0');
+    const minutes = d.getMinutes().toString().padStart(2, '0');
+
+    if (!withSeconds) {
+        return `${hours}:${minutes}`;
+    }
+
+    const seconds = d.getSeconds().toString().padStart(2, '0');
+
+    return `${hours}:${minutes}:${seconds}`;
+};
+
+export const toDate = (date: number | string | Date, withoutTime = false) => {
     const d = new Date(date);
 
     const day = d.getDate();
     const month = d.getMonth() + 1;
     const year = d.getFullYear();
 
-    const hours = d.getHours().toString().padStart(2, '0');
-    const minutes = d.getMinutes().toString().padStart(2, '0');
-    const seconds = d.getSeconds().toString().padStart(2, '0');
+    if (withoutTime) {
+        return `${day}.${month}.${year}`;
+    }
 
-    return `${hours}:${minutes}:${seconds} ${day}.${month}.${year}`;
+    return `${toTime(d)} ${day}.${month}.${year}`;
 };
 
 export const toLocalDateString = (d?: Date) => {
@@ -65,4 +81,138 @@ export const urlBase64ToUint8Array = (base64String: string) => {
     }
 
     return outputArray;
+};
+
+//eslint-disable-next-line
+type Degenerator<Type> = Type extends Generator<infer Value, any, any> ? Value : never;
+
+export class Calendar {
+    private _today = new Date();
+
+    /**
+     * Gets the first day of month (1. day of the month)
+     * @param today - Date to get the first day of the month
+     */
+    getFirstDayOfMonth(today = this._today) {
+        return new Date(today.getFullYear(), today.getMonth(), 1);
+    }
+
+    /**
+     * Gets the last day of month (last day of the month - 30. or 31. or 28. or 29.)
+     * @param today - Date to get the last day of the month
+     */
+    getLastDayOfMonth(today = this._today) {
+        return new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    }
+
+    /**
+     * Gets first day of calendar. Calendar starts from Monday, so
+     * if month stars from Tuesday, we need to include day before as
+     * Monday and this will be returned.
+     * @param today - Date to get the first day of the calendar
+     */
+    getFirstDayOfCalendar(today = this._today) {
+        const firstDay = this.getFirstDayOfMonth(today);
+
+        //get the first day of the week
+        //0 = Sunday, but we want to start from Monday
+        firstDay.setDate(firstDay.getDate() - firstDay.getDay() + 1);
+        return firstDay;
+    }
+
+    /**
+     * Gets last day of calendar. Calendar ends on Sunday, so
+     * if month ends on Saturday, we need to include day after as
+     * Sunday and this will be returned.
+     * @param today - Date to get the last day of the calendar
+     */
+    getLastDayOfCalendar(today = this._today) {
+        //get the last day of the month
+        const lastDay = this.getLastDayOfMonth(today);
+        lastDay.setDate(lastDay.getDate() + 7 - lastDay.getDay());
+        return lastDay;
+    }
+
+    /**
+     * Gets the current day
+     */
+    get today() {
+        return new Date(this._today);
+    }
+
+    /**
+     * Itterate over days of the month
+     * This includes the days from previous month and next, if
+     * the month does not start on Monday and does not end on Sunday
+     * @param today - Date to itterate over
+     */
+    *monthDayIterator(today = this._today) {
+        const firstDay = this.getFirstDayOfCalendar(today);
+        const lastDay = this.getLastDayOfCalendar(today);
+
+        const currentDay = new Date(firstDay);
+        while (true) {
+            yield {
+                date: new Date(currentDay),
+                isCurrentMonth: currentDay.getMonth() === today.getMonth(),
+                isToday: currentDay.toDateString() === this._today.toDateString()
+            };
+
+            currentDay.setDate(currentDay.getDate() + 1);
+
+            if (currentDay > lastDay) {
+                break;
+            }
+        }
+    }
+
+    /**
+     * Itterate over weeks of the month
+     * This includes the days from previous month and next, if
+     * the month does not start on Monday and does not end on Sunday
+     * @param today - Date to itterate over
+     */
+    *monthWeekIterator(today = this._today) {
+        const iterator = this.monthDayIterator(today);
+        let week: Degenerator<ReturnType<typeof this.monthDayIterator>>[] = [];
+
+        for (const day of iterator) {
+            week.push(day);
+
+            if (day.date.getDay() === 0) {
+                yield week;
+                week = [];
+            }
+        }
+
+        if (week.length > 0) {
+            yield week;
+        }
+    }
+}
+
+export const resolveSvelteClass = (classes: ClassValue): string => {
+    if (typeof classes === 'string') {
+        return classes;
+    }
+
+    if (Array.isArray(classes)) {
+        return classes
+            .filter((item) => typeof item === 'string')
+            .map(resolveSvelteClass)
+            .join(' ');
+    }
+
+    if (typeof classes === 'object') {
+        return Object.entries(classes)
+            .filter(([, value]) => value)
+            .map(([key]) => key)
+            .join(' ');
+    }
+
+    return '';
+};
+
+export const formatUser = (user: { firstname: string; lastname: string }) => {
+    return `${user.firstname} ${user.lastname}`;
 };

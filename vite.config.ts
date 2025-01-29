@@ -43,6 +43,7 @@ export default defineConfig({
     server: {
         fs: {
             allow: ['static/webworker/']
-        }
+        },
+        allowedHosts: ['pc.patrick115.eu', 'familyapp.patrick115.eu']
     }
 });

@@ -4,7 +4,7 @@
     import Icon from '$/components/Icon.svelte';
     import { Table, Td, Th, Tr } from '$/components/table';
     import { API } from '$/lib/api';
-    import { SwalAlert, toDate } from '$/lib/functions';
+    import { formatUser, SwalAlert, toDate } from '$/lib/functions';
     import type { DeArray } from '$/types/types';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
@@ -92,7 +92,7 @@
 <section class="flex flex-1 flex-col gap-2">
     <div class="flex w-full items-center">
         <Icon onclick={() => goto('/app/debt')} name="bi-arrow-return-left" class="text-2xl lg:text-3xl" />
-        <Title class="mx-auto">Dlužení {data.userInfo.firstname} {data.userInfo.lastname}</Title>
+        <Title class="mx-auto">Dlužení {formatUser(data.userInfo)}</Title>
     </div>
 
     <div class="flex items-center justify-between">

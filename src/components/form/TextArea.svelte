@@ -1,18 +1,17 @@
 <script lang="ts">
     import { resolveSvelteClass } from '$/lib/functions';
-    import type { HTMLSelectAttributes } from 'svelte/elements';
+    import type { SvelteHTMLElements } from 'svelte/elements';
     import { twMerge } from 'tailwind-merge';
 
-    let { children, class: cls, value = $bindable(), invalid = $bindable(undefined), ...props }: HTMLSelectAttributes & { invalid?: string } = $props();
+    let { class: cls, value = $bindable(), invalid = $bindable(undefined), ...props }: SvelteHTMLElements['textarea'] & { invalid?: string } = $props();
 
-    let el = $state<HTMLSelectElement>();
-
+    let el = $state<HTMLTextAreaElement>();
     $effect(() => {
         el?.setCustomValidity(invalid ?? '');
     });
 </script>
 
-<select
+<textarea
     bind:this={el}
     {...props}
     class={twMerge(
@@ -20,6 +19,4 @@
         resolveSvelteClass(cls ?? '')
     )}
     bind:value
->
-    {@render children?.()}
-</select>
+></textarea>

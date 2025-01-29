@@ -9,7 +9,7 @@ import { FILE_FOLDER, MAX_FILE_SIZE } from '$env/static/private';
 import { conn } from '../../variables';
 import type { DePromise, Response, ResponseWithData } from '$/types/types';
 import { sendNotification } from '../../functions';
-import { toDate } from '$/lib/functions';
+import { formatUser, toDate } from '$/lib/functions';
 
 const uploadFile = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
@@ -100,7 +100,7 @@ export default [
 
             await sendNotification(data.data.who, {
                 title: 'Máš nový dluh',
-                body: `${ctx.firstname} ${ctx.lastname} chce po tobě ${data.data.amount} Kč`,
+                body: `${formatUser(ctx)} chce po tobě ${data.data.amount} Kč`,
                 data: {
                     url: '/app/debt/view/' + ctx.id
                 }
@@ -260,7 +260,7 @@ export default [
 
             const list = await conn.selectFrom('debt').selectAll().where('id', 'in', input.ids).orderBy('when', 'desc').execute();
 
-            let baseBody = `${ctx.firstname} ${ctx.lastname} ti splatil nějaké dluhy.`;
+            let baseBody = `${formatUser(ctx)} ti splatil nějaké dluhy.`;
 
             for (const item of list) {
                 baseBody += `\n- ${toDate(item.when)} - ${parseFloat(item.price)} Kč`;
