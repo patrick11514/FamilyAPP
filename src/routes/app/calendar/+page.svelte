@@ -219,7 +219,7 @@
         const params = new URLSearchParams({
             action: 'TEMPLATE',
             text: event.name,
-            details: event.description
+            details: event.description ?? ''
         });
 
         if (event.full_day.data[0] == 1) {

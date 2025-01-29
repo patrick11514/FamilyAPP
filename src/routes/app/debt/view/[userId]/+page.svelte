@@ -83,10 +83,6 @@
         //update
         groupped = groupData(response.data);
     };
-
-    $effect(() => {
-        console.log(groupped);
-    });
 </script>
 
 <section class="flex flex-1 flex-col gap-2">

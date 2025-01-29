@@ -26,6 +26,6 @@
     });
 </script>
 
-<main class="xl:font-xl flex h-full min-h-screen w-full flex-col overflow-x-hidden bg-background font-roboto text-lg text-text lg:text-xl">
+<main class="xl:font-xl bg-background font-roboto text-text flex h-full min-h-screen w-full flex-col overflow-x-hidden text-lg lg:text-xl">
     {@render children()}
 </main>

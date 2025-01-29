@@ -51,7 +51,6 @@
         fileInfos = value
             .filter((f) => f !== null)
             .map((file) => {
-                console.log(file.type);
                 if (!imageMimeTypes.includes(file.type)) {
                     return {
                         image: false,
@@ -110,7 +109,7 @@
     {onclick}
     {onkeypress}
     class={twMerge(
-        'flex w-full cursor-pointer flex-wrap items-center justify-center gap-2 rounded-md border-2 border-text bg-secondary p-2 font-poppins text-xl font-bold lg:text-2xl',
+        'border-text bg-secondary font-poppins flex w-full cursor-pointer flex-wrap items-center justify-center gap-2 rounded-md border-2 p-2 text-xl font-bold lg:text-2xl',
         cls
     )}
 >
@@ -118,14 +117,14 @@
         Vyber soubor{#if multiple}y{/if}
     {:else}
         {#each fileInfos as file}
-            <div class="flex flex-col divide-y-2 divide-text rounded-md border-2 border-text">
+            <div class="divide-text border-text flex flex-col divide-y-2 rounded-md border-2">
                 {#if file.image}
                     <div class="mx-auto h-auto md:max-w-72 lg:max-w-80 xl:max-w-96">
                         <img class="rounded-t-[4px]" src={file.data} alt="File preview" />
                     </div>
                 {/if}
                 <div class="justfiy-center flex flex-col items-center p-1">
-                    <h1 class="break-all text-lg lg:text-xl">
+                    <h1 class="text-lg break-all lg:text-xl">
                         {file.name}
                     </h1>
                     <h2 class="text-base font-medium lg:text-lg">{formatSize(file.size)}</h2>

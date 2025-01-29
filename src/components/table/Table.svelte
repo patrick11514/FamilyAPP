@@ -9,7 +9,7 @@
         self = $bindable(),
         ...props
     }: HTMLTableAttributes & {
-        self: HTMLTableElement;
+        self?: HTMLTableElement;
     } = $props();
 </script>
 

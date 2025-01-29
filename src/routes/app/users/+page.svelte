@@ -85,19 +85,19 @@
 
 <div class="mt-2 h-full w-full flex-1">
     {#if users}
-        <table class="w-full border-collapse border-2 border-text">
+        <table class="border-text w-full border-collapse border-2">
             <thead>
-                <tr class="border-2 border-text">
-                    <th class="border-2 border-text">Id</th>
-                    <th class="border-2 border-text">Jméno</th>
-                    <th class="border-2 border-text">Skupina</th>
+                <tr class="border-text border-2">
+                    <th class="border-text border-2">Id</th>
+                    <th class="border-text border-2">Jméno</th>
+                    <th class="border-text border-2">Skupina</th>
                 </tr>
             </thead>
             <tbody>
                 {#each users as user}
-                    <tr class="border-2 border-text">
-                        <td class="border-2 border-text">{user.id}</td>
-                        <td class="border-2 border-text">{user.username}</td>
+                    <tr class="border-text border-2">
+                        <td class="border-text border-2">{user.id}</td>
+                        <td class="border-text border-2">{user.username}</td>
                         <td class="flex justify-center">
                             <Select class="w-full border-none text-center lg:w-auto" bind:value={user.group_id} onchange={() => updateGroup(user.id, user.group_id)}>
                                 <option value={null} selected>Žádná</option>
@@ -109,7 +109,7 @@
                     </tr>
                 {/each}
                 <tr>
-                    <td class="border-2 border-text text-center text-2xl" colspan={3}>
+                    <td class="border-text border-2 text-center text-2xl" colspan={3}>
                         <Icon onclick={createInvitation} name="bi-plus-lg" class="text-green-600" />
                     </td>
                 </tr>

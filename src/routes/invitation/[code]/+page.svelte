@@ -80,7 +80,7 @@
     };
 </script>
 
-<section class="flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:border-accent md:bg-secondary md:p-8">
+<section class="md:border-accent md:bg-secondary flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:p-8">
     <Title class="text-center text-3xl lg:text-4xl">Registrace</Title>
     <h3>Na pozvánku: <strong>{page.params.code}</strong> od {pageData.invitation.firstname} {pageData.invitation.lastname}</h3>
     <Entry id="username" label="Uživatelské jméno" error={data.username.error}>

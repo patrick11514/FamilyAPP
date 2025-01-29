@@ -89,8 +89,6 @@ export const sendSingleNotification = async (payload: string, push: NormalizeId<
 
     try {
         await webPush.sendNotification(obj, payload);
-        console.log('Sended');
-        return true;
     } catch (e) {
         if (e !== null && typeof e === 'object' && 'statusCode' in e)
             if (e.statusCode === 410) {

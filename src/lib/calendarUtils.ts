@@ -2,8 +2,9 @@ import type { Calendar } from '$/types/database';
 import type { NormalizeId } from '$/types/types';
 import { toTime } from './functions';
 
-export type Event = Omit<NormalizeId<Calendar>, 'full_day'> & {
+export type Event = Omit<NormalizeId<Calendar>, 'full_day' | 'description'> & {
     full_day: { data: [0 | 1] };
+    description: string | null;
 };
 
 export const getEventName = (event: Event, selectedDay: Date) => {
@@ -58,7 +59,6 @@ export const getEventRange = (event: Event, selectedDay: Date) => {
     return `${start} - ${end}`;
 };
 
-
 export const eventIsInDay = (date: Date, event: Event) => {
     //so event is included in this day:
     //1. event starts on this day
@@ -75,8 +75,6 @@ export const eventIsInDay = (date: Date, event: Event) => {
     }
 
     return (
-        (event.from.getDate() === date.getDate() && event.from.getMonth() === date.getMonth()) ||
-        (event.to.getDate() === date.getDate() && event.to.getMonth() === date.getMonth())
+        (event.from.getDate() === date.getDate() && event.from.getMonth() === date.getMonth()) || (event.to.getDate() === date.getDate() && event.to.getMonth() === date.getMonth())
     );
 };
-

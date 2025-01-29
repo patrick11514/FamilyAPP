@@ -6,7 +6,7 @@
 
 <div
     style="color: {textColor}; background-color:{backgroundColor};"
-    class="inline-block rounded-md border-2 border-black border-opacity-20 px-2 py-1 text-center font-poppins font-bold"
+    class="border-opacity-20 font-poppins inline-block rounded-md border-2 border-black px-2 py-1 text-center font-bold"
 >
     {@render children()}
 </div>

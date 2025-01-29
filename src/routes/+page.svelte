@@ -74,7 +74,7 @@
     <title>Přihlášení | FamilyAPP</title>
 </svelte:head>
 
-<section class="flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:border-accent md:bg-secondary md:p-8">
+<section class="md:border-accent md:bg-secondary flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:p-8">
     <Title class="text-center text-3xl lg:text-4xl">Přihlášení</Title>
     <Entry id="username" label="Uživatelské jméno" error={data.username.error}>
         <Input id="username" bind:value={data.username.value} invalid={data.username.error} />

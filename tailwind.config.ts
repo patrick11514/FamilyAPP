@@ -29,7 +29,7 @@ export default {
 
     plugins: [
         typography,
-        plugin(function({ addVariant }) {
+        plugin(function ({ addVariant }) {
             addVariant('swatch', ['&::-moz-color-swatch', '&::-webkit-color-swatch-wrapper', '&::-webkit-color-swatch']);
         })
     ]

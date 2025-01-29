@@ -152,35 +152,35 @@
 
 <div class="mt-2 h-full w-full flex-1">
     {#if groups}
-        <table class="w-full border-collapse border-2 border-text">
+        <table class="border-text w-full border-collapse border-2">
             <thead>
-                <tr class="border-2 border-text">
-                    <th class="border-2 border-text">Id</th>
-                    <th class="border-2 border-text">Jméno</th>
-                    <th class="border-2 border-text">Barva Textu</th>
-                    <th class="border-2 border-text">Barva Pozadí</th>
-                    <th class="border-2 border-text">Ukázka</th>
-                    <th class="border-2 border-text"></th>
+                <tr class="border-text border-2">
+                    <th class="border-text border-2">Id</th>
+                    <th class="border-text border-2">Jméno</th>
+                    <th class="border-text border-2">Barva Textu</th>
+                    <th class="border-text border-2">Barva Pozadí</th>
+                    <th class="border-text border-2">Ukázka</th>
+                    <th class="border-text border-2"></th>
                 </tr>
             </thead>
             <tbody>
                 {#each groups as group, idx}
                     {@const inputs = { text: undefined as HTMLInputElement | undefined, background: undefined as HTMLInputElement | undefined }}
-                    <tr class="border-2 border-text">
-                        <td class="border-2 border-text">{group.id}</td>
-                        <td class="border-2 border-text">
+                    <tr class="border-text border-2">
+                        <td class="border-text border-2">{group.id}</td>
+                        <td class="border-text border-2">
                             <input class="w-full border-none bg-transparent text-center outline-hidden" bind:value={group.name} size={1} />
                         </td>
-                        <td onclick={() => inputs.text?.click()} class="border-2 border-text" style="background-color: {group.text_color};">
+                        <td onclick={() => inputs.text?.click()} class="border-text border-2" style="background-color: {group.text_color};">
                             <input bind:this={inputs.text} bind:value={group.text_color} hidden type="color" />
                         </td>
-                        <td onclick={() => inputs.background?.click()} class="border-2 border-text" style="background-color: {group.bg_color};">
+                        <td onclick={() => inputs.background?.click()} class="border-text border-2" style="background-color: {group.bg_color};">
                             <input bind:this={inputs.background} bind:value={group.bg_color} hidden type="color" />
                         </td>
                         <td class="flex items-center justify-center">
                             <GroupTag backgroundColor={group.bg_color} textColor={group.text_color}>{group.name}</GroupTag>
                         </td>
-                        <td class="border-2 border-text text-xl">
+                        <td class="border-text border-2 text-xl">
                             <div class="flex items-center justify-center">
                                 {#if groupStatuses?.[idx] !== false}
                                     <Icon onclick={() => tryUpdateGroup(idx)} name="bi-check-lg" class="text-green-600" />
@@ -194,8 +194,8 @@
                         </td>
                     </tr>
                 {/each}
-                <tr class="border-2 border-text">
-                    <td class="border-2 border-text text-center text-2xl" colspan={6}>
+                <tr class="border-text border-2">
+                    <td class="border-text border-2 text-center text-2xl" colspan={6}>
                         <Icon onclick={addNew} name="bi-plus-lg" class="text-green-600" />
                     </td>
                 </tr>
