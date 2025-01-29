@@ -9,7 +9,7 @@
 <button
     {...props}
     class={twMerge(
-        'bg-accent font-poppins hover:bg-secondary w-full rounded-md px-4 py-2 font-bold transition-all duration-200 active:translate-y-1 disabled:grayscale',
+        'bg-accent font-poppins hover:bg-secondary w-full cursor-pointer rounded-md px-4 py-2 font-bold transition-all duration-200 active:translate-y-1 disabled:grayscale',
         resolveSvelteClass(cls ?? '')
     )}
 >

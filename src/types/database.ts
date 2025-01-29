@@ -11,6 +11,16 @@ export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
   ? ColumnType<S, I | undefined, U>
   : ColumnType<T, T | undefined, T>;
 
+export interface Calendar {
+  description: Generated<string | null>;
+  from: Date;
+  full_day: Buffer;
+  id: Generated<number>;
+  name: string;
+  to: Date;
+  user_id: number;
+}
+
 export interface Debt {
   id: Generated<number>;
   photo: Generated<string | null>;
@@ -62,6 +72,7 @@ export interface WebPush {
 }
 
 export interface DB {
+  calendar: Calendar;
   debt: Debt;
   group: Group;
   group_permissions: GroupPermissions;

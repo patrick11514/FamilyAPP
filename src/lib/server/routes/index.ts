@@ -6,6 +6,7 @@ import permissions from './permissions';
 import users from './users';
 import debt from './debt';
 import push from './push';
+import calendar from './calendar';
 
 export const r = router({
     auth,
@@ -14,7 +15,8 @@ export const r = router({
     users,
     invitation,
     debt,
-    push
+    push,
+    calendar
 });
 
 export type AppRouter = typeof r;

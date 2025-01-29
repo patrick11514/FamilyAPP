@@ -110,7 +110,7 @@
     <title>{route?.name ?? ''} | FamilyAPP</title>
 </svelte:head>
 
-<div class="flex gap-2 p-2 md:hidden">
+<div class="flex items-center gap-2 p-2 md:hidden">
     <Icon
         onclick={() => (opened = true)}
         name="bi-list"
