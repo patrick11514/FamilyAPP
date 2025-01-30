@@ -100,4 +100,4 @@
     </Entry>
     <Button onclick={register} class="w-1/2 md:hover:bg-red-500">Registrovat se</Button>
 </section>
-<Footer />
+<Footer version={pageData.version} />

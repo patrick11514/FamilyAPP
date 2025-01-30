@@ -91,7 +91,8 @@ export class JWTCookies {
     getCookie<T>(token: string): T | null {
         try {
             return jwt.verify(token, this.key) as T;
-        } catch (_) {
+        } catch (e) {
+            console.error(e);
             return null;
         }
     }

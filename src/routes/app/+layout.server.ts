@@ -1,12 +1,14 @@
 import { getCookieData } from '$/lib/server/functions';
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import { conn, VERSION } from '$/lib/server/variables';
+import { conn } from '$/lib/server/variables';
 
-export const load = (async ({ cookies }) => {
+export const load = (async ({ cookies, parent }) => {
     if (!getCookieData(cookies).logged) {
         redirect(302, '/');
     }
+
+    const parentData = await parent();
 
     const startOfDay = new Date();
     startOfDay.setHours(0, 0, 0, 0);
@@ -33,6 +35,6 @@ export const load = (async ({ cookies }) => {
                 })
             ),
         users: await conn.selectFrom('user').select(['id', 'username', 'firstname', 'lastname']).execute(),
-        version: VERSION!
+        version: parentData.version
     };
 }) satisfies LayoutServerLoad;

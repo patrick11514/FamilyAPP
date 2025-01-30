@@ -7,6 +7,9 @@
     import { SwalAlert } from '$/lib/functions';
     import { getState } from '$/lib/state.svelte';
     import { goto } from '$app/navigation';
+    import type { PageData } from './$types';
+
+    const { data: pageData }: { data: PageData } = $props();
 
     const fields = ['username', 'password'] as const;
     type DataType = Record<
@@ -84,4 +87,4 @@
     </Entry>
     <Button onclick={login} class="w-1/2 md:hover:bg-red-500">Přihlásit se</Button>
 </section>
-<Footer />
+<Footer version={pageData.version} />
