@@ -1,7 +1,7 @@
 import { getCookieData } from '$/lib/server/functions';
 import { redirect } from '@sveltejs/kit';
 import type { LayoutServerLoad } from './$types';
-import { conn } from '$/lib/server/variables';
+import { conn, VERSION } from '$/lib/server/variables';
 
 export const load = (async ({ cookies }) => {
     if (!getCookieData(cookies).logged) {
@@ -32,6 +32,7 @@ export const load = (async ({ cookies }) => {
                     };
                 })
             ),
-        users: await conn.selectFrom('user').select(['id', 'username', 'firstname', 'lastname']).execute()
+        users: await conn.selectFrom('user').select(['id', 'username', 'firstname', 'lastname']).execute(),
+        version: VERSION!
     };
 }) satisfies LayoutServerLoad;

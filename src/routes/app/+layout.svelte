@@ -8,8 +8,9 @@
     import Footer from '$/components/navigation/Footer.svelte';
     import { urlBase64ToUint8Array } from '$/lib/functions';
     import { PUBLIC_VAPI_KEY } from '$env/static/public';
+    import type { PageData } from './$types';
 
-    const { children }: { children: Snippet } = $props();
+    const { children, data }: { children: Snippet; data: PageData } = $props();
 
     const _state = getState();
     const PERMS_UPDATE = 5 * 60 * 1000; //5minutes
@@ -72,6 +73,6 @@
     <div class="flex w-full flex-1 flex-col p-2">
         <Title class="m-0 hidden md:block">{_state.title}</Title>
         {@render children()}
-        <Footer />
+        <Footer version={data.version} />
     </div>
 </section>

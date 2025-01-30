@@ -27,3 +27,5 @@ export const VAPI = {
 };
 
 webPush.setVapidDetails('mailto:ja@patrick115.eu', VAPI.publicKey, VAPI.privateKey);
+
+export const VERSION = process.env.npm_package_version;
