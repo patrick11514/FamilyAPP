@@ -1,5 +1,6 @@
 import { getCookieData } from '$/lib/server/functions';
 import { Server } from '$/lib/server/server';
+import { VERSION } from '$/lib/server/variables';
 import type { LayoutServerLoad } from './$types';
 
 export const load = (async (ev) => {
