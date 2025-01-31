@@ -57,16 +57,17 @@
     let events = $state<Event[]>();
 
     const cachedEvents = new Map<string, Event[]>();
+    const eventPagesMap = new Map<number, Set<string>>();
 
-    const resolveMonth = async (force = false) => {
+    const resolveMonth = async () => {
         const firstDay = calendar.getFirstDayOfCalendar(new Date(selectedDay));
         const lastDay = calendar.getLastDayOfCalendar(new Date(selectedDay));
 
-        if (!force) {
-            if (cachedEvents.has(firstDay.toDateString() + lastDay.toDateString())) {
-                events = cachedEvents.get(firstDay.toDateString() + lastDay.toDateString());
-                return;
-            }
+        const cacheKey = firstDay.toISOString() + ' ' + lastDay.toISOString();
+
+        if (cachedEvents.has(cacheKey)) {
+            events = cachedEvents.get(cacheKey);
+            return;
         }
 
         const response = await API.calendar.POST({
@@ -91,7 +92,14 @@
                 }) as unknown as Event
         );
 
-        cachedEvents.set(firstDay.toDateString() + lastDay.toDateString(), events);
+        cachedEvents.set(cacheKey, events);
+        for (const event of events) {
+            if (!eventPagesMap.has(event.id)) {
+                eventPagesMap.set(event.id, new Set());
+            }
+
+            eventPagesMap.get(event.id)!.add(cacheKey);
+        }
     };
 
     let calendarEl = $state() as HTMLTableElement;
@@ -300,8 +308,30 @@
 
         SwalAlert({
             icon: 'success',
-            title: 'Událost byl úspěšně přidán'
+            title: 'Událost byla úspěšně přidána'
         });
+
+        addingEvent = false;
+
+        const eventBetween = (from: Date, to: Date) => {
+            const eventFrom = new Date(eventData.from.value);
+            const eventTo = new Date(eventData.to.value);
+
+            return (eventFrom >= from && eventFrom <= to) || (eventTo >= from && eventTo <= to);
+        };
+
+        //remove from cache
+        for (const [pageKey] of cachedEvents) {
+            const [firstDay, lastDay] = pageKey.split(' ');
+
+            if (eventBetween(new Date(firstDay), new Date(lastDay))) {
+                console.log('deleting', pageKey);
+
+                cachedEvents.delete(pageKey);
+            }
+        }
+
+        resolveMonth();
 
         //reset
         let i = 0;
@@ -309,10 +339,6 @@
             eventData[key as keyof typeof eventData].value = defaultValues[i];
             ++i;
         }
-
-        addingEvent = false;
-
-        resolveMonth(true);
     };
 
     $effect(() => {
@@ -367,7 +393,14 @@
             title: 'Událost byla úspěšně smazána'
         });
 
-        resolveMonth(true);
+        //remove from cache
+        for (const page of eventPagesMap.get(eventId)!) {
+            cachedEvents.delete(page);
+        }
+
+        eventPagesMap.delete(eventId);
+
+        resolveMonth();
     };
 
     const _state = getState();
