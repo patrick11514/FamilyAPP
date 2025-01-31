@@ -12,16 +12,21 @@
 
     type PersonDebt = Omit<DeArray<(typeof data)['who']>, 'whom'>[];
 
-    const grouppedData: Record<number, PersonDebt> = {};
+    let grouppedData = $state<Record<number, PersonDebt>>({});
+    let who = $state(data.who);
     let whom = $state(data.whom);
 
-    for (const { whom, ...rest } of data.who.filter((item) => item.resolved_on === null)) {
-        if (!(whom in grouppedData)) {
-            grouppedData[whom] = [];
-        }
+    const groupData = () => {
+        grouppedData = {};
+        for (const { whom, ...rest } of who.filter((item) => item.resolved_on === null)) {
+            if (!(whom in grouppedData)) {
+                grouppedData[whom] = [];
+            }
 
-        grouppedData[whom].push(rest);
-    }
+            grouppedData[whom].push(rest);
+        }
+    };
+    groupData();
 
     const remove = async (id: number) => {
         const alert = await SwalAlert({
@@ -54,6 +59,8 @@
         });
 
         whom = whom.filter((item) => item.id !== id);
+        who = who.filter((item) => item.id !== id);
+        groupData();
     };
 </script>
 
