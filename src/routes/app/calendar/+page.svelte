@@ -502,7 +502,7 @@
                     {/each}
                 {/if}
             {:else}
-                <p class="text-gray-500">Načítání...</p>
+                <p class="text-center text-gray-500">Načítání...</p>
             {/if}
         </div>
     </div>
