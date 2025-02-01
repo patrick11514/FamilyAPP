@@ -2,27 +2,13 @@ import { z } from 'zod';
 import { loggedProcedure } from '../../api';
 import { FormDataInput, type ErrorApiResponse } from '@patrick115/sveltekitapi';
 import fs from 'node:fs';
-import crypto from 'node:crypto';
 import Path from 'node:path';
 import type { ErrorList } from '$/lib/errors';
 import { FILE_FOLDER, MAX_FILE_SIZE } from '$env/static/private';
 import { conn } from '../../variables';
 import type { DePromise, Response, ResponseWithData } from '$/types/types';
-import { sendNotification } from '../../functions';
+import { sendNotification, uploadFile } from '../../functions';
 import { formatUser, toDate } from '$/lib/functions';
-
-const uploadFile = async (file: File) => {
-    const arrayBuffer = await file.arrayBuffer();
-    const path = Path.parse(file.name);
-    const name = crypto.randomBytes(16).toString('hex') + path.ext;
-
-    if (!fs.existsSync(FILE_FOLDER)) {
-        fs.mkdirSync(FILE_FOLDER);
-    }
-
-    fs.writeFileSync(Path.join(FILE_FOLDER, name), Buffer.from(arrayBuffer));
-    return name;
-};
 
 export const getDebtsByUserId = async (userId: number, who: number) => {
     return await conn
