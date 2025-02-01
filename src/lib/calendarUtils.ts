@@ -1,8 +1,8 @@
 import type { Calendar } from '$/types/database';
-import type { NormalizeId } from '$/types/types';
 import { toTime } from './functions';
+import type { Selectable } from 'kysely';
 
-export type Event = Omit<NormalizeId<Calendar>, 'full_day' | 'description'> & {
+export type Event = Omit<Selectable<Calendar>, 'full_day' | 'description'> & {
     full_day: { data: [0 | 1] };
     description: string | null;
 };

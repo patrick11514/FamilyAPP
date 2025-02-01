@@ -1,9 +1,10 @@
-import type { NormalizeId, UserData, UserState } from '$/types/types';
+import type { UserData, UserState } from '$/types/types';
 import type { Cookies } from '@sveltejs/kit';
 import { conn, jwt } from './variables';
 import { z } from 'zod';
 import webPush from 'web-push';
 import type { WebPush } from '$/types/database';
+import type { Selectable } from 'kysely';
 
 export const getCookieData = (cookies: Cookies): UserState => {
     const cookie = cookies.get('session');
@@ -78,7 +79,7 @@ type NotificationPayload = {
     data?: Record<string, unknown>;
 };
 
-export const sendSingleNotification = async (payload: string, push: NormalizeId<WebPush>) => {
+export const sendSingleNotification = async (payload: string, push: Selectable<WebPush>) => {
     const obj = {
         endpoint: push.endpoint,
         keys: {
@@ -97,7 +98,7 @@ export const sendSingleNotification = async (payload: string, push: NormalizeId<
     }
 };
 
-export const batchNotifications = async (notification: NotificationPayload, pushes: NormalizeId<WebPush>[]) => {
+export const batchNotifications = async (notification: NotificationPayload, pushes: Selectable<WebPush>[]) => {
     const payload = JSON.stringify({
         icon: '/icons/favicon-196x196.png',
         badge: '/icons/favicon-196x196.png',
