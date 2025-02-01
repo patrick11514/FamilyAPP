@@ -8,12 +8,12 @@ export type UserData = Omit<Selectable<User>, 'password'> & {
 
 export type UserState =
     | {
-        logged: false;
-    }
+          logged: false;
+      }
     | {
-        logged: true;
-        data: UserData;
-    };
+          logged: true;
+          data: UserData;
+      };
 
 export type Response = {
     status: true;
