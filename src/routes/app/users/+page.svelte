@@ -4,15 +4,15 @@
     import { API } from '$/lib/api';
     import { SwalAlert } from '$/lib/functions';
     import type { User } from '$/types/database';
-    import type { NormalizeId } from '$/types/types';
     import { page } from '$app/state';
+    import type { Selectable } from 'kysely';
     import type { PageData } from './$types';
 
     const { data }: { data: PageData } = $props();
 
     const groups = data.groups;
     let users = $state<
-        (NormalizeId<Omit<User, 'password'>> & {
+        (Omit<Selectable<User>, 'password'> & {
             group_id: number | null;
         })[]
     >();
