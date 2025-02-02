@@ -53,6 +53,7 @@ export interface Invitation {
 export interface Present {
   description: Generated<string | null>;
   id: Generated<number>;
+  image: Generated<string | null>;
   link: Generated<string | null>;
   name: string;
   price: Generated<Decimal | null>;
