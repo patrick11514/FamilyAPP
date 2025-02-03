@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { Button, Entry, Input } from '$/components/form';
+    import { Button, Entry, FileSelect, Input } from '$/components/form';
     import Title from '$/components/headers/Title.svelte';
     import Icon from '$/components/Icon.svelte';
     import { API } from '$/lib/api';
@@ -116,5 +116,9 @@
     <Entry id="price" label="Cena" error={data.price.error}>
         <Input id="price" type="number" step={0.00001} bind:value={data.price.value} invalid={data.price.error} />
     </Entry>
+    <Entry id="image" label="Obrázek" note="(nepovinné)" error={data.image.error}>
+        <FileSelect id="image" bind:value={data.image.value} accept="image/png, image/jpg, image/jpeg" />
+    </Entry>
+
     <Button onclick={handle}>Přidat</Button>
 </section>

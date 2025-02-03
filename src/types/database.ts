@@ -56,7 +56,7 @@ export interface Present {
   image: Generated<string | null>;
   link: Generated<string | null>;
   name: string;
-  price: Generated<Decimal | null>;
+  price: Decimal;
   reserved_id: Generated<number | null>;
   state: Generated<number>;
   user_id: number;

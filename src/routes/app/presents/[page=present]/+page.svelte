@@ -5,6 +5,8 @@
     import type { Present as PresentDB } from '$/types/database';
     import type { Selectable } from 'kysely';
     import { goto } from '$app/navigation';
+    import { getState } from '$/lib/state.svelte';
+    import { formatUser } from '$/lib/functions';
 
     const PRESENT_OPEN = 0;
     const PRESENT_RESERVED = 1;
@@ -18,14 +20,37 @@
 
     let grouped: Record<number, Present[]> = {};
 
+    const _state = getState();
+    const userState = _state.userState;
+
+    let opened = $state<Record<number, boolean>>({});
+
     for (const present of presents) {
+        if (userState.logged && userState.data.id === present.user_id) {
+            continue; // skip my own presents
+        }
+
         if (!(present.user_id in grouped)) {
+            opened[present.user_id] = false;
             grouped[present.user_id] = [];
         }
         grouped[present.user_id].push(present);
     }
 
     console.log(grouped);
+
+    const minePage = page.params.page === 'mine';
+
+    const states = {
+        [PRESENT_OPEN]: 'Volný',
+        [PRESENT_RESERVED]: minePage ? 'Volný' : 'Rezervovaný', // because we don't want to spoil the surprise
+        [PRESENT_CLOSED]: 'Předaný'
+    };
+    const stateColors = {
+        [PRESENT_OPEN]: 'text-green-500',
+        [PRESENT_RESERVED]: minePage ? 'text-green-500' : 'text-yellow-500',
+        [PRESENT_CLOSED]: 'text-red-500'
+    };
 </script>
 
 {#snippet presentList(presents: Present[])}
@@ -33,7 +58,41 @@
         <h1 class="font-poppins text-center text-xl font-bold">
             {#if page.params.page === 'mine'}Nemáš žádné dárky{:else}Nemá žádné dárky{/if}
         </h1>
-    {:else}{/if}
+    {:else}
+        {#each presents as present}
+            <div class="border-text flex flex-row gap-2 rounded-md border-2 p-2">
+                <div class="flex w-1/4 items-center justify-center">
+                    {#if present.image}
+                        <img src="/images/{present.image}" alt="" />
+                    {:else}
+                        <Icon name="bi-image" class="text-4xl" />
+                    {/if}
+                </div>
+                <div class="flex w-full flex-col">
+                    <div class="border-b-text flex justify-between border-b-2 font-bold">
+                        <h1>{present.name}</h1>
+                        <span>{parseFloat(present.price)} Kč</span>
+                    </div>
+                    {#if present.description}
+                        <span>{present.description}</span>
+                    {/if}
+                    <div class="mt-auto flex justify-between">
+                        <span>Stav: <span class={stateColors[present.state as 0 | 1 | 2]}>{states[present.state as 0 | 1 | 2]}</span></span>
+                        <div class="flex gap-2 text-xl">
+                            {#if !minePage && present.state === 0}
+                                <Icon name="bi-cloud-arrow-down" />
+                            {/if}
+                            {#if present.link}
+                                <a href={present.link} target="_blank">
+                                    <Icon name="bi-link-45deg" />
+                                </a>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {/each}
+    {/if}
 {/snippet}
 
 <div class="flex w-full flex-1 flex-col">
@@ -46,7 +105,18 @@
             <Icon onclick={() => goto('/app/presents/new')} name="bi-plus-lg" class="mx-auto text-xl text-green-500" />
             {@render presentList(presents)}
         {:else}
-            OTHER
+            {#each Object.entries(grouped) as [userId, presents] (userId)}
+                {@const idNum = parseInt(userId)}
+                <button onclick={() => (opened[idNum] = !opened[idNum])} class="cursor-pointer text-2xl font-bold">
+                    <Icon name={opened[idNum] ? 'bi-caret-down-fill' : 'bi-caret-up-fill'} />
+                    {formatUser(data.users.find((user) => user.id === idNum)!)}
+                </button>
+                {#if opened[idNum]}
+                    <div class="flex flex-col gap-2">
+                        {@render presentList(presents)}
+                    </div>
+                {/if}
+            {/each}
         {/if}
     </div>
 </div>
