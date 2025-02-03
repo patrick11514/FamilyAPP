@@ -7,6 +7,7 @@
     import { goto } from '$app/navigation';
     import { getState } from '$/lib/state.svelte';
     import { formatUser } from '$/lib/functions';
+    import { untrack } from 'svelte';
 
     const PRESENT_OPEN = 0;
     const PRESENT_RESERVED = 1;
@@ -16,41 +17,50 @@
 
     const { data }: { data: PageData } = $props();
 
-    const presents = $state(data.data);
+    let presents = $state(data.data);
 
-    let grouped: Record<number, Present[]> = {};
+    let grouped = $state<Record<number, Present[]>>({});
 
     const _state = getState();
     const userState = _state.userState;
 
     let opened = $state<Record<number, boolean>>({});
+    let minePage = $state(page.params.page === 'mine');
 
-    for (const present of presents) {
-        if (userState.logged && userState.data.id === present.user_id) {
-            continue; // skip my own presents
-        }
+    $effect(() => {
+        minePage = page.params.page === 'mine';
 
-        if (!(present.user_id in grouped)) {
-            opened[present.user_id] = false;
-            grouped[present.user_id] = [];
-        }
-        grouped[present.user_id].push(present);
-    }
+        untrack(() => {
+            presents = data.data;
+            if (minePage) {
+                grouped = {};
+                opened = {};
+            } else {
+                for (const present of presents) {
+                    if (userState.logged && userState.data.id === present.user_id) {
+                        continue; // skip my own presents
+                    }
 
-    console.log(grouped);
+                    if (!(present.user_id in grouped)) {
+                        opened[present.user_id] = false;
+                        grouped[present.user_id] = [];
+                    }
+                    grouped[present.user_id].push(present);
+                }
+            }
+        });
+    });
 
-    const minePage = page.params.page === 'mine';
-
-    const states = {
+    const states = $derived({
         [PRESENT_OPEN]: 'Volný',
         [PRESENT_RESERVED]: minePage ? 'Volný' : 'Rezervovaný', // because we don't want to spoil the surprise
         [PRESENT_CLOSED]: 'Předaný'
-    };
-    const stateColors = {
+    });
+    const stateColors = $derived({
         [PRESENT_OPEN]: 'text-green-500',
         [PRESENT_RESERVED]: minePage ? 'text-green-500' : 'text-yellow-500',
         [PRESENT_CLOSED]: 'text-red-500'
-    };
+    });
 </script>
 
 {#snippet presentList(presents: Present[])}
@@ -101,7 +111,7 @@
         <a class={{ 'font-bold underline': page.params.page === 'others' }} href="/app/presents/others"><Icon name="bi-box2-heart-fill" /> Ostatních dárky</a>
     </div>
     <div class="flex flex-1 flex-col gap-2">
-        {#if page.params.page === 'mine'}
+        {#if minePage}
             <Icon onclick={() => goto('/app/presents/new')} name="bi-plus-lg" class="mx-auto text-xl text-green-500" />
             {@render presentList(presents)}
         {:else}
