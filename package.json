@@ -15,11 +15,11 @@
         "start": "node -r dotenv/config build"
     },
     "devDependencies": {
-        "@eslint/compat": "^1.2.5",
+        "@eslint/compat": "^1.2.6",
         "@sveltejs/adapter-node": "^5.2.12",
         "@sveltejs/kit": "^2.16.1",
         "@sveltejs/vite-plugin-svelte": "^5.0.3",
-        "@tailwindcss/postcss": "^4.0.0",
+        "@tailwindcss/postcss": "^4.0.3",
         "@types/bcrypt": "^5.0.2",
         "@types/jsonwebtoken": "^9.0.8",
         "@types/showdown": "^2.0.6",
@@ -33,9 +33,9 @@
         "prettier": "^3.4.2",
         "prettier-plugin-svelte": "^3.3.3",
         "prettier-plugin-tailwindcss": "^0.6.11",
-        "svelte": "^5.19.3",
+        "svelte": "^5.19.6",
         "svelte-check": "^4.1.4",
-        "tailwindcss": "^4.0.0",
+        "tailwindcss": "^4.0.3",
         "typescript": "^5.7.3",
         "typescript-eslint": "^8.22.0",
         "vite": "^6.0.11"
@@ -53,7 +53,7 @@
         "showdown": "^2.1.0",
         "simple-json-db": "^2.0.0",
         "sweetalert2": "^11.15.10",
-        "tailwind-merge": "^2.6.0",
+        "tailwind-merge": "^3.0.1",
         "uuid": "^11.0.5",
         "web-push": "^3.6.7",
         "zod": "^3.24.1"
