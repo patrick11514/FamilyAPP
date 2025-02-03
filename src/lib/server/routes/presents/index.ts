@@ -4,7 +4,7 @@ import { FormDataInput, type ErrorApiResponse } from '@patrick115/sveltekitapi';
 import type { ErrorList } from '$/lib/errors';
 import { MAX_FILE_SIZE } from '$env/static/private';
 import { uploadFile } from '../../functions';
-import type { Response } from '$/types/types';
+import type { Response, ResponseWithData } from '$/types/types';
 import { conn } from '../../variables';
 
 export default [
@@ -89,6 +89,71 @@ export default [
                 }
             }
 
+            console.error(err);
+            return {
+                status: false,
+                code: 500,
+                message: 'Něco se nepovedlo na serveru'
+            } satisfies ErrorApiResponse;
+        }
+    }),
+    loggedProcedure.PATCH.input(
+        z.object({
+            id: z.number(),
+            toState: z.literal(0).or(z.literal(1)).or(z.literal(2)) // 0 - we want to untaken it, 1 - taken, 2 - given
+        })
+    ).query(async ({ input, ctx }) => {
+        const present = await conn.selectFrom('present').selectAll().where('id', '=', input.id).executeTakeFirst();
+        if (!present) {
+            return {
+                status: false,
+                code: 401,
+                message: 'presents.notFound' satisfies ErrorList
+            } satisfies ErrorApiResponse;
+        }
+
+        if (present.user_id === ctx.id) {
+            return {
+                status: false,
+                code: 401,
+                message: 'presents.own' satisfies ErrorList
+            } satisfies ErrorApiResponse;
+        }
+
+        //Possible states
+        // 0 -> 1 We want to take package, but we need to check, if it's not already taken (eg state != 0)
+        // 1 -> 0 We want to untake package, but we need to check, if we are the one who took it (eg reserved_id == ctx.id)
+        // 1 -> 2 We want to complete package, but we need to check, if we are the one who took it (eg reserved_id == ctx.id)
+        // 2 -> 1 We want to uncomplete package, but we need to check, if we are the one who completed it (eg reserved_id == ctx.id)
+        // and error will be presents.input
+
+        if (input.toState === 1) {
+            if (present.state === 2 && present.reserved_id !== ctx.id) {
+                return {
+                    status: false,
+                    code: 401,
+                    message: 'presents.input' satisfies ErrorList
+                } satisfies ErrorApiResponse;
+            }
+        }
+
+        ///@TODO
+
+        try {
+            await conn
+                .updateTable('present')
+                .set({
+                    state: input.toState,
+                    reserved_id: input.toState === 0 ? null : ctx.id
+                })
+                .execute();
+
+            const newData = (await conn.selectFrom('present').selectAll().where('id', '=', input.id).executeTakeFirst())!;
+            return {
+                status: true,
+                data: newData
+            } satisfies ResponseWithData<typeof newData>;
+        } catch (err) {
             console.error(err);
             return {
                 status: false,

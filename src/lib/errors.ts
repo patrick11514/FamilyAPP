@@ -27,7 +27,9 @@ export const ERRORS = {
         negative: 'Zadej prosím platnou hodnotu',
         file: 'Vyber platný soubor',
         size: 'Vybral jsi moc velký soubor',
-        range: 'Zadal jsi moc velké číslo'
+        range: 'Zadal jsi moc velké číslo',
+        notFound: 'Dárek nenalezen',
+        own: 'Nemůžeš si změnit stav svého dárku'
     }
 } as const;
 
