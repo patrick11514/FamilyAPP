@@ -12,6 +12,8 @@ export const load = (async ({ params, cookies, parent }) => {
         .selectFrom('present')
         .selectAll()
         .where('user_id', params.page === 'mine' ? '=' : '!=', userData.id)
+        .orderBy('state', 'asc')
+        .orderBy('id', 'desc')
         .execute();
 
     return {

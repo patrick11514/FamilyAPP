@@ -9,7 +9,7 @@
     import { formatUser, SwalAlert } from '$/lib/functions';
     import { untrack } from 'svelte';
     import { API } from '$/lib/api';
-    import { extractError, matchError } from '$/lib/errors';
+    import { extractError } from '$/lib/errors';
 
     const PRESENT_OPEN = 0;
     const PRESENT_RESERVED = 1;
@@ -80,27 +80,11 @@
         });
 
         if (!response.status) {
-            if (matchError(response.message, 'presents.notFound')) {
-                SwalAlert({
-                    title: extractError(response.message),
-                    icon: 'error'
-                });
-            } else if (matchError(response.message, 'presents.own')) {
-                SwalAlert({
-                    title: extractError(response.message),
-                    icon: 'error'
-                });
-            } else if (matchError(response.message, 'presents.input')) {
-                SwalAlert({
-                    title: extractError(response.message),
-                    icon: 'error'
-                });
-            } else {
-                SwalAlert({
-                    title: response.message,
-                    icon: 'error'
-                });
-            }
+            SwalAlert({
+                title: extractError(response.message),
+                icon: 'error'
+            });
+
             return;
         }
 
@@ -109,6 +93,41 @@
 
         SwalAlert({
             title: UpdateStates[toState],
+            icon: 'success'
+        });
+    };
+
+    const deletePresent = async (id: number) => {
+        const confirmation = await SwalAlert({
+            toast: false,
+            position: 'center',
+            timer: 0,
+            title: 'Opravdu chceš smazat tento dárek?',
+            showConfirmButton: true,
+            confirmButtonText: 'Ano',
+            showCancelButton: true,
+            cancelButtonText: 'Ne'
+        });
+
+        if (!confirmation.isConfirmed) {
+            return;
+        }
+
+        const response = await API.presents.DELETE(id);
+
+        if (!response.status) {
+            SwalAlert({
+                title: extractError(response.message),
+                icon: 'error'
+            });
+
+            return;
+        }
+
+        presents = presents.filter((present) => present.id !== id);
+
+        SwalAlert({
+            title: 'Dárek byl úspěšně smazán',
             icon: 'success'
         });
     };
@@ -125,7 +144,7 @@
                 <div class="border-text flex flex-row gap-2 rounded-md border-2 p-2">
                     <div class="flex w-1/4 items-center justify-center">
                         {#if present.image}
-                            <img src="/images/{present.image}" alt="" />
+                            <a href="/images/{present.image}" target="_blank"><img src="/images/{present.image}" alt="" /></a>
                         {:else}
                             <Icon name="bi-image" class="text-4xl" />
                         {/if}
@@ -148,6 +167,10 @@
                                     <Icon onclick={() => updateState(present.id, 0)} name="bi-gift-fill" />
                                 {:else if !minePage && present.state === 2 && present.reserved_id === userState.data.id}
                                     <Icon onclick={() => updateState(present.id, 1)} name="bi-check-square-fill" />
+                                {/if}
+                                {#if minePage}
+                                    <a href="/app/presents/edit/{present.id}"><Icon name="bi-pencil-fill" /></a>
+                                    <Icon onclick={() => deletePresent(present.id)} name="bi-trash-fill" class="text-red-500" />
                                 {/if}
                                 {#if present.link}
                                     <a href={present.link} target="_blank">

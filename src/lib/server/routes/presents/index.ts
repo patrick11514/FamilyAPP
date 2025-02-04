@@ -128,7 +128,43 @@ export default [
         // and error will be presents.input
 
         if (input.toState === 1) {
+            //so if present is in state 2 we wan't it to downgrade to state 1 then we need to check if we are the one who completed it
             if (present.state === 2 && present.reserved_id !== ctx.id) {
+                return {
+                    status: false,
+                    code: 401,
+                    message: 'presents.input' satisfies ErrorList
+                } satisfies ErrorApiResponse;
+            }
+            //if present is in state 1 we wan't it to stay in state 1
+            if (present.state === 1) {
+                return {
+                    status: false,
+                    code: 401,
+                    message: 'presents.other' satisfies ErrorList
+                } satisfies ErrorApiResponse;
+            }
+        }
+
+        if (input.toState === 0) {
+            //if present is in state 0 we wan't it to stay in state 0
+            if (present.state === 0) {
+                return {
+                    status: false,
+                    code: 401,
+                    message: 'presents.input' satisfies ErrorList
+                } satisfies ErrorApiResponse;
+            }
+            //if present is in state 1 we wan't it to downgrade to state 0 then we need to check if we are the one who took it
+            if (present.state === 1 && present.reserved_id !== ctx.id) {
+                return {
+                    status: false,
+                    code: 401,
+                    message: 'presents.input' satisfies ErrorList
+                } satisfies ErrorApiResponse;
+            }
+            //if present is in state 2, we can't skip state 1, so this is invalid
+            if (present.state === 2) {
                 return {
                     status: false,
                     code: 401,
@@ -137,7 +173,32 @@ export default [
             }
         }
 
-        ///@TODO
+        if (input.toState === 2) {
+            //if present is in state 0 we can't skip state 1, so this is invalid
+            if (present.state === 0) {
+                return {
+                    status: false,
+                    code: 401,
+                    message: 'presents.input' satisfies ErrorList
+                } satisfies ErrorApiResponse;
+            }
+            //if present is in state 1 we wan't it to upgrade to state 2 then we need to check if we are the one who took it
+            if (present.state === 1 && present.reserved_id !== ctx.id) {
+                return {
+                    status: false,
+                    code: 401,
+                    message: 'presents.input' satisfies ErrorList
+                } satisfies ErrorApiResponse;
+            }
+            //if present is in state 2 we wan't it to stay in state 2
+            if (present.state === 2) {
+                return {
+                    status: false,
+                    code: 401,
+                    message: 'presents.input' satisfies ErrorList
+                } satisfies ErrorApiResponse;
+            }
+        }
 
         try {
             await conn
@@ -146,6 +207,7 @@ export default [
                     state: input.toState,
                     reserved_id: input.toState === 0 ? null : ctx.id
                 })
+                .where('id', '=', input.id)
                 .execute();
 
             const newData = (await conn.selectFrom('present').selectAll().where('id', '=', input.id).executeTakeFirst())!;
@@ -153,6 +215,24 @@ export default [
                 status: true,
                 data: newData
             } satisfies ResponseWithData<typeof newData>;
+        } catch (err) {
+            console.error(err);
+            return {
+                status: false,
+                code: 500,
+                message: 'Něco se nepovedlo na serveru'
+            } satisfies ErrorApiResponse;
+        }
+    }),
+    loggedProcedure.DELETE.input(z.number()).query(async ({ input, ctx }) => {
+        try {
+            await conn
+                .deleteFrom('present')
+                .where((eb) => eb.and([eb('id', '=', input), eb('user_id', '=', ctx.id)]))
+                .execute();
+            return {
+                status: true
+            } satisfies Response;
         } catch (err) {
             console.error(err);
             return {
