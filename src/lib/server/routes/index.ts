@@ -7,6 +7,7 @@ import users from './users';
 import debt from './debt';
 import push from './push';
 import calendar from './calendar';
+import presents from './presents';
 
 export const r = router({
     auth,
@@ -16,7 +17,8 @@ export const r = router({
     invitation,
     debt,
     push,
-    calendar
+    calendar,
+    presents
 });
 
 export type AppRouter = typeof r;

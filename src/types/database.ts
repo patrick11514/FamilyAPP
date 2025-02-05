@@ -48,6 +48,18 @@ export interface Invitation {
     user_id: number;
 }
 
+export interface Present {
+    description: Generated<string | null>;
+    id: Generated<number>;
+    image: Generated<string | null>;
+    link: Generated<string | null>;
+    name: string;
+    price: Decimal;
+    reserved_id: Generated<number | null>;
+    state: Generated<number>;
+    user_id: number;
+}
+
 export interface User {
     firstname: string;
     id: Generated<number>;
@@ -75,6 +87,7 @@ export interface DB {
     group: Group;
     group_permissions: GroupPermissions;
     invitation: Invitation;
+    present: Present;
     user: User;
     user_group: UserGroup;
     web_push: WebPush;

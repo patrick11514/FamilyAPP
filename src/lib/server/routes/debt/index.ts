@@ -2,27 +2,13 @@ import { z } from 'zod';
 import { loggedProcedure } from '../../api';
 import { FormDataInput, type ErrorApiResponse } from '@patrick115/sveltekitapi';
 import fs from 'node:fs';
-import crypto from 'node:crypto';
 import Path from 'node:path';
 import type { ErrorList } from '$/lib/errors';
 import { FILE_FOLDER, MAX_FILE_SIZE } from '$env/static/private';
 import { conn } from '../../variables';
 import type { DePromise, Response, ResponseWithData } from '$/types/types';
-import { sendNotification } from '../../functions';
+import { sendNotification, uploadFile } from '../../functions';
 import { formatUser, toDate } from '$/lib/functions';
-
-const uploadFile = async (file: File) => {
-    const arrayBuffer = await file.arrayBuffer();
-    const path = Path.parse(file.name);
-    const name = crypto.randomBytes(16).toString('hex') + path.ext;
-
-    if (!fs.existsSync(FILE_FOLDER)) {
-        fs.mkdirSync(FILE_FOLDER);
-    }
-
-    fs.writeFileSync(Path.join(FILE_FOLDER, name), Buffer.from(arrayBuffer));
-    return name;
-};
 
 export const getDebtsByUserId = async (userId: number, who: number) => {
     return await conn
@@ -32,6 +18,12 @@ export const getDebtsByUserId = async (userId: number, who: number) => {
         .orderBy('when', 'desc')
         .execute();
 };
+
+const debtSchema = z.object({
+    who: z.coerce.number(),
+    amount: z.coerce.number().min(0, 'debt.negative' satisfies ErrorList),
+    when: z.string()
+});
 
 export default [
     loggedProcedure.PUT.input(FormDataInput).query(async ({ input, ctx }) => {
@@ -43,13 +35,7 @@ export default [
             } satisfies ErrorApiResponse;
         }
 
-        const schema = z.object({
-            who: z.coerce.number(),
-            amount: z.coerce.number().min(0, 'debt.negative' satisfies ErrorList),
-            when: z.string()
-        });
-
-        const data = schema.safeParse({
+        const data = debtSchema.safeParse({
             who: input.get('who'),
             amount: input.get('amount'),
             when: input.get('when')
@@ -154,14 +140,8 @@ export default [
             } satisfies ErrorApiResponse;
         }
 
-        const schema = z.object({
-            id: z.coerce.number(),
-            who: z.coerce.number().optional(),
-            amount: z.coerce
-                .number()
-                .min(0, 'debt.negative' satisfies ErrorList)
-                .optional(),
-            when: z.string().optional()
+        const schema = debtSchema.partial().extend({
+            id: z.coerce.number()
         });
 
         const data = schema.safeParse({

@@ -34,7 +34,8 @@
         {
             name: 'Dárkovník',
             path: '/presents',
-            icon: 'bi-gift-fill'
+            icon: 'bi-gift-fill',
+            startsWith: true
         },
         {
             name: 'Dlužníček',

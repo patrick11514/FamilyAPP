@@ -21,6 +21,16 @@ export const ERRORS = {
     calendar: {
         date: 'Zadal jsi neplatné datum',
         delete: 'Nemáš právo smazat tuto událost'
+    },
+    presents: {
+        input: 'Neplatný vstup',
+        negative: 'Zadej prosím platnou hodnotu',
+        file: 'Vyber platný soubor',
+        size: 'Vybral jsi moc velký soubor',
+        range: 'Zadal jsi moc velké číslo',
+        notFound: 'Dárek nenalezen',
+        own: 'Nemůžeš si změnit stav svého dárku',
+        other: 'Někdo jiný si již dárek vybral'
     }
 } as const;
 
@@ -45,6 +55,8 @@ export const extractError = (error: string): string => {
             base = base[key];
         }
     });
+
+    if (typeof base !== 'string') return error;
 
     return base;
 };
