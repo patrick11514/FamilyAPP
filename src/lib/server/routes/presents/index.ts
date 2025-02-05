@@ -2,10 +2,19 @@ import { z } from 'zod';
 import { loggedProcedure } from '../../api';
 import { FormDataInput, type ErrorApiResponse } from '@patrick115/sveltekitapi';
 import type { ErrorList } from '$/lib/errors';
-import { MAX_FILE_SIZE } from '$env/static/private';
+import { FILE_FOLDER, MAX_FILE_SIZE } from '$env/static/private';
 import { uploadFile } from '../../functions';
 import type { Response, ResponseWithData } from '$/types/types';
 import { conn } from '../../variables';
+import fs from 'node:fs';
+import Path from 'node:path';
+
+const presentSchema = z.object({
+    name: z.string(),
+    description: z.string().nullable(),
+    link: z.string().nullable(),
+    price: z.coerce.number().min(0, 'debt.negative' satisfies ErrorList)
+});
 
 export default [
     loggedProcedure.PUT.input(FormDataInput).query(async ({ input, ctx }) => {
@@ -17,14 +26,7 @@ export default [
             };
         }
 
-        const schema = z.object({
-            name: z.string(),
-            description: z.string().nullable(),
-            link: z.string().nullable(),
-            price: z.coerce.number().min(0, 'debt.negative' satisfies ErrorList)
-        });
-
-        const data = schema.safeParse({
+        const data = presentSchema.safeParse({
             name: input.get('name'),
             description: input.get('description') || null,
             link: input.get('link') || null,
@@ -239,6 +241,101 @@ export default [
                 status: false,
                 code: 500,
                 message: 'Něco se nepovedlo na serveru'
+            } satisfies ErrorApiResponse;
+        }
+    }),
+    loggedProcedure.POST.input(FormDataInput).query(async ({ input, ctx }) => {
+        if (!input.has('id')) {
+            return {
+                status: false,
+                code: 401,
+                message: 'presents.input' satisfies ErrorList
+            } satisfies ErrorApiResponse;
+        }
+
+        const schema = presentSchema.partial().extend({
+            id: z.coerce.number()
+        });
+
+        const data = schema.safeParse({
+            id: input.get('id'),
+            // empty string needs to be converted to null, because it means, that user didn't input anything
+            // but null means, that property is not presented, so it needs to be undefined, because we don't want to
+            // update it in db
+            name: input.get('name') === null ? undefined : input.get('name') || null,
+            description: input.get('description') === null ? undefined : input.get('description') || null,
+            link: input.get('link') === null ? undefined : input.get('link') || null,
+            price: input.get('price') ?? undefined
+        });
+
+        if (!data.success) {
+            return {
+                status: false,
+                code: 401,
+                message: 'presents.input' satisfies ErrorList
+            } satisfies ErrorApiResponse;
+        }
+
+        //get current fileName
+        const present = await conn
+            .selectFrom('present')
+            .select('image')
+            .where((eb) => eb.and([eb('id', '=', data.data.id), eb('user_id', '=', ctx.id)]))
+            .executeTakeFirst();
+        if (!present) {
+            return {
+                status: false,
+                code: 401,
+                message: 'debt.input' satisfies ErrorList
+            } satisfies ErrorApiResponse;
+        }
+
+        let fileName: string | null | undefined = undefined;
+
+        //check if file is deleted, or added
+        if (input.has('image')) {
+            const file = input.get('image')!;
+
+            if (typeof file === 'string') {
+                if (file === 'deleted') {
+                    if (present.image) {
+                        fs.rmSync(Path.join(FILE_FOLDER, present.image));
+                        fileName = null;
+                    }
+                }
+            } else {
+                if (file.size > parseInt(MAX_FILE_SIZE)) {
+                    return {
+                        status: false,
+                        code: 401,
+                        message: 'debt.size' satisfies ErrorList
+                    } satisfies ErrorApiResponse;
+                }
+
+                fileName = await uploadFile(file);
+            }
+        }
+
+        try {
+            await conn
+                .updateTable('present')
+                .set({
+                    ...data.data,
+                    image: fileName,
+                    price: data.data.price?.toString()
+                })
+                .where('id', '=', data.data.id)
+                .execute();
+
+            return {
+                status: true
+            } satisfies Response;
+        } catch (err) {
+            console.error(err);
+            return {
+                status: false,
+                code: 500,
+                message: ''
             } satisfies ErrorApiResponse;
         }
     })
