@@ -118,10 +118,7 @@
 
         reloadElement.classList.add('duration-200');
 
-        console.log(willReload);
-
         if (willReload) {
-            console.log('reloading');
             invalidateAll();
         }
 
