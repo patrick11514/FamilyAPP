@@ -4,14 +4,14 @@
     import { API } from '$/lib/api';
     import { SwalAlert } from '$/lib/functions';
     import type { Group } from '$/types/database';
-    import type { NormalizeId } from '$/types/types';
     import { goto } from '$app/navigation';
+    import type { Selectable } from 'kysely';
     import type { PageData, Snapshot } from './$types';
 
     const { data }: { data: PageData } = $props();
 
-    let groups = $state<NormalizeId<Group>[]>();
-    let staticGroups = $state<NormalizeId<Group>[]>();
+    let groups = $state<Selectable<Group>[]>();
+    let staticGroups = $state<Selectable<Group>[]>();
 
     const resolveGroups = (groupData: (typeof data)['groups']) => {
         if (!groupData.status) return;

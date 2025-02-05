@@ -1,8 +1,8 @@
 import { conn } from '$/lib/server/variables';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import type { NormalizeId } from '$/types/types';
 import type { Group } from '$/types/database';
+import type { Selectable } from 'kysely';
 
 export const load = (async ({ params }) => {
     const id = parseInt(params.id);
@@ -17,7 +17,7 @@ export const load = (async ({ params }) => {
         bg_color: '',
         text_color: '',
         permissions: [] as string[]
-    } satisfies NormalizeId<Group> & {
+    } satisfies Selectable<Group> & {
         permissions: string[];
     };
 

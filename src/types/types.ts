@@ -1,10 +1,9 @@
+import type { Selectable } from 'kysely';
 import type { User, Group } from './database';
 
-export type NormalizeId<$From extends { id: unknown }> = Omit<$From, 'id'> & { id: number };
-
-export type UserData = Omit<NormalizeId<User>, 'password'> & {
+export type UserData = Omit<Selectable<User>, 'password'> & {
     permissions: string[];
-    group?: NormalizeId<Group>;
+    group?: Selectable<Group>;
 };
 
 export type UserState =
