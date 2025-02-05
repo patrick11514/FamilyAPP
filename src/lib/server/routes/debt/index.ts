@@ -19,6 +19,12 @@ export const getDebtsByUserId = async (userId: number, who: number) => {
         .execute();
 };
 
+const debtSchema = z.object({
+    who: z.coerce.number(),
+    amount: z.coerce.number().min(0, 'debt.negative' satisfies ErrorList),
+    when: z.string()
+});
+
 export default [
     loggedProcedure.PUT.input(FormDataInput).query(async ({ input, ctx }) => {
         if (!input.has('who') || !input.has('amount') || !input.has('when')) {
@@ -29,13 +35,7 @@ export default [
             } satisfies ErrorApiResponse;
         }
 
-        const schema = z.object({
-            who: z.coerce.number(),
-            amount: z.coerce.number().min(0, 'debt.negative' satisfies ErrorList),
-            when: z.string()
-        });
-
-        const data = schema.safeParse({
+        const data = debtSchema.safeParse({
             who: input.get('who'),
             amount: input.get('amount'),
             when: input.get('when')
@@ -140,14 +140,8 @@ export default [
             } satisfies ErrorApiResponse;
         }
 
-        const schema = z.object({
-            id: z.coerce.number(),
-            who: z.coerce.number().optional(),
-            amount: z.coerce
-                .number()
-                .min(0, 'debt.negative' satisfies ErrorList)
-                .optional(),
-            when: z.string().optional()
+        const schema = debtSchema.partial().extend({
+            id: z.coerce.number()
         });
 
         const data = schema.safeParse({
