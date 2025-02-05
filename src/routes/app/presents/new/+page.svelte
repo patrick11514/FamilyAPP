@@ -3,7 +3,7 @@
     import Title from '$/components/headers/Title.svelte';
     import Icon from '$/components/Icon.svelte';
     import { API } from '$/lib/api';
-    import { extractError, matchError } from '$/lib/errors';
+    import { extractError } from '$/lib/errors';
     import { SwalAlert } from '$/lib/functions';
     import { goto } from '$app/navigation';
     import type { Snapshot } from '@sveltejs/kit';
@@ -55,25 +55,10 @@
         const response = await API.presents.PUT(formData);
 
         if (!response.status) {
-            if (matchError(response.message, 'presents.file')) {
-                data.image.error = extractError(response.message);
-            } else if (matchError(response.message, 'presents.size')) {
-                data.image.error = extractError(response.message);
-            } else if (matchError(response.message, 'presents.input')) {
-                SwalAlert({
-                    icon: 'error',
-                    title: extractError(response.message)
-                });
-            } else if (matchError(response.message, 'presents.negative')) {
-                data.price.error = extractError(response.message);
-            } else if (matchError(response.message, 'presents.range')) {
-                data.price.error = extractError(response.message);
-            } else {
-                SwalAlert({
-                    icon: 'error',
-                    title: response.message
-                });
-            }
+            SwalAlert({
+                icon: 'error',
+                title: extractError(response.message)
+            });
             return;
         }
 
