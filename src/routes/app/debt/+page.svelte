@@ -108,6 +108,13 @@
             </Tr>
         </thead>
         <tbody class="text-center">
+            <Tr>
+                <Td colspan={5}>
+                    <div class="flex w-full justify-center">
+                        <Icon onclick={() => goto('/app/debt/new')} name="bi-plus-lg" class="text-green-600" />
+                    </div>
+                </Td>
+            </Tr>
             {#each whom as item}
                 {@const user = data.users.find((user) => user.id === item.who)!}
                 <Tr>
@@ -121,13 +128,6 @@
                     </Td>
                 </Tr>
             {/each}
-            <Tr>
-                <Td colspan={5}>
-                    <div class="flex w-full justify-center">
-                        <Icon onclick={() => goto('/app/debt/new')} name="bi-plus-lg" class="text-green-600" />
-                    </div>
-                </Td>
-            </Tr>
         </tbody>
     </Table>
 </div>

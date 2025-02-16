@@ -1,8 +1,8 @@
 <script lang="ts">
     import Title from '$/components/headers/Title.svelte';
     import Icon from '$/components/Icon.svelte';
-    import { getEventName, getEventRange } from '$/lib/calendarUtils';
-    import { formatUser } from '$/lib/functions';
+    import { eventIsInDay, getEventName, getEventRange } from '$/lib/calendarUtils';
+    import { formatUser, locale } from '$/lib/functions';
     import type { PageData } from './$types';
 
     const { data }: { data: PageData } = $props();
@@ -23,9 +23,17 @@
                         <div class="flex justify-between">
                             <p class="font-bold">{getEventName(event, new Date())}</p>
                             <p>
-                                {#if range === 'Celodenní'}
-                                    Dnes -&nbsp;
-                                {/if}{range}
+                                {#if eventIsInDay(new Date(), event)}
+                                    Dnes
+                                {:else if eventIsInDay(new Date(new Date().getTime() + 86400000), event)}
+                                    Zítra
+                                {:else}
+                                    za {locale(((event.from.getTime() - Date.now()) / 86400000) | 0, {
+                                        one: 'den',
+                                        two: 'dny',
+                                        five: 'dní'
+                                    })}
+                                {/if}: {range}
                             </p>
                         </div>
                         <p>{event.description}</p>

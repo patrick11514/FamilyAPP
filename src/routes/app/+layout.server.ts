@@ -22,7 +22,7 @@ export const load = (async ({ cookies, parent }) => {
             .selectAll()
             .where((eb) => eb.or([eb.and([eb('to', '>=', startOfDay), eb('from', '<=', startOfDay)]), eb.and([eb('from', '>=', startOfDay), eb('from', '<', afterWeek)])]))
             .limit(5)
-            .orderBy('from', 'desc')
+            .orderBy('from', 'asc')
             .execute()
             .then((events) =>
                 events.map((event) => {

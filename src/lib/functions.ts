@@ -216,3 +216,20 @@ export const resolveSvelteClass = (classes: ClassValue): string => {
 export const formatUser = (user: { firstname: string; lastname: string }) => {
     return `${user.firstname} ${user.lastname}`;
 };
+
+export const locale = (
+    number: number,
+    dictionary: {
+        one: string;
+        two: string;
+        five: string;
+    }
+) => {
+    if (number === 1) {
+        return `${number} ${dictionary.one}`;
+    } else if (number >= 2 && number <= 4) {
+        return `${number} ${dictionary.two}`;
+    } else {
+        return `${number} ${dictionary.five}`;
+    }
+};
