@@ -357,6 +357,14 @@
         }
     });
 
+    $effect(() => {
+        if (new Date(eventData.from.value).getTime() > untrack(() => new Date(eventData.to.value).getTime())) {
+            untrack(() => {
+                eventData.to.value = eventData.from.value;
+            });
+        }
+    });
+
     const removeEvent = async (eventId: number) => {
         const result = await SwalAlert({
             title: 'Opravdu chceš smazat tuto událost',
