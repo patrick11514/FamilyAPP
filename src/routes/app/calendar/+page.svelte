@@ -36,7 +36,16 @@
         selectedDay.setMonth(selectedDay.getMonth() + 1);
     };
 
+    let addOverlay = $state() as HTMLDivElement;
+
     const handleKeys = (ev: KeyboardEvent) => {
+        if (ev.target) {
+            //If in adding overlay, don't handle keys
+            //this was problem, when user used arrows on pc
+            //in input and it moved calendar
+            if (addOverlay && addOverlay.contains(ev.target as Node)) return;
+        }
+
         if (ev.key === 'ArrowLeft') {
             monthBefore();
         } else if (ev.key === 'ArrowRight') {
@@ -245,8 +254,8 @@
 
     let addingEvent = $state(false);
 
-    const fields = ['name', 'description', 'from', 'to', 'fullDay'] as const;
-    const defaultValues = ['', '', toLocalDateString(new Date()), toLocalDateString(new Date()), false] as const;
+    const fields = ['name', 'description', 'from', 'to', 'fullDay', 'notification'] as const;
+    const defaultValues = ['', '', toLocalDateString(new Date()), toLocalDateString(new Date()), false, true] as const;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     type Indices<T extends readonly any[]> = Exclude<keyof T, keyof []>;
@@ -290,7 +299,8 @@
             description: eventData.description.value.trim() || undefined,
             from,
             to,
-            fullDay: eventData.fullDay.value
+            fullDay: eventData.fullDay.value,
+            notification: eventData.notification.value
         });
 
         if (!response.status) {
@@ -517,7 +527,7 @@
 {/if}
 
 {#if addingEvent}
-    <div class="absolute top-0 left-0 z-20 flex h-screen w-full items-center justify-center bg-black/50">
+    <div bind:this={addOverlay} class="absolute top-0 left-0 z-20 flex h-screen w-full items-center justify-center bg-black/50">
         <ClickOutside clickoutside={() => (addingEvent = false)} class="border-primary bg-secondary flex flex-col gap-2 rounded-md border-2 p-4">
             <Title>Přidání události</Title>
             <Entry id="name" label="Název" error={eventData.name.error}>
@@ -528,6 +538,9 @@
             </Entry>
             <Entry id="fullDay" label="Celodenní událost?">
                 <Slider id="fullDay" bind:value={eventData.fullDay.value} invalid={eventData.fullDay.error} />
+            </Entry>
+            <Entry id="notification" label="Odeslat oznámení o přidání?">
+                <Slider id="notification" bind:value={eventData.notification.value} invalid={eventData.notification.error} />
             </Entry>
             <Entry id="from" label="Začátek" error={eventData.from.error}>
                 <Input id="from" type={eventData.fullDay.value ? 'date' : 'datetime-local'} bind:value={eventData.from.value} invalid={eventData.from.error} />

@@ -1,5 +1,6 @@
 <script lang="ts">
     import { twMerge } from 'tailwind-merge';
+    import { Entry, Slider } from '.';
 
     let {
         id = '',
@@ -99,37 +100,45 @@
 
         return '';
     };
+
+    let capture = $state(false);
 </script>
 
-<input bind:this={input} {id} class="h-0 w-0 opacity-0" type="file" {onchange} {accept} {multiple} />
+<input bind:this={input} {id} class="h-0 w-0 opacity-0" type="file" {onchange} {accept} {multiple} capture={capture ? 'environment' : undefined} />
 
-<div
-    tabindex={0}
-    role="button"
-    {onclick}
-    {onkeypress}
-    class={twMerge(
-        'border-text bg-secondary font-poppins flex w-full cursor-pointer flex-wrap items-center justify-center gap-2 rounded-md border-2 p-2 text-xl font-bold lg:text-2xl',
-        cls
-    )}
->
-    {#if value.length == 0}
-        Vyber soubor{#if multiple}y{/if}
-    {:else}
-        {#each fileInfos as file}
-            <div class="divide-text border-text flex flex-col divide-y-2 rounded-md border-2">
-                {#if file.image}
-                    <div class="mx-auto h-auto md:max-w-72 lg:max-w-80 xl:max-w-96">
-                        <img class="rounded-t-[4px]" src={file.data} alt="File preview" />
+<section class="flex flex-col gap-2">
+    <Entry id="input-capture" label="Použít kameru pro zachycení?" row={true} small={true}>
+        <Slider id="input-capture" bind:value={capture} />
+    </Entry>
+
+    <div
+        tabindex={0}
+        role="button"
+        {onclick}
+        {onkeypress}
+        class={twMerge(
+            'border-text bg-secondary font-poppins flex w-full cursor-pointer flex-wrap items-center justify-center gap-2 rounded-md border-2 p-2 text-xl font-bold lg:text-2xl',
+            cls
+        )}
+    >
+        {#if value.length == 0}
+            Vyber soubor{#if multiple}y{/if}
+        {:else}
+            {#each fileInfos as file}
+                <div class="divide-text border-text flex flex-col divide-y-2 rounded-md border-2">
+                    {#if file.image}
+                        <div class="mx-auto h-auto md:max-w-72 lg:max-w-80 xl:max-w-96">
+                            <img class="rounded-t-[4px]" src={file.data} alt="File preview" />
+                        </div>
+                    {/if}
+                    <div class="justfiy-center flex flex-col items-center p-1">
+                        <h1 class="text-lg break-all lg:text-xl">
+                            {file.name}
+                        </h1>
+                        <h2 class="text-base font-medium lg:text-lg">{formatSize(file.size)}</h2>
                     </div>
-                {/if}
-                <div class="justfiy-center flex flex-col items-center p-1">
-                    <h1 class="text-lg break-all lg:text-xl">
-                        {file.name}
-                    </h1>
-                    <h2 class="text-base font-medium lg:text-lg">{formatSize(file.size)}</h2>
                 </div>
-            </div>
-        {/each}
-    {/if}
-</div>
+            {/each}
+        {/if}
+    </div>
+</section>
