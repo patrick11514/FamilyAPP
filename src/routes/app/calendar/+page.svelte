@@ -36,7 +36,16 @@
         selectedDay.setMonth(selectedDay.getMonth() + 1);
     };
 
+    let addOverlay = $state() as HTMLDivElement;
+
     const handleKeys = (ev: KeyboardEvent) => {
+        if (ev.target) {
+            //If in adding overlay, don't handle keys
+            //this was problem, when user used arrows on pc
+            //in input and it moved calendar
+            if (addOverlay && addOverlay.contains(ev.target as Node)) return;
+        }
+
         if (ev.key === 'ArrowLeft') {
             monthBefore();
         } else if (ev.key === 'ArrowRight') {
@@ -517,7 +526,7 @@
 {/if}
 
 {#if addingEvent}
-    <div class="absolute top-0 left-0 z-20 flex h-screen w-full items-center justify-center bg-black/50">
+    <div bind:this={addOverlay} class="absolute top-0 left-0 z-20 flex h-screen w-full items-center justify-center bg-black/50">
         <ClickOutside clickoutside={() => (addingEvent = false)} class="border-primary bg-secondary flex flex-col gap-2 rounded-md border-2 p-4">
             <Title>Přidání události</Title>
             <Entry id="name" label="Název" error={eventData.name.error}>
