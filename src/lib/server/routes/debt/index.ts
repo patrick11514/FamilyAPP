@@ -204,7 +204,9 @@ export default [
             await conn
                 .updateTable('debt')
                 .set({
-                    ...data.data,
+                    id: data.data.id,
+                    who: data.data.who,
+                    price: data.data.amount ? data.data.amount.toString() : undefined,
                     when: data.data.when ? new Date(data.data.when) : undefined,
                     photo: fileName
                 })
