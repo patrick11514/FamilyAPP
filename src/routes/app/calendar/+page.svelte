@@ -254,8 +254,8 @@
 
     let addingEvent = $state(false);
 
-    const fields = ['name', 'description', 'from', 'to', 'fullDay'] as const;
-    const defaultValues = ['', '', toLocalDateString(new Date()), toLocalDateString(new Date()), false] as const;
+    const fields = ['name', 'description', 'from', 'to', 'fullDay', 'notification'] as const;
+    const defaultValues = ['', '', toLocalDateString(new Date()), toLocalDateString(new Date()), false, true] as const;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     type Indices<T extends readonly any[]> = Exclude<keyof T, keyof []>;
@@ -299,7 +299,8 @@
             description: eventData.description.value.trim() || undefined,
             from,
             to,
-            fullDay: eventData.fullDay.value
+            fullDay: eventData.fullDay.value,
+            notification: eventData.notification.value
         });
 
         if (!response.status) {
@@ -537,6 +538,9 @@
             </Entry>
             <Entry id="fullDay" label="Celodenní událost?">
                 <Slider id="fullDay" bind:value={eventData.fullDay.value} invalid={eventData.fullDay.error} />
+            </Entry>
+            <Entry id="notification" label="Odeslat oznámení o přidání?">
+                <Slider id="notification" bind:value={eventData.notification.value} invalid={eventData.notification.error} />
             </Entry>
             <Entry id="from" label="Začátek" error={eventData.from.error}>
                 <Input id="from" type={eventData.fullDay.value ? 'date' : 'datetime-local'} bind:value={eventData.from.value} invalid={eventData.from.error} />

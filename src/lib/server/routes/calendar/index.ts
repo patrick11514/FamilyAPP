@@ -41,7 +41,8 @@ export default [
             description: z.string().optional(),
             from: z.coerce.date(),
             to: z.coerce.date(),
-            fullDay: z.boolean()
+            fullDay: z.boolean(),
+            notification: z.boolean()
         })
     ).query(async ({ input, ctx }) => {
         if (input.from.getTime() > input.to.getTime()) {
@@ -65,21 +66,23 @@ export default [
                 })
                 .execute();
 
-            let baseText = `${formatUser(ctx)} přidal novou událost: ${input.name} `;
+            if (input.notification) {
+                let baseText = `${formatUser(ctx)} přidal novou událost: ${input.name} `;
 
-            if (input.fullDay) {
-                baseText += `probíhající od ${toDate(input.from, true)} do ${toDate(input.to, true)}.`;
-            } else {
-                baseText += `probíhající od ${toDate(input.from)} do ${toDate(input.to)}.`;
-            }
-
-            sendNotificationToAll({
-                title: 'Nová událost',
-                body: baseText,
-                data: {
-                    url: '/app/calendar'
+                if (input.fullDay) {
+                    baseText += `probíhající od ${toDate(input.from, true)} do ${toDate(input.to, true)}.`;
+                } else {
+                    baseText += `probíhající od ${toDate(input.from)} do ${toDate(input.to)}.`;
                 }
-            });
+
+                sendNotificationToAll({
+                    title: 'Nová událost',
+                    body: baseText,
+                    data: {
+                        url: '/app/calendar'
+                    }
+                });
+            }
 
             return {
                 status: true
