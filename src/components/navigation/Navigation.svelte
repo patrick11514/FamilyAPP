@@ -26,11 +26,11 @@
             path: '',
             icon: 'bi-house-fill'
         },
-        {
+        /*{
             name: 'Rozvrhovník',
             path: '/timetable',
             icon: 'bi-calendar2-week'
-        },
+        },*/
         {
             name: 'Dárkovník',
             path: '/presents',
@@ -48,11 +48,11 @@
             path: '/calendar',
             icon: 'bi-calendar3'
         },
-        {
+        /*{
             name: 'Poznámkovník',
             path: '/notes',
             icon: 'bi-stickies-fill'
-        },
+        },*/
         {
             name: 'Správa skupin',
             path: '/groups',
