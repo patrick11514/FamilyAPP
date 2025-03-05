@@ -28,7 +28,7 @@
                                 {:else if eventIsInDay(new Date(new Date().getTime() + 86400000), event)}
                                     Zítra
                                 {:else}
-                                    za {locale(((event.from.getTime() - Date.now()) / 86400000) | 0, {
+                                    za {locale((event.from.setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 86400000 || 0, {
                                         one: 'den',
                                         two: 'dny',
                                         five: 'dní'
