@@ -155,7 +155,12 @@
     <hr class="my-4" />
     <div class="flex flex-1 flex-col items-center justify-center gap-2">
         <div class="flex h-full w-max flex-1 flex-col gap-2 overflow-y-auto">
-            {#each routes.filter( (route) => ((route.permissions ? route.permissions.some( (perm) => permissions.hasPermission(perm) ) : true) && route.hidden !== undefined ? !route.hidden : true) ) as _route, i (i)}
+            {#each routes.filter((route) => {
+                const perms = route.permissions ? route.permissions.some((perm) => permissions.hasPermission(perm)) : true;
+                const hidden = route.hidden !== undefined ? !route.hidden : true;
+
+                return perms && hidden;
+            }) as _route, i (i)}
                 <a
                     class:border-b-2={_route.name == route?.name}
                     class:hover:after:scale-x-100={_route.name != route?.name}

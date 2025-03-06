@@ -421,13 +421,18 @@
         resolveMonth();
     };
 
+    const showAddingEvent = () => {
+        addingEvent = true;
+        eventData.from.value = toLocalDateString(selectedDay);
+    };
+
     const _state = getState();
 </script>
 
 {#if _state.userState.logged}
     <div class="flex flex-1 flex-col items-center gap-2">
         <div class="flex w-full items-center gap-1 px-4 text-4xl">
-            <Icon onclick={() => (addingEvent = true)} class="mr-auto text-xl" name="bi-calendar-plus" />
+            <Icon onclick={showAddingEvent} class="mr-auto text-xl" name="bi-calendar-plus" />
             <Icon onclick={monthBefore} name="bi-chevron-left" />
             <select class="text-2xl" bind:value={month}>
                 <option value={0}>Leden</option>
