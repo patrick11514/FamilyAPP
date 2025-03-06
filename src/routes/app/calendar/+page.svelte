@@ -335,8 +335,6 @@
             const [firstDay, lastDay] = pageKey.split(' ');
 
             if (eventBetween(new Date(firstDay), new Date(lastDay))) {
-                console.log('deleting', pageKey);
-
                 cachedEvents.delete(pageKey);
             }
         }

@@ -57,7 +57,6 @@
         if (data.who.value != pageData.data.who) {
             formData.set('who', data.who.value!.toString());
         }
-        console.log(data.amount.value, parseFloat(pageData.data.price));
         if (data.amount.value != parseFloat(pageData.data.price)) {
             formData.set('amount', data.amount.value.toString());
         }

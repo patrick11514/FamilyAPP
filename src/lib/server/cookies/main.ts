@@ -92,6 +92,7 @@ export class JWTCookies {
         try {
             return jwt.verify(token, this.key) as T;
         } catch (e) {
+             
             console.error(e);
             return null;
         }

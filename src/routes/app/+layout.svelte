@@ -16,6 +16,7 @@
     const PERMS_UPDATE = 5 * 60 * 1000; //5minutes
 
     const setupPush = async () => {
+        /* eslint-disable no-console */
         if (!('serviceWorker' in navigator || 'PushManager' in window)) {
             console.log('Service workers are not supported or push manager is not supported');
             return;
@@ -38,6 +39,7 @@
         } catch (e) {
             console.error(e);
         }
+        /* eslint-enable no-console */
     };
 
     onMount(() => {

@@ -33,7 +33,7 @@ export default ts.config(
     },
     {
         rules: {
-            'no-console': 'error'
+            'no-console': ['error', { allow: ['warn', 'error'] }]
         }
     }
 );
