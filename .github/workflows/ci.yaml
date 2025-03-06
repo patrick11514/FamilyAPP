@@ -70,6 +70,9 @@ jobs:
                       echo "Building the app"
                       pnpm run build
 
+                      echo "Applying migrations"
+                      pnpm run migrate
+
                       echo "Restarting the app"
                       sudo systemctl restart family_app
                       echo "Deployment completed"
