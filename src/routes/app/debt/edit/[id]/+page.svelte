@@ -8,6 +8,7 @@
     import { formatUser, SwalAlert, toLocalDateString } from '$/lib/functions.js';
     import { API } from '$/lib/api.js';
     import { extractError, matchError } from '$/lib/errors.js';
+    import Image from '$/components/Image.svelte';
 
     const { data: pageData }: { data: PageData } = $props();
 
@@ -150,7 +151,7 @@
     {#if pageData.data.photo && !imageDeleted}
         <div class="max-w-2xl">
             <h2 class="font-poppins text-lg font-bold 2xl:text-xl">Aktuální obrázek <Icon onclick={() => (imageDeleted = true)} name="bi-trash-fill" class="text-red-500" /></h2>
-            <img src="/images/{pageData.data.photo}" alt="uploaded preview" />
+            <Image name={pageData.data.photo} alt="uploaded preview" />
         </div>
     {/if}
     <Entry id="img" label="Obrázek" note="(nepovinné)" error={data.image.error}>

@@ -10,6 +10,7 @@
     import { untrack } from 'svelte';
     import { API } from '$/lib/api';
     import { extractError } from '$/lib/errors';
+    import Image from '$/components/Image.svelte';
 
     const PRESENT_OPEN = 0;
     const PRESENT_RESERVED = 1;
@@ -144,7 +145,7 @@
                 <div class="border-text flex flex-row gap-2 rounded-md border-2 p-2">
                     <div class="flex w-1/4 items-center justify-center">
                         {#if present.image}
-                            <a href="/images/{present.image}" target="_blank"><img src="/images/{present.image}" alt="" /></a>
+                            <a href="/images/{present.image}" target="_blank"><Image name={present.image} alt="" /></a>
                         {:else}
                             <Icon name="bi-image" class="text-4xl" />
                         {/if}

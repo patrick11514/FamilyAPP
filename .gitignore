@@ -24,6 +24,7 @@ vite.config.ts.timestamp-*
 
 #files folder
 files
+.cache
 
 #deploy files
 logs

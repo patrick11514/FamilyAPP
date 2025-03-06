@@ -8,6 +8,7 @@
     import { goto } from '$app/navigation';
     import type { Snapshot } from '@sveltejs/kit';
     import type { PageData } from './$types';
+    import Image from '$/components/Image.svelte';
 
     const { data: pageData }: { data: PageData } = $props();
 
@@ -132,7 +133,7 @@
     {#if pageData.data.image && !imageDeleted}
         <div class="max-w-2xl">
             <h2 class="font-poppins text-lg font-bold 2xl:text-xl">Aktuální obrázek <Icon onclick={() => (imageDeleted = true)} name="bi-trash-fill" class="text-red-500" /></h2>
-            <img src="/images/{pageData.data.image}" alt="uploaded preview" />
+            <Image name={pageData.data.image} alt="uploaded preview" />
         </div>
     {/if}
     <Entry id="image" label="Obrázek" note="(nepovinné)" error={data.image.error}>

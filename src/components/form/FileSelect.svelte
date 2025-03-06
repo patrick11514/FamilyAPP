@@ -1,6 +1,7 @@
 <script lang="ts">
     import { twMerge } from 'tailwind-merge';
     import { Entry, Slider } from '.';
+    import Image from '../Image.svelte';
 
     let {
         id = '',
@@ -128,7 +129,7 @@
                 <div class="divide-text border-text flex flex-col divide-y-2 rounded-md border-2">
                     {#if file.image}
                         <div class="mx-auto h-auto md:max-w-72 lg:max-w-80 xl:max-w-96">
-                            <img class="rounded-t-[4px]" src={file.data} alt="File preview" />
+                            <Image class="rounded-t-[4px]" name={file.data} alt="File preview" />
                         </div>
                     {/if}
                     <div class="justfiy-center flex flex-col items-center p-1">
