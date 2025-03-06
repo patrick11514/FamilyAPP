@@ -17,7 +17,7 @@ const dialect = new MysqlDialect({
     })
 });
 
-const conn = new Kysely({ dialect, log: ['query'] });
+const conn = new Kysely({ dialect });
 
 async function runMigrations() {
     const migrator = new Migrator({
