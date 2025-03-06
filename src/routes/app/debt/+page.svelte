@@ -83,10 +83,7 @@
                     <Tr>
                         <Td>{formatUser(user)}</Td>
                         <Td>
-                            {list
-                                .map((record) => parseFloat(record.price))
-                                .reduce((a, b) => a + b, 0)
-                                .toFixed(2)}
+                            {list.map((record) => parseFloat(record.price)).reduce((a, b) => a + b, 0)}
                         </Td>
                         <Td>
                             <Icon onclick={() => goto(`/app/debt/view/${user.id}`)} name="bi-eye-fill" class="text-sky-500" />
@@ -119,7 +116,7 @@
                 {@const user = data.users.find((user) => user.id === item.who)!}
                 <Tr>
                     <Td>{formatUser(user)}</Td>
-                    <Td class="break-all">{item.price}</Td>
+                    <Td class="break-all">{parseFloat(item.price)}</Td>
                     <Td>{toDate(item.when)}</Td>
                     <Td>{item.resolved_on === null ? 'Ne' : toDate(item.resolved_on)}</Td>
                     <Td>
