@@ -31,6 +31,12 @@ export const ERRORS = {
         notFound: 'Dárek nenalezen',
         own: 'Nemůžeš si změnit stav svého dárku',
         other: 'Někdo jiný si již dárek vybral'
+    },
+    shoppinglist: {
+        input: 'Neplatný vstup',
+        negative: 'Zadej prosím platnou hodnotu',
+        file: 'Vyber platný soubor',
+        size: 'Vybral jsi moc velký soubor'
     }
 } as const;
 
@@ -38,11 +44,11 @@ export const ERRORS = {
 type ExtractPaths<$CurrentObject, $Path extends string = ''> = $CurrentObject extends string
     ? $Path // If T is a string, return the accumulated path
     : // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      $CurrentObject extends Record<string, any>
-      ? {
-            [K in keyof $CurrentObject]: ExtractPaths<$CurrentObject[K], `${$Path}${$Path extends '' ? '' : '.'}${K & string}`>;
-        }[keyof $CurrentObject] // Recurse into object keys
-      : never;
+    $CurrentObject extends Record<string, any>
+    ? {
+        [K in keyof $CurrentObject]: ExtractPaths<$CurrentObject[K], `${$Path}${$Path extends '' ? '' : '.'}${K & string}`>;
+    }[keyof $CurrentObject] // Recurse into object keys
+    : never;
 
 // Final type
 export type ErrorList = ExtractPaths<typeof ERRORS>;
