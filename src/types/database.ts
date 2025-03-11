@@ -60,6 +60,17 @@ export interface Present {
     user_id: number;
 }
 
+export interface Shoppinglist {
+    bought_at: Generated<Date | null>;
+    bought_by: Generated<number | null>;
+    count: number;
+    created_at: Generated<Date>;
+    id: Generated<number>;
+    image: Generated<string | null>;
+    name: string;
+    user_id: number;
+}
+
 export interface User {
     firstname: string;
     id: Generated<number>;
@@ -88,6 +99,7 @@ export interface DB {
     group_permissions: GroupPermissions;
     invitation: Invitation;
     present: Present;
+    shoppinglist: Shoppinglist;
     user: User;
     user_group: UserGroup;
     web_push: WebPush;

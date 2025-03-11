@@ -54,6 +54,12 @@
             icon: 'bi-stickies-fill'
         },*/
         {
+            name: 'Nákupní seznam',
+            path: '/shoppinglist',
+            icon: 'bi-cart',
+            startsWith: true
+        },
+        {
             name: 'Správa skupin',
             path: '/groups',
             startsWith: true,

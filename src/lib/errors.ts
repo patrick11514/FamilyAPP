@@ -31,6 +31,15 @@ export const ERRORS = {
         notFound: 'Dárek nenalezen',
         own: 'Nemůžeš si změnit stav svého dárku',
         other: 'Někdo jiný si již dárek vybral'
+    },
+    shoppinglist: {
+        input: 'Neplatný vstup',
+        negative: 'Zadej prosím platnou hodnotu',
+        file: 'Vyber platný soubor',
+        size: 'Vybral jsi moc velký soubor',
+        notFound: 'Tato položka nebyla nalezena',
+        author: 'Nemáš právo smazat tuto položku',
+        bought: 'Někdo již nějakou vybranou položku koupil'
     }
 } as const;
 

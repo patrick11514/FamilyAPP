@@ -18,17 +18,16 @@ const dialect = new MysqlDialect({
 });
 
 const conn = new Kysely({ dialect });
+const migrator = new Migrator({
+    db: conn,
+    provider: new FileMigrationProvider({
+        fs,
+        path,
+        migrationFolder: path.resolve(import.meta.dirname, './migrations')
+    })
+});
 
 async function runMigrations() {
-    const migrator = new Migrator({
-        db: conn,
-        provider: new FileMigrationProvider({
-            fs,
-            path,
-            migrationFolder: path.resolve(import.meta.dirname, './migrations')
-        })
-    });
-
     const result = await migrator.migrateToLatest();
 
     if (result.error) {
@@ -39,4 +38,19 @@ async function runMigrations() {
     console.log('Migrations applied successfully.');
 }
 
-runMigrations().then(() => process.exit(0));
+async function downMigration() {
+    const result = await migrator.migrateDown();
+
+    if (result.error) {
+        console.error('Rollback failed:', result.error);
+        process.exit(1);
+    }
+
+    console.log('Rollback successful.');
+}
+
+if (process.argv.includes('--rollback')) {
+    downMigration().then(() => process.exit(0));
+} else {
+    runMigrations().then(() => process.exit(0));
+}
