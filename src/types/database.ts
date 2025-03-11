@@ -3,92 +3,106 @@
  * Please do not edit it manually.
  */
 
-import type { ColumnType } from 'kysely';
+import type { ColumnType } from "kysely";
 
 export type Decimal = ColumnType<string, number | string>;
 
-export type Generated<T> = T extends ColumnType<infer S, infer I, infer U> ? ColumnType<S, I | undefined, U> : ColumnType<T, T | undefined, T>;
+export type Generated<T> = T extends ColumnType<infer S, infer I, infer U>
+  ? ColumnType<S, I | undefined, U>
+  : ColumnType<T, T | undefined, T>;
 
 export interface Calendar {
-    description: Generated<string | null>;
-    from: Date;
-    full_day: Buffer;
-    id: Generated<number>;
-    name: string;
-    to: Date;
-    user_id: number;
+  description: Generated<string | null>;
+  from: Date;
+  full_day: Buffer;
+  id: Generated<number>;
+  name: string;
+  to: Date;
+  user_id: number;
 }
 
 export interface Debt {
-    id: Generated<number>;
-    photo: Generated<string | null>;
-    price: Decimal;
-    resolved_on: Generated<Date | null>;
-    when: Generated<Date>;
-    who: number;
-    whom: number;
+  id: Generated<number>;
+  photo: Generated<string | null>;
+  price: Decimal;
+  resolved_on: Generated<Date | null>;
+  when: Generated<Date>;
+  who: number;
+  whom: number;
 }
 
 export interface Group {
-    bg_color: string;
-    id: Generated<number>;
-    name: string;
-    text_color: string;
+  bg_color: string;
+  id: Generated<number>;
+  name: string;
+  text_color: string;
 }
 
 export interface GroupPermissions {
-    group_id: number;
-    permission: string;
+  group_id: number;
+  permission: string;
 }
 
 export interface Invitation {
-    code: string;
-    created_at: Generated<Date>;
-    id: Generated<number>;
-    user_id: number;
+  code: string;
+  created_at: Generated<Date>;
+  id: Generated<number>;
+  user_id: number;
 }
 
 export interface Present {
-    description: Generated<string | null>;
-    id: Generated<number>;
-    image: Generated<string | null>;
-    link: Generated<string | null>;
-    name: string;
-    price: Decimal;
-    reserved_id: Generated<number | null>;
-    state: Generated<number>;
-    user_id: number;
+  description: Generated<string | null>;
+  id: Generated<number>;
+  image: Generated<string | null>;
+  link: Generated<string | null>;
+  name: string;
+  price: Decimal;
+  reserved_id: Generated<number | null>;
+  state: Generated<number>;
+  user_id: number;
+}
+
+export interface Shoppinglist {
+  bought_at: Generated<Date | null>;
+  bought_by: Generated<number | null>;
+  count: number;
+  created_at: Generated<Date>;
+  id: Generated<number>;
+  image: Generated<string | null>;
+  name: string;
+  user_id: number;
 }
 
 export interface User {
-    firstname: string;
-    id: Generated<number>;
-    lastname: string;
-    password: string;
-    username: string;
+  firstname: string;
+  id: Generated<number>;
+  lastname: string;
+  password: string;
+  username: string;
 }
 
 export interface UserGroup {
-    group_id: number;
-    user_id: number;
+  group_id: number;
+  user_id: number;
 }
 
 export interface WebPush {
-    auth: string;
-    endpoint: string;
-    id: Generated<number>;
-    p256dh: string;
-    userId: number;
+  auth: string;
+  endpoint: string;
+  id: Generated<number>;
+  p256dh: string;
+  userId: number;
 }
 
 export interface DB {
-    calendar: Calendar;
-    debt: Debt;
-    group: Group;
-    group_permissions: GroupPermissions;
-    invitation: Invitation;
-    present: Present;
-    user: User;
-    user_group: UserGroup;
-    web_push: WebPush;
+  calendar: Calendar;
+  debt: Debt;
+  group: Group;
+  group_permissions: GroupPermissions;
+  invitation: Invitation;
+  present: Present;
+  shoppinglist: Shoppinglist;
+  user: User;
+  user_group: UserGroup;
+  web_push: WebPush;
 }
