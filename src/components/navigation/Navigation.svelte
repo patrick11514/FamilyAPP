@@ -56,7 +56,8 @@
         {
             name: 'Nákupní seznam',
             path: '/shoppinglist',
-            icon: 'bi-cart'
+            icon: 'bi-cart',
+            startsWith: true
         },
         {
             name: 'Správa skupin',

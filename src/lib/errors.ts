@@ -36,7 +36,10 @@ export const ERRORS = {
         input: 'Neplatný vstup',
         negative: 'Zadej prosím platnou hodnotu',
         file: 'Vyber platný soubor',
-        size: 'Vybral jsi moc velký soubor'
+        size: 'Vybral jsi moc velký soubor',
+        notFound: 'Tato položka nebyla nalezena',
+        author: 'Nemáš právo smazat tuto položku',
+        bought: 'Někdo již nějakou vybranou položku koupil'
     }
 } as const;
 
