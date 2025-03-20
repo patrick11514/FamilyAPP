@@ -4,16 +4,18 @@
     import { getState, logged } from '$/lib/state.svelte';
     import { API } from '$/lib/api';
     import { goto } from '$app/navigation';
-    import Title from '$/components/headers/Title.svelte';
     import Footer from '$/components/navigation/Footer.svelte';
     import { urlBase64ToUint8Array } from '$/lib/functions';
     import { PUBLIC_VAPI_KEY } from '$env/static/public';
     import type { PageData } from './$types';
+    import Icon from '$/components/Icon.svelte';
 
     const { children, data }: { children: Snippet; data: PageData } = $props();
 
     const _state = getState();
     const PERMS_UPDATE = 5 * 60 * 1000; //5minutes
+    const isSafari = navigator.userAgent.includes('Safari');
+    const granted = Notification.permission === 'granted';
 
     const setupPush = async () => {
         /* eslint-disable no-console */
@@ -24,6 +26,7 @@
 
         try {
             const registration = await navigator.serviceWorker.register('/webworker/push-worker.js');
+            console.log(registration.pushManager);
             const subscription = await registration.pushManager.getSubscription();
 
             if (!subscription) {
@@ -44,8 +47,10 @@
 
     onMount(() => {
         if (!logged(_state.userState)) return;
-
-        setupPush();
+        //if device is not safari, access notifications immidietly
+        if (!isSafari) {
+            setupPush();
+        }
 
         const data = _state.userState.data;
 
@@ -73,7 +78,11 @@
 <section class="flex flex-1 flex-col md:flex-row">
     <Navigation />
     <div class="flex w-full flex-1 flex-col p-2">
-        <Title class="m-0 hidden md:block">{_state.title}</Title>
+        <div class="flex flex-row justify-between">
+            {#if isSafari && !granted}
+                <button onclick={setupPush}><Icon onclick={setupPush} name="bi-bell-fill" /> Klikni pro povolení notifikací (Jabko :))</button>
+            {/if}
+        </div>
         {@render children()}
         <Footer version={data.version} />
     </div>
