@@ -9,13 +9,19 @@
     import { PUBLIC_VAPI_KEY } from '$env/static/public';
     import type { PageData } from './$types';
     import Icon from '$/components/Icon.svelte';
+    import { browser } from '$app/environment';
 
     const { children, data }: { children: Snippet; data: PageData } = $props();
 
     const _state = getState();
     const PERMS_UPDATE = 5 * 60 * 1000; //5minutes
-    const isSafari = navigator.userAgent.includes('Safari');
-    const granted = Notification.permission === 'granted';
+
+    let isSafari = $state(false);
+    let granted = $state(true);
+    if (browser) {
+        isSafari = navigator.userAgent.includes('Safari');
+        granted = Notification.permission === 'granted';
+    }
 
     const setupPush = async () => {
         /* eslint-disable no-console */
