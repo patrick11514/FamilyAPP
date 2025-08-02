@@ -15,7 +15,7 @@ enum IncidentType {
 }
 
 export default [
-    '0 * * * * *',
+    '0 */30 * * * *',
     async () => {
         const now = new Date();
         const [, upper] = await energyFace.getDataFromDay(
