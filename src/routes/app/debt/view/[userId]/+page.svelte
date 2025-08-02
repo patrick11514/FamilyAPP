@@ -10,7 +10,9 @@
     import { page } from '$app/state';
     import type { PageData } from './$types';
 
-    const { data }: { data: PageData } = $props();
+    import type { PageProps } from './$types';
+
+    const { data }: PageProps = $props();
 
     const intl = Intl.DateTimeFormat('cs-CZ', {
         month: 'long',
@@ -63,7 +65,7 @@
         if (!confirm.isConfirmed) return;
 
         const response = await API.debt.POST({
-            whom: parseInt(page.params.userId),
+            whom: parseInt(page.params.userId!),
             ids: Object.values(groupped)
                 .flat()
                 .filter((item) => item.checked)
@@ -115,7 +117,7 @@
             </Tr>
         </thead>
         <tbody class="text-center">
-            {#each Object.entries(groupped) as [month, items], idx}
+            {#each Object.entries(groupped) as [month, items], idx (idx)}
                 <Tr>
                     <Td colspan={2}>{month}</Td>
                     <Td colspan={2}>{prices[idx]} Kč</Td>
@@ -135,7 +137,7 @@
                     <Td>Obrázek</Td>
                 </Tr>
 
-                {#each items as item}
+                {#each items as item (item.id)}
                     <Tr>
                         <Td><input type="checkbox" bind:checked={item.checked} /></Td>
                         <Td>{toDate(item.when)}</Td>

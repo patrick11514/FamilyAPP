@@ -1,14 +1,14 @@
 <script lang="ts">
-    import { Entry, Select, Input, FileSelect, Button } from '$/components/form';
+    import { Button, Entry, FileSelect, Input, Select } from '$/components/form';
     import Title from '$/components/headers/Title.svelte';
     import Icon from '$/components/Icon.svelte';
+    import Image from '$/components/Image.svelte';
+    import { API } from '$/lib/api.js';
+    import { extractError, matchError } from '$/lib/errors.js';
+    import { formatUser, SwalAlert, toLocalDateString } from '$/lib/functions.js';
     import { goto } from '$app/navigation';
     import type { Snapshot } from '@sveltejs/kit';
     import type { PageData } from './$types.js';
-    import { formatUser, SwalAlert, toLocalDateString } from '$/lib/functions.js';
-    import { API } from '$/lib/api.js';
-    import { extractError, matchError } from '$/lib/errors.js';
-    import Image from '$/components/Image.svelte';
 
     const { data: pageData }: { data: PageData } = $props();
 
@@ -155,7 +155,7 @@
     <Entry id="who" label="Dlužník" error={data.who.error}>
         <Select id="who" bind:value={data.who.value} invalid={data.who.error}>
             <option value={null} selected disabled>Vyber dlužníka</option>
-            {#each pageData.users as user}
+            {#each pageData.users as user (user.id)}
                 <option value={user.id}>{formatUser(user)}</option>
             {/each}
         </Select>

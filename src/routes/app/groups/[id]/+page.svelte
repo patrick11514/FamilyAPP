@@ -84,7 +84,7 @@
         Úprava: ({groupData.id}) {groupData.name}
     </h1>
     <div class="flex h-full w-full flex-wrap gap-2">
-        {#each groupData.permissions as permission}
+        {#each groupData.permissions as permission (permission)}
             {@render item(permission)}
         {/each}
         <Icon

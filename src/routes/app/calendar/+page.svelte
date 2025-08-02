@@ -1,25 +1,26 @@
 <script lang="ts">
+    import ClickOutside from '$/components/clickOutside.svelte';
+    import { Button, Entry, Input, Slider, TextArea } from '$/components/form';
+    import Title from '$/components/headers/Title.svelte';
+    import Icon from '$/components/Icon.svelte';
     import { Table, Td, Th, Tr } from '$/components/table';
     import { API } from '$/lib/api';
-    import { Calendar, formatUser, SwalAlert, toLocalDateString } from '$/lib/functions';
-    import { browser } from '$app/environment';
-    import { onMount, untrack } from 'svelte';
-    import type { PageData } from './$types';
     import {
         eventIsInDay,
         getEventName,
         getEventRange,
         type Event
     } from '$/lib/calendarUtils';
-    import Title from '$/components/headers/Title.svelte';
-    import Icon from '$/components/Icon.svelte';
-    import { SvelteDate } from 'svelte/reactivity';
-    import { Button, Entry, Input, TextArea, Slider } from '$/components/form';
-    import ClickOutside from '$/components/clickOutside.svelte';
     import { extractError, matchError } from '$/lib/errors';
+    import { Calendar, formatUser, SwalAlert, toLocalDateString } from '$/lib/functions';
     import { getState } from '$/lib/state.svelte';
+    import { browser } from '$app/environment';
+    import { onMount, untrack } from 'svelte';
+    import { SvelteDate, SvelteMap, SvelteURLSearchParams } from 'svelte/reactivity';
 
-    const { data }: { data: PageData } = $props();
+    import type { PageProps } from './$types';
+
+    const { data }: PageProps = $props();
 
     const calendar = new Calendar();
 
@@ -31,7 +32,7 @@
         isMobile = window.innerWidth < 1024;
     };
 
-    let selectedDay = $state(new SvelteDate(calendar.today));
+    let selectedDay = new SvelteDate(calendar.today);
 
     const monthBefore = () => {
         selectedDay.setMonth(selectedDay.getMonth() - 1);
@@ -70,8 +71,8 @@
 
     let events = $state<Event[]>();
 
-    const cachedEvents = new Map<string, Event[]>();
-    const eventPagesMap = new Map<number, Set<string>>();
+    const cachedEvents = new SvelteMap<string, Event[]>();
+    const eventPagesMap = new SvelteMap<number, Set<string>>();
 
     const resolveMonth = async () => {
         const firstDay = calendar.getFirstDayOfCalendar(new Date(selectedDay));
@@ -242,7 +243,7 @@
 
     const makeGoogleCalendarUrl = (event: Event) => {
         let BASE_URL = 'https://calendar.google.com/calendar/render';
-        const params = new URLSearchParams({
+        const params = new SvelteURLSearchParams({
             action: 'TEMPLATE',
             text: event.name,
             details: event.description ?? ''
@@ -250,7 +251,7 @@
 
         if (event.full_day.data[0] == 1) {
             //end day is exclusive, so we need to add 1 day to
-            const to = new Date(event.to);
+            const to = new SvelteDate(event.to);
             to.setDate(to.getDate() + 1);
 
             params.append(
@@ -491,7 +492,7 @@
             </select>
             <select class="text-2xl" bind:value={year}>
                 <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
-                {#each new Array(10) as _, i}
+                {#each new Array(10) as _, i (i)}
                     <option value={year - 5 + i}>{year - 5 + i}</option>
                 {/each}
             </select>
@@ -506,13 +507,13 @@
         <Table bind:self={calendarEl}>
             <thead>
                 <Tr>
-                    {#each isMobile ? shortDays : days as day}
+                    {#each isMobile ? shortDays : days as day (day)}
                         <Th>{day}</Th>
                     {/each}
                 </Tr>
             </thead>
             <tbody class="text-center align-middle select-none">
-                {#each calendar.monthWeekIterator(selectedDay) as week}
+                {#each calendar.monthWeekIterator(selectedDay) as week (week)}
                     <Tr>
                         {#each week as day (day.date.toString())}
                             {@const hasEvent = events?.some((event) => {

@@ -1,14 +1,15 @@
 <script lang="ts">
     import Title from '$/components/headers/Title.svelte';
     import Icon from '$/components/Icon.svelte';
-    import { Table, Th, Tr, Td } from '$/components/table';
+    import { Table, Td, Th, Tr } from '$/components/table';
     import { API } from '$/lib/api';
     import { formatUser, SwalAlert, toDate } from '$/lib/functions';
     import type { DeArray } from '$/types/types';
     import { goto } from '$app/navigation';
-    import type { PageData } from './$types';
 
-    const { data }: { data: PageData } = $props();
+    import type { PageProps } from './$types';
+
+    const { data }: PageProps = $props();
 
     type PersonDebt = Omit<DeArray<(typeof data)['who']>, 'whom'>[];
 
@@ -80,7 +81,7 @@
                 </Tr>
             </thead>
             <tbody class="text-center">
-                {#each Object.entries(grouppedData) as [who, list]}
+                {#each Object.entries(grouppedData) as [who, list] (who)}
                     {@const user = data.users.find((user) => user.id === parseInt(who))!}
                     <Tr>
                         <Td>{formatUser(user)}</Td>
@@ -124,7 +125,7 @@
                     </div>
                 </Td>
             </Tr>
-            {#each whom as item}
+            {#each whom as item (item.id)}
                 {@const user = data.users.find((user) => user.id === item.who)!}
                 <Tr>
                     <Td>{formatUser(user)}</Td>

@@ -6,9 +6,10 @@
     import type { User } from '$/types/database';
     import { page } from '$app/state';
     import type { Selectable } from 'kysely';
-    import type { PageData } from './$types';
 
-    const { data }: { data: PageData } = $props();
+    import type { PageProps } from './$types';
+
+    const { data }: PageProps = $props();
 
     const groups = data.groups;
     let users = $state<
@@ -94,7 +95,7 @@
                 </tr>
             </thead>
             <tbody>
-                {#each users as user}
+                {#each users as user (user.id)}
                     <tr class="border-text border-2">
                         <td class="border-text border-2">{user.id}</td>
                         <td class="border-text border-2">{user.username}</td>
@@ -105,7 +106,7 @@
                                 onchange={() => updateGroup(user.id, user.group_id)}
                             >
                                 <option value={null} selected>Žádná</option>
-                                {#each groups as group}
+                                {#each groups as group (group.id)}
                                     <option value={group.id}>{group.name}</option>
                                 {/each}
                             </Select>
