@@ -13,7 +13,7 @@
 <div
     class="divide-primary prose prose-invert mx-auto flex w-full flex-1 flex-col gap-2 divide-y text-lg"
 >
-    {#each htmls as html (html)}
+    {#each htmls as html, index (index)}
         <!-- eslint-disable-next-line svelte/no-at-html-tags -->
         <div>{@html html}</div>
     {/each}
