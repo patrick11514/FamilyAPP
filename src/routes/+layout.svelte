@@ -1,12 +1,12 @@
 <script lang="ts">
-    import '../fonts.css';
-    import '../app.css';
     import 'bootstrap-icons/font/bootstrap-icons.min.css';
+    import '../app.css';
+    import '../fonts.css';
 
     import { API } from '$/lib/api';
+    import { logged, setState } from '$/lib/state.svelte';
     import { type Snippet } from 'svelte';
     import type { LayoutData } from './$types';
-    import { logged, setState } from '$/lib/state.svelte';
 
     let { children, data }: { children: Snippet; data: LayoutData } = $props();
 
@@ -22,7 +22,8 @@
 
     setState({
         userState: data.userState,
-        title: ''
+        title: '',
+        pushEnabled: false
     });
 </script>
 

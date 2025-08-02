@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { onMount, type Snippet } from 'svelte';
-    import Navigation from '$/components/navigation/Navigation.svelte';
-    import { getState, logged } from '$/lib/state.svelte';
-    import { API } from '$/lib/api';
-    import { goto } from '$app/navigation';
-    import Footer from '$/components/navigation/Footer.svelte';
-    import { urlBase64ToUint8Array } from '$/lib/functions';
-    import { PUBLIC_VAPI_KEY } from '$env/static/public';
-    import type { PageData } from './$types';
     import Icon from '$/components/Icon.svelte';
+    import Footer from '$/components/navigation/Footer.svelte';
+    import Navigation from '$/components/navigation/Navigation.svelte';
+    import { API } from '$/lib/api';
+    import { urlBase64ToUint8Array } from '$/lib/functions';
+    import { getState, logged } from '$/lib/state.svelte';
     import { browser } from '$app/environment';
+    import { goto } from '$app/navigation';
+    import { PUBLIC_VAPI_KEY } from '$env/static/public';
+    import { onMount, type Snippet } from 'svelte';
+    import type { PageData } from './$types';
 
     const { children, data }: { children: Snippet; data: PageData } = $props();
 
@@ -46,9 +46,12 @@
                     applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPI_KEY)
                 });
 
-                //eslint-disable-next-line
-                await API.push.subscribe(subscription as any);
+                //eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const result = await API.push.subscribe(subscription as any);
+                if (!result.status) return;
             }
+
+            _state.pushEnabled = true;
         } catch (e) {
             console.error(e);
         }

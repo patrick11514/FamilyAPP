@@ -1,16 +1,16 @@
 <script lang="ts">
     import { API } from '$/lib/api';
     import { formatUser, SwalAlert } from '$/lib/functions';
+    import { Permissions, type Permission } from '$/lib/permissions';
     import { getState, logged } from '$/lib/state.svelte';
     import type { BootstrapIcon } from '$/types/bootstrap_icons';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
+    import { twMerge } from 'tailwind-merge';
+    import ClickOutside from '../clickOutside.svelte';
+    import Group from '../group.svelte';
     import Title from '../headers/Title.svelte';
     import Icon from '../Icon.svelte';
-    import { Permissions, type Permission } from '$/lib/permissions';
-    import Group from '../group.svelte';
-    import ClickOutside from '../clickOutside.svelte';
-    import { twMerge } from 'tailwind-merge';
 
     const BASE = '/app' as const;
     const routes: {
@@ -58,6 +58,11 @@
             path: '/shoppinglist',
             icon: 'bi-cart',
             startsWith: true
+        },
+        {
+            name: 'Teplota vody',
+            path: '/water-temperature',
+            icon: 'bi-thermometer-half'
         },
         {
             name: 'Správa skupin',

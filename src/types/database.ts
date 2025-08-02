@@ -32,6 +32,10 @@ export interface Debt {
     whom: number;
 }
 
+export interface EnabledTempNotifications {
+    userId: number;
+}
+
 export interface Group {
     bg_color: string;
     id: Generated<number>;
@@ -98,6 +102,7 @@ export interface WebPush {
 export interface DB {
     calendar: Calendar;
     debt: Debt;
+    enabled_temp_notifications: EnabledTempNotifications;
     group: Group;
     group_permissions: GroupPermissions;
     invitation: Invitation;

@@ -4,6 +4,7 @@ import { getContext, setContext } from 'svelte';
 type State = {
     userState: UserState;
     title: string;
+    pushEnabled: boolean;
 };
 
 let state = $state<State>();
