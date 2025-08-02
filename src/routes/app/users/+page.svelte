@@ -99,7 +99,11 @@
                         <td class="border-text border-2">{user.id}</td>
                         <td class="border-text border-2">{user.username}</td>
                         <td class="flex justify-center">
-                            <Select class="w-full border-none text-center lg:w-auto" bind:value={user.group_id} onchange={() => updateGroup(user.id, user.group_id)}>
+                            <Select
+                                class="w-full border-none text-center lg:w-auto"
+                                bind:value={user.group_id}
+                                onchange={() => updateGroup(user.id, user.group_id)}
+                            >
                                 <option value={null} selected>Žádná</option>
                                 {#each groups as group}
                                     <option value={group.id}>{group.name}</option>
@@ -110,7 +114,11 @@
                 {/each}
                 <tr>
                     <td class="border-text border-2 text-center text-2xl" colspan={3}>
-                        <Icon onclick={createInvitation} name="bi-plus-lg" class="text-green-600" />
+                        <Icon
+                            onclick={createInvitation}
+                            name="bi-plus-lg"
+                            class="text-green-600"
+                        />
                     </td>
                 </tr>
             </tbody>

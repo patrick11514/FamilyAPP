@@ -30,7 +30,11 @@ export default {
     plugins: [
         typography,
         plugin(function ({ addVariant }) {
-            addVariant('swatch', ['&::-moz-color-swatch', '&::-webkit-color-swatch-wrapper', '&::-webkit-color-swatch']);
+            addVariant('swatch', [
+                '&::-moz-color-swatch',
+                '&::-webkit-color-swatch-wrapper',
+                '&::-webkit-color-swatch'
+            ]);
         })
     ]
 } satisfies Config;

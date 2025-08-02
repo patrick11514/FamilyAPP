@@ -13,6 +13,13 @@
     } = $props();
 </script>
 
-<table bind:this={self} {...props} class={twMerge('border-text w-full border-collapse border-2', resolveSvelteClass(cls ?? ''))}>
+<table
+    bind:this={self}
+    {...props}
+    class={twMerge(
+        'border-text w-full border-collapse border-2',
+        resolveSvelteClass(cls ?? '')
+    )}
+>
     {@render children?.()}
 </table>

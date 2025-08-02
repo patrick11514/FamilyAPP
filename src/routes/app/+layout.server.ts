@@ -20,7 +20,12 @@ export const load = (async ({ cookies, parent }) => {
         recentEvents: conn
             .selectFrom('calendar')
             .selectAll()
-            .where((eb) => eb.or([eb.and([eb('to', '>=', startOfDay), eb('from', '<=', startOfDay)]), eb.and([eb('from', '>=', startOfDay), eb('from', '<', afterWeek)])]))
+            .where((eb) =>
+                eb.or([
+                    eb.and([eb('to', '>=', startOfDay), eb('from', '<=', startOfDay)]),
+                    eb.and([eb('from', '>=', startOfDay), eb('from', '<', afterWeek)])
+                ])
+            )
             .limit(5)
             .orderBy('from', 'asc')
             .execute()
@@ -34,7 +39,10 @@ export const load = (async ({ cookies, parent }) => {
                     };
                 })
             ),
-        users: await conn.selectFrom('user').select(['id', 'username', 'firstname', 'lastname']).execute(),
+        users: await conn
+            .selectFrom('user')
+            .select(['id', 'username', 'firstname', 'lastname'])
+            .execute(),
         version: parentData.version
     };
 }) satisfies LayoutServerLoad;

@@ -14,7 +14,13 @@ export const getDebtsByUserId = async (userId: number, who: number) => {
     return await conn
         .selectFrom('debt')
         .selectAll()
-        .where((eb) => eb.and([eb('debt.whom', '=', userId), eb('debt.who', '=', who), eb('resolved_on', 'is', null)]))
+        .where((eb) =>
+            eb.and([
+                eb('debt.whom', '=', userId),
+                eb('debt.who', '=', who),
+                eb('resolved_on', 'is', null)
+            ])
+        )
         .orderBy('when', 'desc')
         .execute();
 };
@@ -237,10 +243,21 @@ export default [
                 .set({
                     resolved_on: new Date()
                 })
-                .where((eb) => eb.and([eb('whom', '=', input.whom), eb('who', '=', ctx.id), eb('id', 'in', input.ids)]))
+                .where((eb) =>
+                    eb.and([
+                        eb('whom', '=', input.whom),
+                        eb('who', '=', ctx.id),
+                        eb('id', 'in', input.ids)
+                    ])
+                )
                 .execute();
 
-            const list = await conn.selectFrom('debt').selectAll().where('id', 'in', input.ids).orderBy('when', 'desc').execute();
+            const list = await conn
+                .selectFrom('debt')
+                .selectAll()
+                .where('id', 'in', input.ids)
+                .orderBy('when', 'desc')
+                .execute();
 
             let baseBody = `${formatUser(ctx)} ti splatil nějaké dluhy.`;
 

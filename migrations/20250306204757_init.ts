@@ -30,8 +30,12 @@ export const up = async (conn: Kysely<any>) => {
         .addColumn('whom', 'integer', (col) => col.notNull().references('user.id'))
         .addColumn('price', 'decimal(20, 5)', (col) => col.notNull())
         .addColumn('photo', 'varchar(255)')
-        .addColumn('when', 'timestamp', (col) => col.notNull().defaultTo(sql`current_timestamp()`))
-        .addColumn('resolved_on', 'timestamp', (col) => col.modifyFront(sql`NULL`).defaultTo(sql`NULL`))
+        .addColumn('when', 'timestamp', (col) =>
+            col.notNull().defaultTo(sql`current_timestamp()`)
+        )
+        .addColumn('resolved_on', 'timestamp', (col) =>
+            col.modifyFront(sql`NULL`).defaultTo(sql`NULL`)
+        )
         .execute();
 
     await conn.schema
@@ -53,7 +57,9 @@ export const up = async (conn: Kysely<any>) => {
         .createTable('invitation')
         .addColumn('id', 'integer', (col) => col.autoIncrement().primaryKey())
         .addColumn('code', 'varchar(10)', (col) => col.notNull())
-        .addColumn('created_at', 'timestamp', (col) => col.notNull().defaultTo(sql`current_timestamp()`))
+        .addColumn('created_at', 'timestamp', (col) =>
+            col.notNull().defaultTo(sql`current_timestamp()`)
+        )
         .addColumn('user_id', 'integer', (col) => col.notNull().references('user.id'))
         .execute();
 

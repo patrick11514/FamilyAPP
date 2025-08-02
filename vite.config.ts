@@ -10,8 +10,14 @@ export default defineConfig({
                 enabled: true
             },
             manifest: {
-                name: process.env.NODE_ENV === 'production' ? 'Family APP' : 'Family APP - DEV',
-                short_name: process.env.NODE_ENV === 'production' ? 'Family APP' : 'Family APP - DEV',
+                name:
+                    process.env.NODE_ENV === 'production'
+                        ? 'Family APP'
+                        : 'Family APP - DEV',
+                short_name:
+                    process.env.NODE_ENV === 'production'
+                        ? 'Family APP'
+                        : 'Family APP - DEV',
                 start_url: '/',
                 display: 'standalone',
                 background_color: '#0e0201',

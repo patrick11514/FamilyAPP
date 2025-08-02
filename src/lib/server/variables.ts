@@ -1,5 +1,13 @@
 import type { DB } from '$/types/database';
-import { JWT_SECRET, DATABASE_NAME, DATABASE_IP, DATABASE_PASSWORD, DATABASE_PORT, DATABASE_USER, PRIVATE_VAPI_KEY } from '$env/static/private';
+import {
+    JWT_SECRET,
+    DATABASE_NAME,
+    DATABASE_IP,
+    DATABASE_PASSWORD,
+    DATABASE_PORT,
+    DATABASE_USER,
+    PRIVATE_VAPI_KEY
+} from '$env/static/private';
 import { PUBLIC_VAPI_KEY } from '$env/static/public';
 import { JWTCookies } from './cookies/main';
 import { Kysely, MysqlDialect } from 'kysely';

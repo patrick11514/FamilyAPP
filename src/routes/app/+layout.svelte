@@ -26,12 +26,16 @@
     const setupPush = async () => {
         /* eslint-disable no-console */
         if (!('serviceWorker' in navigator || 'PushManager' in window)) {
-            console.log('Service workers are not supported or push manager is not supported');
+            console.log(
+                'Service workers are not supported or push manager is not supported'
+            );
             return;
         }
 
         try {
-            const registration = await navigator.serviceWorker.register('/webworker/push-worker.js');
+            const registration = await navigator.serviceWorker.register(
+                '/webworker/push-worker.js'
+            );
             console.log(registration.pushManager);
             const subscription = await registration.pushManager.getSubscription();
 
@@ -86,7 +90,10 @@
     <div class="flex w-full flex-1 flex-col p-2">
         <div class="flex flex-row justify-between">
             {#if isSafari && !granted}
-                <button onclick={setupPush}><Icon onclick={setupPush} name="bi-bell-fill" /> Klikni pro povolení notifikací (Jabko :))</button>
+                <button onclick={setupPush}
+                    ><Icon onclick={setupPush} name="bi-bell-fill" /> Klikni pro povolení notifikací
+                    (Jabko :))</button
+                >
             {/if}
         </div>
         {@render children()}

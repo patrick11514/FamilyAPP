@@ -1,7 +1,11 @@
 <script lang="ts">
     import type { Snippet } from 'svelte';
 
-    const { textColor, backgroundColor, children }: { textColor: string; backgroundColor: string; children: Snippet } = $props();
+    const {
+        textColor,
+        backgroundColor,
+        children
+    }: { textColor: string; backgroundColor: string; children: Snippet } = $props();
 </script>
 
 <div

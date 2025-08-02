@@ -8,7 +8,12 @@ export const load = (async ({ params }) => {
     const id = parseInt(params.id);
     if (isNaN(id)) redirect(302, '/app/groups');
     //check
-    const data = await conn.selectFrom('group').innerJoin('group_permissions', 'group.id', 'group_id').selectAll().where('id', '=', id).execute();
+    const data = await conn
+        .selectFrom('group')
+        .innerJoin('group_permissions', 'group.id', 'group_id')
+        .selectAll()
+        .where('id', '=', id)
+        .execute();
     if (data.length === 0) redirect(302, '/app/groups');
 
     const groupData = {

@@ -12,7 +12,9 @@ export const load = (async ({ cookies, parent }) => {
     const debts = await conn
         .selectFrom('debt')
         .selectAll()
-        .where((eb) => eb.or([eb('who', '=', data.data.id), eb('whom', '=', data.data.id)]))
+        .where((eb) =>
+            eb.or([eb('who', '=', data.data.id), eb('whom', '=', data.data.id)])
+        )
         .orderBy('when desc')
         .execute();
 

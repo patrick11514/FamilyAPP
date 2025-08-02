@@ -12,7 +12,12 @@
     const { data: pageData }: { data: PageData } = $props();
 
     const fields = ['who', 'amount', 'when', 'image'] as const;
-    const defaultValues = [null as null | number, 0, toLocalDateString(), [] as (File | null)[]] as const;
+    const defaultValues = [
+        null as null | number,
+        0,
+        toLocalDateString(),
+        [] as (File | null)[]
+    ] as const;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     type Indices<T extends readonly any[]> = Exclude<keyof T, keyof []>;
@@ -23,12 +28,19 @@
             error?: string;
         };
     };
-    let data = $state(Object.fromEntries(fields.map((item, idx) => [item, { value: defaultValues[idx] }])) as DataType);
+    let data = $state(
+        Object.fromEntries(
+            fields.map((item, idx) => [item, { value: defaultValues[idx] }])
+        ) as DataType
+    );
 
     const handle = async () => {
         Object.values(data).forEach((item) => (item.error = undefined));
 
-        if (data.who.value == null || !pageData.users.map((user) => user.id).includes(data.who.value)) {
+        if (
+            data.who.value == null ||
+            !pageData.users.map((user) => user.id).includes(data.who.value)
+        ) {
             data.who.error = 'Vyber prosím uživatele';
         }
 
@@ -107,8 +119,14 @@
     } satisfies Snapshot<Omit<DataType, 'image'>>;
 </script>
 
-<Icon onclick={() => goto('/app/debt')} name="bi-arrow-return-left" class="text-2xl lg:text-3xl" />
-<section class="md:border-accent md:bg-secondary flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:p-8">
+<Icon
+    onclick={() => goto('/app/debt')}
+    name="bi-arrow-return-left"
+    class="text-2xl lg:text-3xl"
+/>
+<section
+    class="md:border-accent md:bg-secondary flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:p-8"
+>
     <Title>Přidání nového dlužení</Title>
     <Entry id="who" label="Dlužník" error={data.who.error}>
         <Select id="who" bind:value={data.who.value} invalid={data.who.error}>
@@ -118,14 +136,39 @@
             {/each}
         </Select>
     </Entry>
-    <Entry id="amount" label="Částka" note="(používá se desetinná tečka)" error={data.amount.error}>
-        <Input id="amount" type="number" step={0.00001} bind:value={data.amount.value} invalid={data.amount.error} />
+    <Entry
+        id="amount"
+        label="Částka"
+        note="(používá se desetinná tečka)"
+        error={data.amount.error}
+    >
+        <Input
+            id="amount"
+            type="number"
+            step={0.00001}
+            bind:value={data.amount.value}
+            invalid={data.amount.error}
+        />
     </Entry>
-    <Entry id="when" label="Kdy" note="(proběhla například platba/placení)" error={data.when.error}>
-        <Input id="when" type="datetime-local" bind:value={data.when.value} invalid={data.when.error} />
+    <Entry
+        id="when"
+        label="Kdy"
+        note="(proběhla například platba/placení)"
+        error={data.when.error}
+    >
+        <Input
+            id="when"
+            type="datetime-local"
+            bind:value={data.when.value}
+            invalid={data.when.error}
+        />
     </Entry>
     <Entry id="img" label="Obrázek" note="(nepovinné)" error={data.image.error}>
-        <FileSelect id="img" bind:value={data.image.value} accept="image/png, image/jpg, image/jpeg" />
+        <FileSelect
+            id="img"
+            bind:value={data.image.value}
+            accept="image/png, image/jpg, image/jpeg"
+        />
     </Entry>
 
     <Button onclick={handle}>Přidat</Button>

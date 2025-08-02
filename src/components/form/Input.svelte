@@ -3,7 +3,12 @@
     import type { HTMLInputAttributes } from 'svelte/elements';
     import { twMerge } from 'tailwind-merge';
 
-    let { class: cls, value = $bindable(), invalid = $bindable(undefined), ...props }: HTMLInputAttributes & { invalid?: string } = $props();
+    let {
+        class: cls,
+        value = $bindable(),
+        invalid = $bindable(undefined),
+        ...props
+    }: HTMLInputAttributes & { invalid?: string } = $props();
 
     let el = $state<HTMLInputElement>();
     $effect(() => {

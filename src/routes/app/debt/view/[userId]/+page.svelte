@@ -38,7 +38,14 @@
 
     let groupped = $state(groupData(data.data));
 
-    const prices = $derived(Object.values(groupped).map((items) => items.reduce((acc, item) => (item.checked ? acc + parseFloat(item.price) : acc), 0)));
+    const prices = $derived(
+        Object.values(groupped).map((items) =>
+            items.reduce(
+                (acc, item) => (item.checked ? acc + parseFloat(item.price) : acc),
+                0
+            )
+        )
+    );
     const total = $derived(prices.reduce((acc, price) => acc + price, 0));
 
     const confirm = async () => {
@@ -87,7 +94,11 @@
 
 <section class="flex flex-1 flex-col gap-2">
     <div class="flex w-full items-center">
-        <Icon onclick={() => goto('/app/debt')} name="bi-arrow-return-left" class="text-2xl lg:text-3xl" />
+        <Icon
+            onclick={() => goto('/app/debt')}
+            name="bi-arrow-return-left"
+            class="text-2xl lg:text-3xl"
+        />
         <Title class="mx-auto">Dlužení {formatUser(data.userInfo)}</Title>
     </div>
 
@@ -110,7 +121,15 @@
                     <Td colspan={2}>{prices[idx]} Kč</Td>
                 </Tr>
                 <Tr>
-                    <Td><input type="checkbox" onchange={(ev) => items.forEach((item) => (item.checked = ev.currentTarget.checked))} /></Td>
+                    <Td
+                        ><input
+                            type="checkbox"
+                            onchange={(ev) =>
+                                items.forEach(
+                                    (item) => (item.checked = ev.currentTarget.checked)
+                                )}
+                        /></Td
+                    >
                     <Td>Datum</Td>
                     <Td>Částka</Td>
                     <Td>Obrázek</Td>
@@ -123,7 +142,11 @@
                         <Td>{parseFloat(item.price)} Kč</Td>
                         <Td>
                             {#if item.photo}
-                                <a class="break-all text-sky-600" href="/images/{item.photo}" target="_blank">{item.photo}</a>
+                                <a
+                                    class="break-all text-sky-600"
+                                    href="/images/{item.photo}"
+                                    target="_blank">{item.photo}</a
+                                >
                             {:else}
                                 -
                             {/if}

@@ -72,7 +72,10 @@ export const GET = (async ({ params, setHeaders, url }) => {
         if (!fs.existsSync(cachePath)) {
             let image = sharp(content);
 
-            const imageOptions: sharp.JpegOptions & sharp.PngOptions & sharp.WebpOptions & sharp.TiffOptions = {
+            const imageOptions: sharp.JpegOptions &
+                sharp.PngOptions &
+                sharp.WebpOptions &
+                sharp.TiffOptions = {
                 quality: 75
             };
 
@@ -94,8 +97,12 @@ export const GET = (async ({ params, setHeaders, url }) => {
 
             const meta = await image.metadata();
 
-            const newWidth = meta.width ? Math.round(meta.width * (scale / 100)) : undefined;
-            const newHeight = meta.height ? Math.round(meta.height * (scale / 100)) : undefined;
+            const newWidth = meta.width
+                ? Math.round(meta.width * (scale / 100))
+                : undefined;
+            const newHeight = meta.height
+                ? Math.round(meta.height * (scale / 100))
+                : undefined;
 
             image = image.resize(newWidth, newHeight);
 

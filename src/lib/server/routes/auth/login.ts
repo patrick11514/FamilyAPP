@@ -14,7 +14,11 @@ export default procedure.POST.input(
         password: z.string()
     })
 ).query(async ({ input, ev: { cookies } }) => {
-    const data = await conn.selectFrom('user').selectAll().where('username', '=', input.username).executeTakeFirst();
+    const data = await conn
+        .selectFrom('user')
+        .selectAll()
+        .where('username', '=', input.username)
+        .executeTakeFirst();
     if (!data) {
         return {
             status: false,

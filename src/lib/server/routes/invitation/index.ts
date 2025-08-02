@@ -44,7 +44,11 @@ export default [
             code: z.string()
         })
     ).query(async ({ input }) => {
-        const invitation = await conn.selectFrom('invitation').selectAll().where('code', '=', input.code).executeTakeFirst();
+        const invitation = await conn
+            .selectFrom('invitation')
+            .selectAll()
+            .where('code', '=', input.code)
+            .executeTakeFirst();
         if (!invitation) {
             return {
                 status: false,
@@ -53,7 +57,11 @@ export default [
             } satisfies ErrorApiResponse;
         }
 
-        const user = await conn.selectFrom('user').select('id').where('username', '=', input.username).executeTakeFirst();
+        const user = await conn
+            .selectFrom('user')
+            .select('id')
+            .where('username', '=', input.username)
+            .executeTakeFirst();
 
         if (user) {
             return {

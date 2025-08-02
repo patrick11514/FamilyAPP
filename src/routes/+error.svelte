@@ -15,7 +15,10 @@
             Náš server to nezvládl :(
             <br />Zkus to prosím znovu
         {:else}
-            Nastala chyba <Link link="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/{error}">{error}</Link>
+            Nastala chyba <Link
+                link="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/{error}"
+                >{error}</Link
+            >
         {/if}
     </h2>
     {#if error === 404}

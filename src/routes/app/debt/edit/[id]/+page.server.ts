@@ -16,7 +16,9 @@ export const load = (async ({ cookies, params, parent }) => {
     const found = await conn
         .selectFrom('debt')
         .selectAll()
-        .where((eb) => eb.and([eb('debt.id', '=', id), eb('debt.whom', '=', data.data.id)]))
+        .where((eb) =>
+            eb.and([eb('debt.id', '=', id), eb('debt.whom', '=', data.data.id)])
+        )
         .executeTakeFirst();
     if (!found) {
         redirect(302, '/app/debt');

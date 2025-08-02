@@ -26,7 +26,10 @@
         if (!groups || !staticGroups) return;
 
         groupStatuses = groups.map(
-            (group, idx) => group.name != staticGroups![idx]?.name || group.bg_color != staticGroups![idx]?.bg_color || group.text_color != staticGroups![idx]?.text_color
+            (group, idx) =>
+                group.name != staticGroups![idx]?.name ||
+                group.bg_color != staticGroups![idx]?.bg_color ||
+                group.text_color != staticGroups![idx]?.text_color
         );
     });
 
@@ -113,7 +116,9 @@
             return;
         }
 
-        return staticGroups![groupIdx] === undefined ? addGroup(groupIdx) : updateGroup(groupIdx);
+        return staticGroups![groupIdx] === undefined
+            ? addGroup(groupIdx)
+            : updateGroup(groupIdx);
     };
 
     const resetGroup = (groupId: number) => {
@@ -165,31 +170,75 @@
             </thead>
             <tbody>
                 {#each groups as group, idx}
-                    {@const inputs = { text: undefined as HTMLInputElement | undefined, background: undefined as HTMLInputElement | undefined }}
+                    {@const inputs = {
+                        text: undefined as HTMLInputElement | undefined,
+                        background: undefined as HTMLInputElement | undefined
+                    }}
                     <tr class="border-text border-2">
                         <td class="border-text border-2">{group.id}</td>
                         <td class="border-text border-2">
-                            <input class="w-full border-none bg-transparent text-center outline-hidden" bind:value={group.name} size={1} />
+                            <input
+                                class="w-full border-none bg-transparent text-center outline-hidden"
+                                bind:value={group.name}
+                                size={1}
+                            />
                         </td>
-                        <td onclick={() => inputs.text?.click()} class="border-text border-2" style="background-color: {group.text_color};">
-                            <input bind:this={inputs.text} bind:value={group.text_color} hidden type="color" />
+                        <td
+                            onclick={() => inputs.text?.click()}
+                            class="border-text border-2"
+                            style="background-color: {group.text_color};"
+                        >
+                            <input
+                                bind:this={inputs.text}
+                                bind:value={group.text_color}
+                                hidden
+                                type="color"
+                            />
                         </td>
-                        <td onclick={() => inputs.background?.click()} class="border-text border-2" style="background-color: {group.bg_color};">
-                            <input bind:this={inputs.background} bind:value={group.bg_color} hidden type="color" />
+                        <td
+                            onclick={() => inputs.background?.click()}
+                            class="border-text border-2"
+                            style="background-color: {group.bg_color};"
+                        >
+                            <input
+                                bind:this={inputs.background}
+                                bind:value={group.bg_color}
+                                hidden
+                                type="color"
+                            />
                         </td>
                         <td class="flex items-center justify-center">
-                            <GroupTag backgroundColor={group.bg_color} textColor={group.text_color}>{group.name}</GroupTag>
+                            <GroupTag
+                                backgroundColor={group.bg_color}
+                                textColor={group.text_color}>{group.name}</GroupTag
+                            >
                         </td>
                         <td class="border-text border-2 text-xl">
                             <div class="flex items-center justify-center">
                                 {#if groupStatuses?.[idx] !== false}
-                                    <Icon onclick={() => tryUpdateGroup(idx)} name="bi-check-lg" class="text-green-600" />
+                                    <Icon
+                                        onclick={() => tryUpdateGroup(idx)}
+                                        name="bi-check-lg"
+                                        class="text-green-600"
+                                    />
                                     {#if staticGroups!.length > idx}
-                                        <Icon onclick={() => resetGroup(idx)} name="bi-arrow-counterclockwise" class="text-red-600" />
+                                        <Icon
+                                            onclick={() => resetGroup(idx)}
+                                            name="bi-arrow-counterclockwise"
+                                            class="text-red-600"
+                                        />
                                     {/if}
                                 {/if}
-                                <Icon onclick={() => removeGroup(group.id)} name="bi-trash-fill" class="text-red-500" />
-                                <Icon onclick={() => goto(`/app/groups/${group.id}`)} name="bi-gear-fill" class="text-gray-500" />
+                                <Icon
+                                    onclick={() => removeGroup(group.id)}
+                                    name="bi-trash-fill"
+                                    class="text-red-500"
+                                />
+                                <Icon
+                                    onclick={() => goto(`/app/groups/${group.id}`)}
+                                    name="bi-gear-fill"
+                                    class="text-gray-500"
+                                />
                             </div>
                         </td>
                     </tr>

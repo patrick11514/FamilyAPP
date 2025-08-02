@@ -11,11 +11,19 @@ export const userProcedure = permProcedure([USER_PERMISSION]);
 
 export default [
     userProcedure.GET.query(async () => {
-        const users = await conn.selectFrom('user').leftJoin('user_group', 'user.id', 'user_id').selectAll().execute();
+        const users = await conn
+            .selectFrom('user')
+            .leftJoin('user_group', 'user.id', 'user_id')
+            .selectAll()
+            .execute();
 
         return {
             status: true,
-            data: users.map((user) => ({ ...user, user_id: undefined, password: undefined }))
+            data: users.map((user) => ({
+                ...user,
+                user_id: undefined,
+                password: undefined
+            }))
         } satisfies ResponseWithData<unknown>;
     }),
     userProcedure.PATCH.input(
@@ -25,7 +33,11 @@ export default [
         })
     ).query(async ({ input }) => {
         //check if already exists
-        const result = await conn.selectFrom('user_group').selectAll().where('user_id', '=', input.id).executeTakeFirst();
+        const result = await conn
+            .selectFrom('user_group')
+            .selectAll()
+            .where('user_id', '=', input.id)
+            .executeTakeFirst();
 
         try {
             if (!result) {
@@ -53,7 +65,10 @@ export default [
                     .where('user_id', '=', input.id)
                     .execute();
             } else {
-                await conn.deleteFrom('user_group').where('user_id', '=', input.id).execute();
+                await conn
+                    .deleteFrom('user_group')
+                    .where('user_id', '=', input.id)
+                    .execute();
             }
 
             return {

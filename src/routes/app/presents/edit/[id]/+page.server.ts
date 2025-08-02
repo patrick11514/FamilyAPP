@@ -16,7 +16,11 @@ export const load = (async ({ params, cookies }) => {
         redirect(302, '/app/presents/mine');
     }
 
-    const present = await conn.selectFrom('present').selectAll().where('id', '=', id).executeTakeFirst();
+    const present = await conn
+        .selectFrom('present')
+        .selectAll()
+        .where('id', '=', id)
+        .executeTakeFirst();
 
     if (!present) {
         redirect(302, '/app/presents/mine');

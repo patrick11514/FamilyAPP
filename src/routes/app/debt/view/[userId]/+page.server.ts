@@ -19,6 +19,10 @@ export const load = (async ({ cookies, params }) => {
 
     return {
         data: records,
-        userInfo: (await conn.selectFrom('user').select(['id', 'firstname', 'lastname']).where('id', '=', userId).executeTakeFirst())!
+        userInfo: (await conn
+            .selectFrom('user')
+            .select(['id', 'firstname', 'lastname'])
+            .where('id', '=', userId)
+            .executeTakeFirst())!
     };
 }) satisfies PageServerLoad;
