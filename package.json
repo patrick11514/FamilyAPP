@@ -1,7 +1,7 @@
 {
     "name": "familyapp",
     "private": true,
-    "version": "0.0.7",
+    "version": "0.0.8",
     "type": "module",
     "scripts": {
         "dev": "vite dev",
@@ -51,6 +51,8 @@
         "@vite-pwa/sveltekit": "^1.0.0",
         "bcrypt": "^6.0.0",
         "bootstrap-icons": "^1.13.1",
+        "chart.js": "^4.5.0",
+        "chartjs-adapter-date-fns": "^3.0.0",
         "dotenv": "^17.2.1",
         "jsonwebtoken": "^9.0.2",
         "kysely": "^0.28.4",
