@@ -11,7 +11,7 @@ declare global {
 
     namespace NodeJS {
         interface Process {
-            crontsRegistered?: boolean;
+            cronsRegistered?: boolean;
         }
     }
 }
