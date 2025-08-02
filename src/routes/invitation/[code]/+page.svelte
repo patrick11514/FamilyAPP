@@ -63,7 +63,7 @@
             firstname: data.firstname.value,
             lastname: data.lastname.value,
             password: data.password.value,
-            code: page.params.code
+            code: page.params.code!
         });
 
         if (!response.status) {

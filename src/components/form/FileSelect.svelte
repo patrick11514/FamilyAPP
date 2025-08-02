@@ -139,7 +139,7 @@
         {#if value.length == 0}
             Vyber soubor{#if multiple}y{/if}
         {:else}
-            {#each fileInfos as file}
+            {#each fileInfos as file (`${file.name}-${file.size}`)}
                 <div
                     class="divide-text border-text flex flex-col divide-y-2 rounded-md border-2"
                 >

@@ -1,10 +1,10 @@
 import type { DePromise, Response, ResponseWithData, UserData } from '$/types/types';
 import { COOKIE_EXPIRE } from '$env/static/private';
+import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
 import { z } from 'zod';
 import { loggedProcedure } from '../../api';
 import { getUserPermissions } from '../../functions';
 import { conn, jwt } from '../../variables';
-import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
 
 export default [
     loggedProcedure.GET.query(async ({ ctx, ev: { cookies } }) => {

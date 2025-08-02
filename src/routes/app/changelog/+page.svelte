@@ -1,8 +1,9 @@
 <script lang="ts">
-    import type { PageData } from './$types';
     import showdown from 'showdown';
 
-    const { data }: { data: PageData } = $props();
+    import type { PageProps } from './$types';
+
+    const { data }: PageProps = $props();
 
     const converter = new showdown.Converter();
 
@@ -12,7 +13,7 @@
 <div
     class="divide-primary prose prose-invert mx-auto flex w-full flex-1 flex-col gap-2 divide-y text-lg"
 >
-    {#each htmls as html}
+    {#each htmls as html, index (index)}
         <!-- eslint-disable-next-line svelte/no-at-html-tags -->
         <div>{@html html}</div>
     {/each}

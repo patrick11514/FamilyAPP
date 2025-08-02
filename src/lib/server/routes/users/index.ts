@@ -1,9 +1,9 @@
 import type { Permission } from '$/lib/permissions';
 import type { Response, ResponseWithData } from '$/types/types';
+import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
 import { z } from 'zod';
 import { permProcedure } from '../../api';
 import { conn } from '../../variables';
-import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
 
 export const USER_PERMISSION = 'admin.users' as Permission;
 

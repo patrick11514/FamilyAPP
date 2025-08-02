@@ -6,9 +6,11 @@
     import type { Group } from '$/types/database';
     import { goto } from '$app/navigation';
     import type { Selectable } from 'kysely';
-    import type { PageData, Snapshot } from './$types';
+    import type { Snapshot } from './$types';
 
-    const { data }: { data: PageData } = $props();
+    import type { PageProps } from './$types';
+
+    const { data }: PageProps = $props();
 
     let groups = $state<Selectable<Group>[]>();
     let staticGroups = $state<Selectable<Group>[]>();
@@ -169,7 +171,7 @@
                 </tr>
             </thead>
             <tbody>
-                {#each groups as group, idx}
+                {#each groups as group, idx (idx)}
                     {@const inputs = {
                         text: undefined as HTMLInputElement | undefined,
                         background: undefined as HTMLInputElement | undefined

@@ -1,16 +1,15 @@
 <script lang="ts">
     import Icon from '$/components/Icon.svelte';
-    import { page } from '$app/state';
-    import type { PageData } from './$types';
-    import type { Present as PresentDB } from '$/types/database';
-    import type { Selectable } from 'kysely';
-    import { goto } from '$app/navigation';
-    import { getState } from '$/lib/state.svelte';
-    import { formatUser, SwalAlert } from '$/lib/functions';
-    import { untrack } from 'svelte';
+    import Image from '$/components/Image.svelte';
     import { API } from '$/lib/api';
     import { extractError } from '$/lib/errors';
-    import Image from '$/components/Image.svelte';
+    import { formatUser, SwalAlert } from '$/lib/functions';
+    import { getState } from '$/lib/state.svelte';
+    import type { Present as PresentDB } from '$/types/database';
+    import { goto } from '$app/navigation';
+    import { page } from '$app/state';
+    import type { Selectable } from 'kysely';
+    import { untrack } from 'svelte';
 
     const PRESENT_OPEN = 0;
     const PRESENT_RESERVED = 1;
@@ -18,7 +17,9 @@
 
     type Present = Selectable<PresentDB>;
 
-    const { data }: { data: PageData } = $props();
+    import type { PageProps } from './$types';
+
+    const { data }: PageProps = $props();
 
     let presents = $state(data.data);
 
@@ -141,7 +142,7 @@
                 {#if page.params.page === 'mine'}Nemáš žádné dárky{:else}Nemá žádné dárky{/if}
             </h1>
         {:else}
-            {#each presents as present}
+            {#each presents as present (present.id)}
                 <div class="border-text flex flex-row gap-2 rounded-md border-2 p-2">
                     <div class="flex w-1/4 items-center justify-center">
                         {#if present.image}

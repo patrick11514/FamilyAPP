@@ -2,14 +2,15 @@
     import Title from '$/components/headers/Title.svelte';
     import Icon from '$/components/Icon.svelte';
     import Image from '$/components/Image.svelte';
+    import { API } from '$/lib/api';
     import { formatUser, SwalAlert, toDate } from '$/lib/functions';
     import { getState } from '$/lib/state.svelte';
     import type { Shoppinglist } from '$/types/database';
     import type { Selectable } from 'kysely';
-    import type { PageData } from './$types';
-    import { API } from '$/lib/api';
 
-    const { data }: { data: PageData } = $props();
+    import type { PageProps } from './$types';
+
+    const { data }: PageProps = $props();
 
     data.data = data.data.map((item) => ({
         ...item,
@@ -184,7 +185,7 @@
         <p class="text-center">Nákupní seznam, je prázdný</p>
     {:else}
         <div class="flex flex-col gap-2">
-            {#each toBuy as item}
+            {#each toBuy as item (item.id)}
                 {@render renderItem(item)}
             {/each}
         </div>
@@ -192,7 +193,7 @@
     {#if bought.length > 0}
         <Title class="my-2">Zakoupeno</Title>
         <div class="flex flex-col gap-2">
-            {#each bought as item}
+            {#each bought as item (item.id)}
                 {@render renderItem(item)}
             {/each}
         </div>
