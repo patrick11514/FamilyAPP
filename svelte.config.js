@@ -17,6 +17,11 @@ const config = {
         },
         csrf: {
             checkOrigin: process.env.NODE_ENV === 'production'
+        },
+        files: {
+            hooks: {
+                server: 'src/hooks.server.ts'
+            }
         }
     }
 };

@@ -3,10 +3,14 @@
     import Icon from '$/components/Icon.svelte';
     import { API } from '$/lib/api';
     import { Calendar, SwalAlert } from '$/lib/functions';
+    import { getState } from '$/lib/state.svelte';
     import Chart from 'chart.js/auto';
     import 'chartjs-adapter-date-fns';
     import { onMount } from 'svelte';
     import { SvelteDate } from 'svelte/reactivity';
+    import type { PageProps } from './$types';
+
+    let { data }: PageProps = $props();
 
     let canvas: HTMLCanvasElement;
     const calendar = new Calendar();
@@ -55,7 +59,7 @@
 
     const loadData = async (year: number, month: number, day: number) => {
         if (!chart) return;
-        const data = await API.energyface({ year, month, day });
+        const data = await API.energyface.get({ year, month, day });
         if (!data.status) {
             SwalAlert({
                 icon: 'error',
@@ -204,11 +208,86 @@
         month = today.getMonth();
         day = today.getDate();
     };
+
+    const _state = getState();
+
+    let subscribed = $state(data.subscribed);
+
+    const toggleNotifications = async () => {
+        if (!_state.pushEnabled) {
+            SwalAlert({
+                icon: 'info',
+                title: 'Pro povolení notifikací ohledně teploty vody je potřeba mít povolené notifikace v aplikaci.',
+                timer: 10000
+            });
+            return;
+        }
+
+        if (subscribed) {
+            const confirm = await SwalAlert({
+                toast: false,
+                timer: 0,
+                position: 'center',
+                title: 'Opravdu se chceš odhlásit z notifikací?',
+                showConfirmButton: true,
+                confirmButtonText: 'Ano',
+                showCancelButton: true,
+                cancelButtonText: 'Ne'
+            });
+            if (!confirm) return;
+
+            const result = await API.energyface.subscription.DELETE('');
+            if (!result.status) {
+                SwalAlert({
+                    icon: 'error',
+                    title: 'Nepodařilo se odhlásit z notifikací'
+                });
+                return;
+            }
+            subscribed = false;
+            SwalAlert({
+                icon: 'success',
+                title: 'Byl jsi úspěšně odhlášen z notifikací'
+            });
+            return;
+        }
+
+        const confirmation = await SwalAlert({
+            toast: false,
+            timer: 0,
+            position: 'center',
+            title: 'Opravdu se chceš přihlásit k notifikacím ohledně teploty vody?',
+            showConfirmButton: true,
+            confirmButtonText: 'Ano',
+            showCancelButton: true,
+            cancelButtonText: 'Ne'
+        });
+        if (!confirmation) return;
+
+        const subscription = await API.energyface.subscription.PUT('');
+        if (!subscription.status) {
+            SwalAlert({
+                icon: 'error',
+                title: 'Nepodařilo se přihlásit k notifikacím'
+            });
+            return;
+        }
+        subscribed = true;
+        SwalAlert({
+            icon: 'success',
+            title: 'Byl jsi úspěšně přihlášen k notifikacím'
+        });
+    };
 </script>
 
+{_state.pushEnabled}
 <section class="flex flex-1 flex-col">
     <div class="flex w-full gap-2 text-2xl">
-        <Icon name="bi-bell" class="mr-auto" />
+        <Icon
+            onclick={toggleNotifications}
+            name={subscribed ? 'bi-bell-fill' : 'bi-bell'}
+            class="mr-auto"
+        />
         <Icon onclick={previousDay} name="bi-chevron-left" />
         <select bind:value={year}>
             <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->

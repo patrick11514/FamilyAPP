@@ -1,14 +1,16 @@
-import type { UserData, UserState } from '$/types/types';
-import type { Cookies } from '@sveltejs/kit';
-import { conn, jwt } from './variables';
-import { z } from 'zod';
-import webPush from 'web-push';
 import type { WebPush } from '$/types/database';
-import Path from 'node:path';
-import fs from 'node:fs';
-import crypto from 'node:crypto';
+import type { UserData, UserState } from '$/types/types';
 import { FILE_FOLDER } from '$env/static/private';
+import type { Awaitable } from '@patrick115/sveltekitapi';
+import type { Cookies } from '@sveltejs/kit';
 import type { Selectable } from 'kysely';
+import * as cron from 'node-cron';
+import crypto from 'node:crypto';
+import fs from 'node:fs/promises';
+import { default as Path } from 'node:path';
+import webPush from 'web-push';
+import { z } from 'zod';
+import { conn, jwt } from './variables';
 
 export const getCookieData = (cookies: Cookies): UserState => {
     const cookie = cookies.get('session');
@@ -178,15 +180,40 @@ export const sendNotificationToAll = async (notification: NotificationPayload) =
     await batchNotifications(notification, pushes);
 };
 
+export const asyncExists = async (path: string): Promise<boolean> => {
+    try {
+        await fs.access(path);
+        return true;
+    } catch {
+        return false;
+    }
+};
+
 export const uploadFile = async (file: File) => {
     const arrayBuffer = await file.arrayBuffer();
     const path = Path.parse(file.name);
     const name = crypto.randomBytes(16).toString('hex') + path.ext;
 
-    if (!fs.existsSync(FILE_FOLDER)) {
-        fs.mkdirSync(FILE_FOLDER);
+    if (!(await asyncExists(FILE_FOLDER))) {
+        await fs.mkdir(FILE_FOLDER);
     }
 
-    fs.writeFileSync(Path.join(FILE_FOLDER, name), Buffer.from(arrayBuffer));
+    await fs.writeFile(Path.join(FILE_FOLDER, name), Buffer.from(arrayBuffer));
     return name;
 };
+
+export type Cron =
+    | [string, () => Awaitable<void>]
+    | [string, () => Awaitable<void>, cron.TaskOptions];
+
+/* eslint-disable no-console */
+export const registerCrons = (crons: Cron[]) => {
+    console.log('Registering crons...');
+
+    for (const arr of crons) {
+        cron.schedule(arr[0], arr[1], arr[2] ?? {});
+    }
+
+    console.log(`Registered ${crons.length} crons`);
+};
+/* eslint-enable no-console */
