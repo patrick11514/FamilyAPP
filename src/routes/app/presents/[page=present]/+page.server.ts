@@ -12,13 +12,16 @@ export const load = (async ({ params, cookies, parent }) => {
         redirect(302, '/app/presents/mine');
     }
 
-    const data = await conn
+    let query = conn
         .selectFrom('present')
         .selectAll()
-        .where('user_id', params.page === 'mine' ? '=' : '!=', userData.data.id)
-        .orderBy('state', 'asc')
-        .orderBy('id', 'desc')
-        .execute();
+        .where('user_id', params.page === 'mine' ? '=' : '!=', userData.data.id);
+
+    if (params.page !== 'mine') {
+        query = query.where('state', '!=', 2);
+    }
+
+    const data = await query.orderBy('state', 'asc').orderBy('id', 'desc').execute();
 
     return {
         data,
