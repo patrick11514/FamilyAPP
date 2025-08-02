@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
-import Swal, { type SweetAlertOptions } from 'sweetalert2';
 import type { ClassValue } from 'svelte/elements';
+import Swal, { type SweetAlertOptions } from 'sweetalert2';
+import type { ZodSchema } from 'zod';
 
 export const sleep = (ms: number) => {
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -231,5 +232,30 @@ export const locale = (
         return `${number} ${dictionary.two}`;
     } else {
         return `${number} ${dictionary.five}`;
+    }
+};
+
+export const fetchData = async <$Type>(
+    url: string,
+    schema: ZodSchema<$Type>,
+    options?: RequestInit
+): Promise<$Type | undefined> => {
+    try {
+        const request = await fetch(url, options);
+        if (!request.ok) {
+            return undefined;
+        }
+        const data = await request.json();
+        const parsedData = schema.safeParse(data);
+        if (!parsedData.success) {
+            // eslint-disable-next-line no-console
+            console.error('Data parsing error:', parsedData.error);
+            return undefined;
+        }
+        return parsedData.data as $Type;
+    } catch (err) {
+        // eslint-disable-next-line no-console
+        console.error(err);
+        return undefined;
     }
 };
