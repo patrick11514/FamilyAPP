@@ -18,6 +18,7 @@
     import { onMount, untrack } from 'svelte';
     import { SvelteDate, SvelteMap, SvelteURLSearchParams } from 'svelte/reactivity';
 
+    import MonthSelector from '../../../components/form/MonthSelector.svelte';
     import type { PageProps } from './$types';
 
     const { data }: PageProps = $props();
@@ -476,24 +477,12 @@
                 name="bi-calendar-plus"
             />
             <Icon onclick={monthBefore} name="bi-chevron-left" />
-            <select class="text-2xl" bind:value={month}>
-                <option value={0}>Leden</option>
-                <option value={1}>Únor</option>
-                <option value={2}>Březen</option>
-                <option value={3}>Duben</option>
-                <option value={4}>Květen</option>
-                <option value={5}>Červen</option>
-                <option value={6}>Červenec</option>
-                <option value={7}>Srpen</option>
-                <option value={8}>Září</option>
-                <option value={9}>Říjen</option>
-                <option value={10}>Listopad</option>
-                <option value={11}>Prosinec</option>
-            </select>
+            <MonthSelector class="text-2xl" bind:value={month} />
             <select class="text-2xl" bind:value={year}>
                 <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
                 {#each new Array(10) as _, i (i)}
-                    <option value={year - 5 + i}>{year - 5 + i}</option>
+                    {@const y = year - 5 + i}
+                    <option value={y}>{y}</option>
                 {/each}
             </select>
 
