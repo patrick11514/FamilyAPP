@@ -63,7 +63,12 @@ export default [
         try {
             await conn
                 .deleteFrom('group_permissions')
-                .where((eb) => eb.and([eb('group_id', '=', input.id), eb('permission', '=', input.permission)]))
+                .where((eb) =>
+                    eb.and([
+                        eb('group_id', '=', input.id),
+                        eb('permission', '=', input.permission)
+                    ])
+                )
                 .execute();
 
             return {

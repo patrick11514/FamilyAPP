@@ -3,7 +3,13 @@
     import type { HTMLSelectAttributes } from 'svelte/elements';
     import { twMerge } from 'tailwind-merge';
 
-    let { children, class: cls, value = $bindable(), invalid = $bindable(undefined), ...props }: HTMLSelectAttributes & { invalid?: string } = $props();
+    let {
+        children,
+        class: cls,
+        value = $bindable(),
+        invalid = $bindable(undefined),
+        ...props
+    }: HTMLSelectAttributes & { invalid?: string } = $props();
 
     let el = $state<HTMLSelectElement>();
 

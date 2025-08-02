@@ -9,7 +9,11 @@ export type Event = Omit<Selectable<Calendar>, 'full_day' | 'description'> & {
 
 export const getEventName = (event: Event, selectedDay: Date) => {
     //if event is multi-day, we want to add to the end (1 day of 2) etc..
-    if (event.from.getDate() === event.to.getDate() && event.from.getMonth() === event.to.getMonth() && event.from.getFullYear() === event.to.getFullYear()) {
+    if (
+        event.from.getDate() === event.to.getDate() &&
+        event.from.getMonth() === event.to.getMonth() &&
+        event.from.getFullYear() === event.to.getFullYear()
+    ) {
         return event.name;
     }
 
@@ -21,11 +25,19 @@ export const getEventName = (event: Event, selectedDay: Date) => {
     let currentDays = 1;
 
     while (true) {
-        if (begin.getDate() === selectedDay.getDate() && begin.getMonth() === selectedDay.getMonth() && begin.getFullYear() === selectedDay.getFullYear()) {
+        if (
+            begin.getDate() === selectedDay.getDate() &&
+            begin.getMonth() === selectedDay.getMonth() &&
+            begin.getFullYear() === selectedDay.getFullYear()
+        ) {
             counting = false;
         }
 
-        if (begin.getDate() === event.to.getDate() && begin.getMonth() === event.to.getMonth() && begin.getFullYear() === event.to.getFullYear()) {
+        if (
+            begin.getDate() === event.to.getDate() &&
+            begin.getMonth() === event.to.getMonth() &&
+            begin.getFullYear() === event.to.getFullYear()
+        ) {
             totalDays++;
             break;
         }
@@ -49,11 +61,15 @@ export const getEventRange = (event: Event, selectedDay: Date) => {
     const endOfDay = new Date(selectedDay);
     endOfDay.setHours(23, 59, 59, 999);
 
-    if (event.from.getTime() < startOfDay.getTime() && event.to.getTime() > endOfDay.getTime()) {
+    if (
+        event.from.getTime() < startOfDay.getTime() &&
+        event.to.getTime() > endOfDay.getTime()
+    ) {
         return 'Celodenní';
     }
 
-    const start = event.from.getTime() < startOfDay.getTime() ? '00:00' : toTime(event.from);
+    const start =
+        event.from.getTime() < startOfDay.getTime() ? '00:00' : toTime(event.from);
     const end = event.to.getTime() > endOfDay.getTime() ? '23:59' : toTime(event.to);
 
     return `${start} - ${end}`;
@@ -70,11 +86,16 @@ export const eventIsInDay = (date: Date, event: Event) => {
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
 
-    if (event.from.getTime() < startOfDay.getTime() && event.to.getTime() > endOfDay.getTime()) {
+    if (
+        event.from.getTime() < startOfDay.getTime() &&
+        event.to.getTime() > endOfDay.getTime()
+    ) {
         return true;
     }
 
     return (
-        (event.from.getDate() === date.getDate() && event.from.getMonth() === date.getMonth()) || (event.to.getDate() === date.getDate() && event.to.getMonth() === date.getMonth())
+        (event.from.getDate() === date.getDate() &&
+            event.from.getMonth() === date.getMonth()) ||
+        (event.to.getDate() === date.getDate() && event.to.getMonth() === date.getMonth())
     );
 };

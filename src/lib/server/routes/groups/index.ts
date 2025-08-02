@@ -64,7 +64,11 @@ export default [
         })
     ).query(async ({ input }) => {
         try {
-            await conn.updateTable('group').set(input).where('id', '=', input.id).execute();
+            await conn
+                .updateTable('group')
+                .set(input)
+                .where('id', '=', input.id)
+                .execute();
 
             return {
                 status: true

@@ -3,7 +3,12 @@
     import type { SvelteHTMLElements } from 'svelte/elements';
     import { twMerge } from 'tailwind-merge';
 
-    let { class: cls, value = $bindable(), invalid = $bindable(undefined), ...props }: SvelteHTMLElements['textarea'] & { invalid?: string } = $props();
+    let {
+        class: cls,
+        value = $bindable(),
+        invalid = $bindable(undefined),
+        ...props
+    }: SvelteHTMLElements['textarea'] & { invalid?: string } = $props();
 
     let el = $state<HTMLTextAreaElement>();
     $effect(() => {

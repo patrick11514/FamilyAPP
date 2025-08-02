@@ -87,7 +87,9 @@
 
     $effect(() => {
         const pathname = page.url.pathname.replace(BASE, '');
-        route = routes.find((route) => (route.startsWith ? pathname.startsWith(route.path) : pathname === route.path));
+        route = routes.find((route) =>
+            route.startsWith ? pathname.startsWith(route.path) : pathname === route.path
+        );
     });
 
     $effect(() => {
@@ -117,7 +119,9 @@
         goto('/');
     };
 
-    let permissions = $derived(new Permissions(logged(_state.userState) ? _state.userState.data : undefined));
+    let permissions = $derived(
+        new Permissions(logged(_state.userState) ? _state.userState.data : undefined)
+    );
 </script>
 
 <svelte:head>
@@ -141,7 +145,11 @@
     )}
 >
     <div class="flex flex-row justify-between px-2 md:justify-end">
-        <Icon onclick={() => (opened = false)} name="bi-x-lg" class="text-3xl font-bold md:hidden" />
+        <Icon
+            onclick={() => (opened = false)}
+            name="bi-x-lg"
+            class="text-3xl font-bold md:hidden"
+        />
         <Icon onclick={logout} name="bi-box-arrow-in-right" class="text-3xl font-bold" />
     </div>
     <div class="flex flex-col items-center justify-center gap-2">
@@ -153,7 +161,9 @@
                 {formatUser(data)}
                 {#if data.group}
                     {@const group = data.group}
-                    <Group textColor={group.text_color} backgroundColor={group.bg_color}>{group.name}</Group>
+                    <Group textColor={group.text_color} backgroundColor={group.bg_color}
+                        >{group.name}</Group
+                    >
                 {/if}
             </h1>
         {/if}
@@ -162,7 +172,7 @@
     <div class="flex flex-1 flex-col items-center justify-center gap-2">
         <div class="flex h-full w-max flex-1 flex-col gap-2 overflow-y-auto">
             {#each routes.filter((route) => {
-                const perms = route.permissions ? route.permissions.some((perm) => permissions.hasPermission(perm)) : true;
+                const perms = route.permissions ? route.permissions.some( (perm) => permissions.hasPermission(perm) ) : true;
                 const hidden = route.hidden !== undefined ? !route.hidden : true;
 
                 return perms && hidden;

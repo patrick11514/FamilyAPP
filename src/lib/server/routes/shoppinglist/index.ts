@@ -86,7 +86,11 @@ export default [
     }),
     loggedProcedure.POST.input(z.array(z.number())).query(async ({ input, ctx }) => {
         try {
-            const items = await conn.selectFrom('shoppinglist').selectAll().where('id', 'in', input).execute();
+            const items = await conn
+                .selectFrom('shoppinglist')
+                .selectAll()
+                .where('id', 'in', input)
+                .execute();
             if (items.some((item) => item.bought_by !== null)) {
                 return {
                     status: false,
@@ -95,7 +99,11 @@ export default [
                 };
             }
 
-            await conn.updateTable('shoppinglist').set({ bought_by: ctx.id, bought_at: new Date() }).where('id', 'in', input).execute();
+            await conn
+                .updateTable('shoppinglist')
+                .set({ bought_by: ctx.id, bought_at: new Date() })
+                .where('id', 'in', input)
+                .execute();
 
             let body = `${formatUser(ctx)} zakoupil:`;
 
@@ -125,7 +133,11 @@ export default [
     }),
     loggedProcedure.DELETE.input(z.number()).query(async ({ input, ctx }) => {
         try {
-            const data = await conn.selectFrom('shoppinglist').selectAll().where('id', '=', input).executeTakeFirst();
+            const data = await conn
+                .selectFrom('shoppinglist')
+                .selectAll()
+                .where('id', '=', input)
+                .executeTakeFirst();
 
             if (!data) {
                 return {

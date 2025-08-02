@@ -14,7 +14,15 @@ self.addEventListener('notificationclick', (event) => {
     const data = notification.data;
     const defaultUrl = self.location.origin + '/app/';
 
-    event.waitUntil(self.clients.openWindow('url' in data ? (data.url.startsWith('/') ? self.location.origin + data.url : data.url) : defaultUrl));
+    event.waitUntil(
+        self.clients.openWindow(
+            'url' in data
+                ? data.url.startsWith('/')
+                    ? self.location.origin + data.url
+                    : data.url
+                : defaultUrl
+        )
+    );
 
     notification.close();
 });

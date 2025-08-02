@@ -19,7 +19,15 @@ export default [
                 .selectFrom('calendar')
                 .selectAll()
                 //we want to find all events, that start or end is in the range
-                .where((eb) => eb.or([eb.and([eb('from', '>=', input.from), eb('from', '<=', input.to)]), eb.and([eb('to', '>=', input.from), eb('to', '<=', input.to)])]))
+                .where((eb) =>
+                    eb.or([
+                        eb.and([
+                            eb('from', '>=', input.from),
+                            eb('from', '<=', input.to)
+                        ]),
+                        eb.and([eb('to', '>=', input.from), eb('to', '<=', input.to)])
+                    ])
+                )
                 .execute();
 
             return {
@@ -98,7 +106,11 @@ export default [
     }),
     loggedProcedure.DELETE.input(z.number()).query(async ({ input, ctx }) => {
         try {
-            const event = await conn.selectFrom('calendar').select('name').where('id', '=', input).executeTakeFirst();
+            const event = await conn
+                .selectFrom('calendar')
+                .select('name')
+                .where('id', '=', input)
+                .executeTakeFirst();
 
             if (!event) {
                 return {
@@ -108,7 +120,11 @@ export default [
                 } satisfies ErrorApiResponse;
             }
 
-            const data = await conn.deleteFrom('calendar').where('id', '=', input).where('user_id', '=', ctx.id).executeTakeFirst();
+            const data = await conn
+                .deleteFrom('calendar')
+                .where('id', '=', input)
+                .where('user_id', '=', ctx.id)
+                .executeTakeFirst();
 
             if (data.numDeletedRows == 0n) {
                 return {

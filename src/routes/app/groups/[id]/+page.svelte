@@ -66,17 +66,31 @@
 {#snippet item(name: string)}
     <div class="border-text bg-primary rounded-md border-2 p-2 font-bold">
         {name}
-        <Icon onclick={() => removePermission(name)} name="bi-trash-fill" class="text-red-600" />
+        <Icon
+            onclick={() => removePermission(name)}
+            name="bi-trash-fill"
+            class="text-red-600"
+        />
     </div>
 {/snippet}
 
 <div class="flex h-full w-full flex-1 flex-col">
-    <Icon onclick={() => goto('/app/groups/')} name="bi-arrow-return-left" class="w-max text-2xl hover:text-gray-500" />
-    <h1 class="font-poppins my-2 text-2xl font-bold">Úprava: ({groupData.id}) {groupData.name}</h1>
+    <Icon
+        onclick={() => goto('/app/groups/')}
+        name="bi-arrow-return-left"
+        class="w-max text-2xl hover:text-gray-500"
+    />
+    <h1 class="font-poppins my-2 text-2xl font-bold">
+        Úprava: ({groupData.id}) {groupData.name}
+    </h1>
     <div class="flex h-full w-full flex-wrap gap-2">
         {#each groupData.permissions as permission}
             {@render item(permission)}
         {/each}
-        <Icon onclick={addPermission} name="bi-plus-lg" class="border-text my-auto rounded-md border-2 px-1.5 py-0.5 text-green-600" />
+        <Icon
+            onclick={addPermission}
+            name="bi-plus-lg"
+            class="border-text my-auto rounded-md border-2 px-1.5 py-0.5 text-green-600"
+        />
     </div>
 </div>

@@ -145,13 +145,17 @@
                 <div class="border-text flex flex-row gap-2 rounded-md border-2 p-2">
                     <div class="flex w-1/4 items-center justify-center">
                         {#if present.image}
-                            <a href="/images/{present.image}" target="_blank"><Image name={present.image} alt="" /></a>
+                            <a href="/images/{present.image}" target="_blank"
+                                ><Image name={present.image} alt="" /></a
+                            >
                         {:else}
                             <Icon name="bi-image" class="text-4xl" />
                         {/if}
                     </div>
                     <div class="flex w-full flex-col">
-                        <div class="border-b-text flex justify-between border-b-2 font-bold">
+                        <div
+                            class="border-b-text flex justify-between border-b-2 font-bold"
+                        >
                             <h1>{present.name}</h1>
                             <span>{parseFloat(present.price)} Kč</span>
                         </div>
@@ -159,19 +163,42 @@
                             <span>{present.description}</span>
                         {/if}
                         <div class="mt-auto flex justify-between">
-                            <span>Stav: <span class={stateColors[present.state as 0 | 1 | 2]}>{states[present.state as 0 | 1 | 2]}</span></span>
+                            <span
+                                >Stav: <span
+                                    class={stateColors[present.state as 0 | 1 | 2]}
+                                    >{states[present.state as 0 | 1 | 2]}</span
+                                ></span
+                            >
                             <div class="flex gap-2 text-xl">
                                 {#if !minePage && present.state === 0}
-                                    <Icon onclick={() => updateState(present.id, 1)} name="bi-gift" />
+                                    <Icon
+                                        onclick={() => updateState(present.id, 1)}
+                                        name="bi-gift"
+                                    />
                                 {:else if !minePage && present.state === 1 && present.reserved_id === userState.data.id}
-                                    <Icon onclick={() => updateState(present.id, 2)} name="bi-check-square" />
-                                    <Icon onclick={() => updateState(present.id, 0)} name="bi-gift-fill" />
+                                    <Icon
+                                        onclick={() => updateState(present.id, 2)}
+                                        name="bi-check-square"
+                                    />
+                                    <Icon
+                                        onclick={() => updateState(present.id, 0)}
+                                        name="bi-gift-fill"
+                                    />
                                 {:else if !minePage && present.state === 2 && present.reserved_id === userState.data.id}
-                                    <Icon onclick={() => updateState(present.id, 1)} name="bi-check-square-fill" />
+                                    <Icon
+                                        onclick={() => updateState(present.id, 1)}
+                                        name="bi-check-square-fill"
+                                    />
                                 {/if}
                                 {#if minePage}
-                                    <a href="/app/presents/edit/{present.id}"><Icon name="bi-pencil-fill" /></a>
-                                    <Icon onclick={() => deletePresent(present.id)} name="bi-trash-fill" class="text-red-500" />
+                                    <a href="/app/presents/edit/{present.id}"
+                                        ><Icon name="bi-pencil-fill" /></a
+                                    >
+                                    <Icon
+                                        onclick={() => deletePresent(present.id)}
+                                        name="bi-trash-fill"
+                                        class="text-red-500"
+                                    />
                                 {/if}
                                 {#if present.link}
                                     <a href={present.link} target="_blank">
@@ -188,18 +215,36 @@
 
     <div class="flex w-full flex-1 flex-col">
         <div class="font-poppins mb-4 flex w-full items-center justify-center gap-4">
-            <a class={{ 'font-bold underline': page.params.page === 'mine' }} href="/app/presents/mine"><Icon name="bi-gift-fill" /> Moje dárky</a>
-            <a class={{ 'font-bold underline': page.params.page === 'others' }} href="/app/presents/others"><Icon name="bi-box2-heart-fill" /> Ostatních dárky</a>
+            <a
+                class={{ 'font-bold underline': page.params.page === 'mine' }}
+                href="/app/presents/mine"><Icon name="bi-gift-fill" /> Moje dárky</a
+            >
+            <a
+                class={{ 'font-bold underline': page.params.page === 'others' }}
+                href="/app/presents/others"
+                ><Icon name="bi-box2-heart-fill" /> Ostatních dárky</a
+            >
         </div>
         <div class="flex flex-1 flex-col gap-2">
             {#if minePage}
-                <Icon onclick={() => goto('/app/presents/new')} name="bi-plus-lg" class="mx-auto text-xl text-green-500" />
+                <Icon
+                    onclick={() => goto('/app/presents/new')}
+                    name="bi-plus-lg"
+                    class="mx-auto text-xl text-green-500"
+                />
                 {@render presentList(presents)}
             {:else}
                 {#each Object.entries(grouped) as [userId, presents] (userId)}
                     {@const idNum = parseInt(userId)}
-                    <button onclick={() => (opened[idNum] = !opened[idNum])} class="cursor-pointer text-2xl font-bold">
-                        <Icon name={opened[idNum] ? 'bi-caret-down-fill' : 'bi-caret-up-fill'} />
+                    <button
+                        onclick={() => (opened[idNum] = !opened[idNum])}
+                        class="cursor-pointer text-2xl font-bold"
+                    >
+                        <Icon
+                            name={opened[idNum]
+                                ? 'bi-caret-down-fill'
+                                : 'bi-caret-up-fill'}
+                        />
                         {formatUser(data.users.find((user) => user.id === idNum)!)}
                     </button>
                     {#if opened[idNum]}

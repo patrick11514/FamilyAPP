@@ -44,12 +44,18 @@ export const ERRORS = {
 } as const;
 
 // Recursive helper to traverse the object and build paths
-type ExtractPaths<$CurrentObject, $Path extends string = ''> = $CurrentObject extends string
+type ExtractPaths<
+    $CurrentObject,
+    $Path extends string = ''
+> = $CurrentObject extends string
     ? $Path // If T is a string, return the accumulated path
     : // eslint-disable-next-line @typescript-eslint/no-explicit-any
       $CurrentObject extends Record<string, any>
       ? {
-            [K in keyof $CurrentObject]: ExtractPaths<$CurrentObject[K], `${$Path}${$Path extends '' ? '' : '.'}${K & string}`>;
+            [K in keyof $CurrentObject]: ExtractPaths<
+                $CurrentObject[K],
+                `${$Path}${$Path extends '' ? '' : '.'}${K & string}`
+            >;
         }[keyof $CurrentObject] // Recurse into object keys
       : never;
 
@@ -70,6 +76,9 @@ export const extractError = (error: string): string => {
     return base;
 };
 
-export const matchError = (error: string, errorToMatch: ErrorList): error is typeof errorToMatch => {
+export const matchError = (
+    error: string,
+    errorToMatch: ErrorList
+): error is typeof errorToMatch => {
     return error === errorToMatch;
 };

@@ -10,7 +10,12 @@
             const target = event.target as HTMLElement | null;
             if (!target) return;
 
-            if (node && !node.contains(target) && !event.defaultPrevented && !ignore.some((cls) => target.classList.contains(cls))) {
+            if (
+                node &&
+                !node.contains(target) &&
+                !event.defaultPrevented &&
+                !ignore.some((cls) => target.classList.contains(cls))
+            ) {
                 clickoutside();
             }
         };

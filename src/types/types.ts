@@ -23,6 +23,7 @@ export type ResponseWithData<$DataType> = Response & {
     data: $DataType;
 };
 
-export type DePromise<$Promise> = $Promise extends Promise<infer $Type> ? $Type : $Promise;
+export type DePromise<$Promise> =
+    $Promise extends Promise<infer $Type> ? $Type : $Promise;
 
 export type DeArray<$Array> = $Array extends Array<infer $Type> ? $Type : $Array;

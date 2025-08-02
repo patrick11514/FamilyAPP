@@ -20,7 +20,11 @@
             error?: string;
         };
     };
-    let data = $state(Object.fromEntries(fields.map((item, idx) => [item, { value: defaultValues[idx] }])) as DataType);
+    let data = $state(
+        Object.fromEntries(
+            fields.map((item, idx) => [item, { value: defaultValues[idx] }])
+        ) as DataType
+    );
 
     const handle = async () => {
         Object.values(data).forEach((item) => (item.error = undefined));
@@ -85,24 +89,49 @@
     } satisfies Snapshot<Omit<DataType, 'image'>>;
 </script>
 
-<Icon onclick={() => goto('/app/presents/mine')} name="bi-arrow-return-left" class="text-2xl lg:text-3xl" />
+<Icon
+    onclick={() => goto('/app/presents/mine')}
+    name="bi-arrow-return-left"
+    class="text-2xl lg:text-3xl"
+/>
 
-<section class="md:border-accent md:bg-secondary flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:p-8">
+<section
+    class="md:border-accent md:bg-secondary flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:p-8"
+>
     <Title>Nový dárek</Title>
     <Entry id="name" label="Název" error={data.name.error}>
         <Input id="name" bind:value={data.name.value} invalid={data.name.error} />
     </Entry>
-    <Entry id="description" label="Popis" note="(nepovinné)" error={data.description.error}>
-        <Input id="description" bind:value={data.description.value} invalid={data.description.error} />
+    <Entry
+        id="description"
+        label="Popis"
+        note="(nepovinné)"
+        error={data.description.error}
+    >
+        <Input
+            id="description"
+            bind:value={data.description.value}
+            invalid={data.description.error}
+        />
     </Entry>
     <Entry id="link" label="Odkaz" note="(nepovinné)" error={data.link.error}>
         <Input id="link" bind:value={data.link.value} invalid={data.link.error} />
     </Entry>
     <Entry id="price" label="Cena" error={data.price.error}>
-        <Input id="price" type="number" step={0.00001} bind:value={data.price.value} invalid={data.price.error} />
+        <Input
+            id="price"
+            type="number"
+            step={0.00001}
+            bind:value={data.price.value}
+            invalid={data.price.error}
+        />
     </Entry>
     <Entry id="image" label="Obrázek" note="(nepovinné)" error={data.image.error}>
-        <FileSelect id="image" bind:value={data.image.value} accept="image/png, image/jpg, image/jpeg" />
+        <FileSelect
+            id="image"
+            bind:value={data.image.value}
+            accept="image/png, image/jpg, image/jpeg"
+        />
     </Entry>
 
     <Button onclick={handle}>Přidat</Button>

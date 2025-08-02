@@ -23,11 +23,16 @@ export class SessionCookies {
     private db: JSONdb<cookie<unknown>>;
 
     constructor(storage = './cookies.json') {
-        this.db = new JSONdb<cookie<unknown>>(storage.startsWith('./') || storage.startsWith('../') ? path.join(__dirname, storage) : storage, {
-            syncOnWrite: true,
-            jsonSpaces: false,
-            asyncWrite: false
-        });
+        this.db = new JSONdb<cookie<unknown>>(
+            storage.startsWith('./') || storage.startsWith('../')
+                ? path.join(__dirname, storage)
+                : storage,
+            {
+                syncOnWrite: true,
+                jsonSpaces: false,
+                asyncWrite: false
+            }
+        );
     }
 
     checkCookies() {

@@ -14,9 +14,13 @@
         <p class="text-center font-bold text-gray-500">Načítám události...</p>
     {:then events}
         {#if events.length == 0}
-            <p class="text-center font-bold text-gray-500">Nejsou žádné blízké události :(</p>
+            <p class="text-center font-bold text-gray-500">
+                Nejsou žádné blízké události :(
+            </p>
         {:else}
-            <div class="divide-primary border-primary flex w-[80%] flex-col gap-2 divide-y-2 rounded-md border-2 p-2">
+            <div
+                class="divide-primary border-primary flex w-[80%] flex-col gap-2 divide-y-2 rounded-md border-2 p-2"
+            >
                 {#each events as event}
                     {@const range = getEventRange(event, new Date())}
                     <div class="flex flex-col gap-2">
@@ -28,17 +32,27 @@
                                 {:else if eventIsInDay(new Date(new Date().getTime() + 86400000), event)}
                                     Zítra
                                 {:else}
-                                    za {locale((event.from.setHours(0, 0, 0, 0) - new Date().setHours(0, 0, 0, 0)) / 86400000 || 0, {
-                                        one: 'den',
-                                        two: 'dny',
-                                        five: 'dní'
-                                    })}
+                                    za {locale(
+                                        (event.from.setHours(0, 0, 0, 0) -
+                                            new Date().setHours(0, 0, 0, 0)) /
+                                            86400000 || 0,
+                                        {
+                                            one: 'den',
+                                            two: 'dny',
+                                            five: 'dní'
+                                        }
+                                    )}
                                 {/if}: {range}
                             </p>
                         </div>
                         <p>{event.description}</p>
 
-                        <p><Icon name="bi-person-fill" /> {formatUser(data.users.find((user) => user.id === event.user_id)!)}</p>
+                        <p>
+                            <Icon name="bi-person-fill" />
+                            {formatUser(
+                                data.users.find((user) => user.id === event.user_id)!
+                            )}
+                        </p>
                     </div>
                 {/each}
             </div>

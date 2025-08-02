@@ -11,7 +11,13 @@
 
     const { data: pageData }: { data: PageData } = $props();
 
-    const fields = ['username', 'firstname', 'lastname', 'password', 'password2'] as const;
+    const fields = [
+        'username',
+        'firstname',
+        'lastname',
+        'password',
+        'password2'
+    ] as const;
     type DataType = Record<
         (typeof fields)[number],
         {
@@ -20,7 +26,9 @@
         }
     >;
 
-    const data = $state(Object.fromEntries(fields.map((item) => [item, { value: '' }])) as DataType);
+    const data = $state(
+        Object.fromEntries(fields.map((item) => [item, { value: '' }])) as DataType
+    );
 
     const register = async () => {
         Object.values(data).forEach((item) => (item.error = undefined));
@@ -80,23 +88,51 @@
     };
 </script>
 
-<section class="md:border-accent md:bg-secondary flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:p-8">
+<section
+    class="md:border-accent md:bg-secondary flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:p-8"
+>
     <Title class="text-center text-3xl lg:text-4xl">Registrace</Title>
-    <h3>Na pozvánku: <strong>{page.params.code}</strong> od {pageData.invitation.firstname} {pageData.invitation.lastname}</h3>
+    <h3>
+        Na pozvánku: <strong>{page.params.code}</strong> od {pageData.invitation
+            .firstname}
+        {pageData.invitation.lastname}
+    </h3>
     <Entry id="username" label="Uživatelské jméno" error={data.username.error}>
-        <Input id="username" bind:value={data.username.value} invalid={data.username.error} />
+        <Input
+            id="username"
+            bind:value={data.username.value}
+            invalid={data.username.error}
+        />
     </Entry>
     <Entry id="firstname" label="Jméno" error={data.firstname.error}>
-        <Input id="firstname" bind:value={data.firstname.value} invalid={data.firstname.error} />
+        <Input
+            id="firstname"
+            bind:value={data.firstname.value}
+            invalid={data.firstname.error}
+        />
     </Entry>
     <Entry id="lastname" label="Příjmení" error={data.lastname.error}>
-        <Input id="lastname" bind:value={data.lastname.value} invalid={data.lastname.error} />
+        <Input
+            id="lastname"
+            bind:value={data.lastname.value}
+            invalid={data.lastname.error}
+        />
     </Entry>
     <Entry id="password" label="Heslo" error={data.password.error}>
-        <Input id="password" type="password" bind:value={data.password.value} invalid={data.password.error} />
+        <Input
+            id="password"
+            type="password"
+            bind:value={data.password.value}
+            invalid={data.password.error}
+        />
     </Entry>
     <Entry id="password2" label="Heslo (znovu)" error={data.password2.error}>
-        <Input id="password2" type="password" bind:value={data.password2.value} invalid={data.password2.error} />
+        <Input
+            id="password2"
+            type="password"
+            bind:value={data.password2.value}
+            invalid={data.password2.error}
+        />
     </Entry>
     <Button onclick={register} class="w-1/2 md:hover:bg-red-500">Registrovat se</Button>
 </section>

@@ -33,7 +33,11 @@ export const getCookieData = (cookies: Cookies): UserState => {
 };
 
 export const getUserPermissions = async (id: number) => {
-    const groupRel = await conn.selectFrom('user_group').select('group_id').where('user_id', '=', id).executeTakeFirst();
+    const groupRel = await conn
+        .selectFrom('user_group')
+        .select('group_id')
+        .where('user_id', '=', id)
+        .executeTakeFirst();
     if (!groupRel) {
         return {
             group: undefined,
@@ -41,8 +45,16 @@ export const getUserPermissions = async (id: number) => {
         };
     }
 
-    const perms = await conn.selectFrom('group_permissions').select('permission').where('group_id', '=', groupRel.group_id).execute();
-    const group = await conn.selectFrom('group').selectAll().where('group.id', '=', groupRel.group_id).executeTakeFirst();
+    const perms = await conn
+        .selectFrom('group_permissions')
+        .select('permission')
+        .where('group_id', '=', groupRel.group_id)
+        .execute();
+    const group = await conn
+        .selectFrom('group')
+        .selectAll()
+        .where('group.id', '=', groupRel.group_id)
+        .executeTakeFirst();
 
     return {
         group: group!,
@@ -83,7 +95,10 @@ type NotificationPayload = {
     data?: Record<string, unknown>;
 };
 
-export const sendSingleNotification = async (payload: string, push: Selectable<WebPush>) => {
+export const sendSingleNotification = async (
+    payload: string,
+    push: Selectable<WebPush>
+) => {
     const obj = {
         endpoint: push.endpoint,
         keys: {
@@ -102,7 +117,10 @@ export const sendSingleNotification = async (payload: string, push: Selectable<W
     }
 };
 
-export const batchNotifications = async (notification: NotificationPayload, pushes: Selectable<WebPush>[]) => {
+export const batchNotifications = async (
+    notification: NotificationPayload,
+    pushes: Selectable<WebPush>[]
+) => {
     const payload = JSON.stringify({
         icon: '/icons/favicon-196x196.png',
         badge: '/icons/favicon-196x196.png',
@@ -128,14 +146,28 @@ export const batchNotifications = async (notification: NotificationPayload, push
     await conn.deleteFrom('web_push').where('id', 'in', removeIds).execute();
 };
 
-export const sendNotification = async (userId: number, notification: NotificationPayload) => {
-    const pushes = await conn.selectFrom('web_push').selectAll().where('userId', '=', userId).execute();
+export const sendNotification = async (
+    userId: number,
+    notification: NotificationPayload
+) => {
+    const pushes = await conn
+        .selectFrom('web_push')
+        .selectAll()
+        .where('userId', '=', userId)
+        .execute();
 
     await batchNotifications(notification, pushes);
 };
 
-export const sendNotificationToMultiple = async (userIds: number[], notification: NotificationPayload) => {
-    const pushes = await conn.selectFrom('web_push').selectAll().where('userId', 'in', userIds).execute();
+export const sendNotificationToMultiple = async (
+    userIds: number[],
+    notification: NotificationPayload
+) => {
+    const pushes = await conn
+        .selectFrom('web_push')
+        .selectAll()
+        .where('userId', 'in', userIds)
+        .execute();
 
     await batchNotifications(notification, pushes);
 };

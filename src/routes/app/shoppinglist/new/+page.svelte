@@ -20,7 +20,11 @@
             error?: string;
         };
     };
-    const data = $state(Object.fromEntries(fields.map((item, idx) => [item, { value: defaultValues[idx] }])) as DataType);
+    const data = $state(
+        Object.fromEntries(
+            fields.map((item, idx) => [item, { value: defaultValues[idx] }])
+        ) as DataType
+    );
 
     const handle = async () => {
         Object.values(data).forEach((item) => (item.error = undefined));
@@ -69,14 +73,25 @@
     };
 </script>
 
-<Icon onclick={() => goto('/app/shoppinglist')} name="bi-arrow-return-left" class="text-2xl lg:text-3xl" />
-<section class="md:border-accent md:bg-secondary flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:p-8">
+<Icon
+    onclick={() => goto('/app/shoppinglist')}
+    name="bi-arrow-return-left"
+    class="text-2xl lg:text-3xl"
+/>
+<section
+    class="md:border-accent md:bg-secondary flex flex-1 flex-col items-center justify-center gap-4 p-4 md:m-auto md:flex-0 md:rounded-md md:border-2 md:p-8"
+>
     <Title>Nová položka</Title>
     <Entry id="name" label="Název" error={data.name.error}>
         <Input id="name" bind:value={data.name.value} invalid={data.name.error} />
     </Entry>
     <Entry id="count" label="Počet" error={data.count.error}>
-        <Input id="count" type="number" bind:value={data.count.value} invalid={data.count.error} />
+        <Input
+            id="count"
+            type="number"
+            bind:value={data.count.value}
+            invalid={data.count.error}
+        />
     </Entry>
     <Entry id="image" label="Obrázek" note="(nepovinné)" error={data.image.error}>
         <FileSelect id="image" bind:value={data.image.value} accept="image/*" />

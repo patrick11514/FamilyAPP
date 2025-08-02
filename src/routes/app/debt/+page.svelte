@@ -67,7 +67,9 @@
 <div class="flex flex-1 flex-col">
     <Title class="my-2">Dlužíš</Title>
     {#if Object.values(grouppedData).length === 0}
-        <h1 class="font-poppins text-center text-xl font-bold lg:text-2xl">Nikomu nic nedlužíš :)</h1>
+        <h1 class="font-poppins text-center text-xl font-bold lg:text-2xl">
+            Nikomu nic nedlužíš :)
+        </h1>
     {:else}
         <Table>
             <thead>
@@ -83,10 +85,16 @@
                     <Tr>
                         <Td>{formatUser(user)}</Td>
                         <Td>
-                            {list.map((record) => parseFloat(record.price)).reduce((a, b) => a + b, 0)}
+                            {list
+                                .map((record) => parseFloat(record.price))
+                                .reduce((a, b) => a + b, 0)}
                         </Td>
                         <Td>
-                            <Icon onclick={() => goto(`/app/debt/view/${user.id}`)} name="bi-eye-fill" class="text-sky-500" />
+                            <Icon
+                                onclick={() => goto(`/app/debt/view/${user.id}`)}
+                                name="bi-eye-fill"
+                                class="text-sky-500"
+                            />
                         </Td>
                     </Tr>
                 {/each}
@@ -108,7 +116,11 @@
             <Tr>
                 <Td colspan={5}>
                     <div class="flex w-full justify-center">
-                        <Icon onclick={() => goto('/app/debt/new')} name="bi-plus-lg" class="text-green-600" />
+                        <Icon
+                            onclick={() => goto('/app/debt/new')}
+                            name="bi-plus-lg"
+                            class="text-green-600"
+                        />
                     </div>
                 </Td>
             </Tr>
@@ -120,8 +132,16 @@
                     <Td>{toDate(item.when)}</Td>
                     <Td>{item.resolved_on === null ? 'Ne' : toDate(item.resolved_on)}</Td>
                     <Td>
-                        <Icon onclick={() => goto(`/app/debt/edit/${item.id}`)} name="bi-pencil-fill" class="text-gray-400" />
-                        <Icon onclick={() => remove(item.id)} name="bi-trash-fill" class="text-red-500" />
+                        <Icon
+                            onclick={() => goto(`/app/debt/edit/${item.id}`)}
+                            name="bi-pencil-fill"
+                            class="text-gray-400"
+                        />
+                        <Icon
+                            onclick={() => remove(item.id)}
+                            name="bi-trash-fill"
+                            class="text-red-500"
+                        />
                     </Td>
                 </Tr>
             {/each}

@@ -5,7 +5,12 @@
     import { browser } from '$app/environment';
     import { onMount, untrack } from 'svelte';
     import type { PageData } from './$types';
-    import { eventIsInDay, getEventName, getEventRange, type Event } from '$/lib/calendarUtils';
+    import {
+        eventIsInDay,
+        getEventName,
+        getEventRange,
+        type Event
+    } from '$/lib/calendarUtils';
     import Title from '$/components/headers/Title.svelte';
     import Icon from '$/components/Icon.svelte';
     import { SvelteDate } from 'svelte/reactivity';
@@ -219,7 +224,11 @@
             if (b.full_day.data[0] == 1) return 1;
 
             //if starts some days before and ends some days after, it should be considered fullday for this current day
-            if (a.from.getDate() < selectedDay.getDate() && a.to.getDate() > selectedDay.getDate()) return -1;
+            if (
+                a.from.getDate() < selectedDay.getDate() &&
+                a.to.getDate() > selectedDay.getDate()
+            )
+                return -1;
 
             return a.from.getTime() - b.from.getTime();
         });
@@ -244,9 +253,15 @@
             const to = new Date(event.to);
             to.setDate(to.getDate() + 1);
 
-            params.append('dates', `${dateToGoogleCalendar(event.from).split('T')[0]}/${dateToGoogleCalendar(to).split('T')[0]}`);
+            params.append(
+                'dates',
+                `${dateToGoogleCalendar(event.from).split('T')[0]}/${dateToGoogleCalendar(to).split('T')[0]}`
+            );
         } else {
-            params.append('dates', `${dateToGoogleCalendar(event.from)}/${dateToGoogleCalendar(event.to)}`);
+            params.append(
+                'dates',
+                `${dateToGoogleCalendar(event.from)}/${dateToGoogleCalendar(event.to)}`
+            );
         }
 
         return `${BASE_URL}?${params.toString()}`;
@@ -254,8 +269,22 @@
 
     let addingEvent = $state(false);
 
-    const fields = ['name', 'description', 'from', 'to', 'fullDay', 'notification'] as const;
-    const defaultValues = ['', '', toLocalDateString(new Date()), toLocalDateString(new Date()), false, true] as const;
+    const fields = [
+        'name',
+        'description',
+        'from',
+        'to',
+        'fullDay',
+        'notification'
+    ] as const;
+    const defaultValues = [
+        '',
+        '',
+        toLocalDateString(new Date()),
+        toLocalDateString(new Date()),
+        false,
+        true
+    ] as const;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     type Indices<T extends readonly any[]> = Exclude<keyof T, keyof []>;
@@ -266,7 +295,11 @@
             error?: string;
         };
     };
-    const eventData = $state(Object.fromEntries(fields.map((item, idx) => [item, { value: defaultValues[idx] }])) as DataType);
+    const eventData = $state(
+        Object.fromEntries(
+            fields.map((item, idx) => [item, { value: defaultValues[idx] }])
+        ) as DataType
+    );
 
     const addEvent = async () => {
         Object.values(eventData).forEach((item) => (item.error = undefined));
@@ -327,7 +360,10 @@
             const eventFrom = new Date(eventData.from.value);
             const eventTo = new Date(eventData.to.value);
 
-            return (eventFrom >= from && eventFrom <= to) || (eventTo >= from && eventTo <= to);
+            return (
+                (eventFrom >= from && eventFrom <= to) ||
+                (eventTo >= from && eventTo <= to)
+            );
         };
 
         //remove from cache
@@ -366,7 +402,10 @@
     });
 
     $effect(() => {
-        if (new Date(eventData.from.value).getTime() > untrack(() => new Date(eventData.to.value).getTime())) {
+        if (
+            new Date(eventData.from.value).getTime() >
+            untrack(() => new Date(eventData.to.value).getTime())
+        ) {
             untrack(() => {
                 eventData.to.value = eventData.from.value;
             });
@@ -430,7 +469,11 @@
 {#if _state.userState.logged}
     <div class="flex flex-1 flex-col items-center gap-2">
         <div class="flex w-full items-center gap-1 px-4 text-4xl">
-            <Icon onclick={showAddingEvent} class="mr-auto text-xl" name="bi-calendar-plus" />
+            <Icon
+                onclick={showAddingEvent}
+                class="mr-auto text-xl"
+                name="bi-calendar-plus"
+            />
             <Icon onclick={monthBefore} name="bi-chevron-left" />
             <select class="text-2xl" bind:value={month}>
                 <option value={0}>Leden</option>
@@ -454,7 +497,11 @@
             </select>
 
             <Icon onclick={monthAfter} name="bi-chevron-right" />
-            <Icon onclick={() => selectedDay.setTime(Date.now())} class="ml-auto text-xl" name="bi-calendar-event" />
+            <Icon
+                onclick={() => selectedDay.setTime(Date.now())}
+                class="ml-auto text-xl"
+                name="bi-calendar-event"
+            />
         </div>
         <Table bind:self={calendarEl}>
             <thead>
@@ -479,7 +526,9 @@
                                     'text-gray-500': !day.isCurrentMonth,
                                     'font-bold text-sky-500': day.isToday,
                                     'cursor-pointer': true,
-                                    'bg-sky-500 text-white': day.date.toDateString() === selectedDay.toDateString(),
+                                    'bg-sky-500 text-white':
+                                        day.date.toDateString() ===
+                                        selectedDay.toDateString(),
                                     'text-yellow-500': hasEvent
                                 }}
                             >
@@ -497,12 +546,16 @@
                     return eventIsInDay(selectedDay, event);
                 })}
                 {#if eventsToday.length == 0}
-                    <p class="text-center text-gray-500">V tento den nejsou žádné údalosti</p>
+                    <p class="text-center text-gray-500">
+                        V tento den nejsou žádné údalosti
+                    </p>
                 {:else}
                     {#each sortEvents(eventsToday) as event (selectedDay.toString() + event.id)}
                         <div class="flex flex-col gap-1">
                             <div class="flex justify-between">
-                                <p class="font-bold">{getEventName(event, selectedDay)}</p>
+                                <p class="font-bold">
+                                    {getEventName(event, selectedDay)}
+                                </p>
                                 <p>
                                     <Icon name="bi-clock-fill" />
 
@@ -511,12 +564,25 @@
                             </div>
                             <p>{event.description}</p>
                             <div class="flex justify-between">
-                                <p><Icon name="bi-person-fill" /> {formatUser(data.users.find((user) => user.id === event.user_id)!)}</p>
+                                <p>
+                                    <Icon name="bi-person-fill" />
+                                    {formatUser(
+                                        data.users.find(
+                                            (user) => user.id === event.user_id
+                                        )!
+                                    )}
+                                </p>
                                 <div class="flex gap-2">
                                     {#if event.user_id === _state.userState.data.id}
-                                        <Icon onclick={() => removeEvent(event.id)} name="bi-trash-fill" class="text-red-500" />
+                                        <Icon
+                                            onclick={() => removeEvent(event.id)}
+                                            name="bi-trash-fill"
+                                            class="text-red-500"
+                                        />
                                     {/if}
-                                    <a href={makeGoogleCalendarUrl(event)} target="_blank"><Icon name="bi-share-fill" /></a>
+                                    <a href={makeGoogleCalendarUrl(event)} target="_blank"
+                                        ><Icon name="bi-share-fill" /></a
+                                    >
                                 </div>
                             </div>
                         </div>
@@ -530,26 +596,58 @@
 {/if}
 
 {#if addingEvent}
-    <div bind:this={addOverlay} class="absolute top-0 left-0 z-20 flex h-screen w-full items-center justify-center bg-black/50">
-        <ClickOutside clickoutside={() => (addingEvent = false)} class="border-primary bg-secondary flex flex-col gap-2 rounded-md border-2 p-4">
+    <div
+        bind:this={addOverlay}
+        class="absolute top-0 left-0 z-20 flex h-screen w-full items-center justify-center bg-black/50"
+    >
+        <ClickOutside
+            clickoutside={() => (addingEvent = false)}
+            class="border-primary bg-secondary flex flex-col gap-2 rounded-md border-2 p-4"
+        >
             <Title>Přidání události</Title>
             <Entry id="name" label="Název" error={eventData.name.error}>
-                <Input id="name" bind:value={eventData.name.value} invalid={eventData.name.error} />
+                <Input
+                    id="name"
+                    bind:value={eventData.name.value}
+                    invalid={eventData.name.error}
+                />
             </Entry>
             <Entry id="desc" label="Popis" error={eventData.description.error}>
-                <TextArea id="desc" bind:value={eventData.description.value} invalid={eventData.description.error} />
+                <TextArea
+                    id="desc"
+                    bind:value={eventData.description.value}
+                    invalid={eventData.description.error}
+                />
             </Entry>
             <Entry id="fullDay" label="Celodenní událost?">
-                <Slider id="fullDay" bind:value={eventData.fullDay.value} invalid={eventData.fullDay.error} />
+                <Slider
+                    id="fullDay"
+                    bind:value={eventData.fullDay.value}
+                    invalid={eventData.fullDay.error}
+                />
             </Entry>
             <Entry id="notification" label="Odeslat oznámení o přidání?">
-                <Slider id="notification" bind:value={eventData.notification.value} invalid={eventData.notification.error} />
+                <Slider
+                    id="notification"
+                    bind:value={eventData.notification.value}
+                    invalid={eventData.notification.error}
+                />
             </Entry>
             <Entry id="from" label="Začátek" error={eventData.from.error}>
-                <Input id="from" type={eventData.fullDay.value ? 'date' : 'datetime-local'} bind:value={eventData.from.value} invalid={eventData.from.error} />
+                <Input
+                    id="from"
+                    type={eventData.fullDay.value ? 'date' : 'datetime-local'}
+                    bind:value={eventData.from.value}
+                    invalid={eventData.from.error}
+                />
             </Entry>
             <Entry id="to" label="Konec" error={eventData.to.error}>
-                <Input id="to" type={eventData.fullDay.value ? 'date' : 'datetime-local'} bind:value={eventData.to.value} invalid={eventData.to.error} />
+                <Input
+                    id="to"
+                    type={eventData.fullDay.value ? 'date' : 'datetime-local'}
+                    bind:value={eventData.to.value}
+                    invalid={eventData.to.error}
+                />
             </Entry>
             <Button onclick={addEvent}>Přidat</Button>
         </ClickOutside>

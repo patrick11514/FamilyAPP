@@ -18,7 +18,12 @@ const presentSchema = z.object({
 
 export default [
     loggedProcedure.PUT.input(FormDataInput).query(async ({ input, ctx }) => {
-        if (!input.has('name') || !input.has('description') || !input.has('link') || !input.has('price')) {
+        if (
+            !input.has('name') ||
+            !input.has('description') ||
+            !input.has('link') ||
+            !input.has('price')
+        ) {
             return {
                 status: false,
                 code: 401,
@@ -105,7 +110,11 @@ export default [
             toState: z.literal(0).or(z.literal(1)).or(z.literal(2)) // 0 - we want to untaken it, 1 - taken, 2 - given
         })
     ).query(async ({ input, ctx }) => {
-        const present = await conn.selectFrom('present').selectAll().where('id', '=', input.id).executeTakeFirst();
+        const present = await conn
+            .selectFrom('present')
+            .selectAll()
+            .where('id', '=', input.id)
+            .executeTakeFirst();
         if (!present) {
             return {
                 status: false,
@@ -212,7 +221,11 @@ export default [
                 .where('id', '=', input.id)
                 .execute();
 
-            const newData = (await conn.selectFrom('present').selectAll().where('id', '=', input.id).executeTakeFirst())!;
+            const newData = (await conn
+                .selectFrom('present')
+                .selectAll()
+                .where('id', '=', input.id)
+                .executeTakeFirst())!;
             return {
                 status: true,
                 data: newData
@@ -263,7 +276,10 @@ export default [
             // but null means, that property is not presented, so it needs to be undefined, because we don't want to
             // update it in db
             name: input.get('name') === null ? undefined : input.get('name') || null,
-            description: input.get('description') === null ? undefined : input.get('description') || null,
+            description:
+                input.get('description') === null
+                    ? undefined
+                    : input.get('description') || null,
             link: input.get('link') === null ? undefined : input.get('link') || null,
             price: input.get('price') ?? undefined
         });
@@ -280,7 +296,9 @@ export default [
         const present = await conn
             .selectFrom('present')
             .select('image')
-            .where((eb) => eb.and([eb('id', '=', data.data.id), eb('user_id', '=', ctx.id)]))
+            .where((eb) =>
+                eb.and([eb('id', '=', data.data.id), eb('user_id', '=', ctx.id)])
+            )
             .executeTakeFirst();
         if (!present) {
             return {
