@@ -280,7 +280,6 @@
     };
 </script>
 
-{_state.pushEnabled}
 <section class="flex flex-1 flex-col">
     <div class="flex w-full gap-2 text-2xl">
         <Icon
