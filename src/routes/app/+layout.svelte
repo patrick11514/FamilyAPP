@@ -1,14 +1,13 @@
 <script lang="ts">
-    import Icon from '$/components/Icon.svelte';
     import Footer from '$/components/navigation/Footer.svelte';
     import Navigation from '$/components/navigation/Navigation.svelte';
     import { API } from '$/lib/api';
-    import { urlBase64ToUint8Array } from '$/lib/functions';
     import { getState, logged } from '$/lib/state.svelte';
+    import { subscribePush } from '$/lib/web-push';
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
-    import { PUBLIC_VAPI_KEY } from '$env/static/public';
     import { onMount, type Snippet } from 'svelte';
+    import { UAParser } from 'ua-parser-js';
     import type { PageData } from './$types';
 
     const { children, data }: { children: Snippet; data: PageData } = $props();
@@ -16,53 +15,16 @@
     const _state = getState();
     const PERMS_UPDATE = 5 * 60 * 1000; //5minutes
 
-    let isSafari = $state(false);
-    let granted = $state(true);
+    let isIphone = $state(false);
     if (browser) {
-        isSafari = navigator.userAgent.includes('Safari');
-        granted = Notification.permission === 'granted';
+        const parsed = UAParser(navigator.userAgent);
+        isIphone = parsed.os.is('iOS');
     }
-
-    const setupPush = async () => {
-        /* eslint-disable no-console */
-        if (!('serviceWorker' in navigator || 'PushManager' in window)) {
-            console.log(
-                'Service workers are not supported or push manager is not supported'
-            );
-            return;
-        }
-
-        try {
-            const registration = await navigator.serviceWorker.register(
-                '/webworker/push-worker.js'
-            );
-            console.log(registration.pushManager);
-            const subscription = await registration.pushManager.getSubscription();
-
-            if (!subscription) {
-                console.log('Subscribing to push notifications');
-                const subscription = await registration.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: urlBase64ToUint8Array(PUBLIC_VAPI_KEY)
-                });
-
-                //eslint-disable-next-line @typescript-eslint/no-explicit-any
-                const result = await API.push.subscribe(subscription as any);
-                if (!result.status) return;
-            }
-
-            _state.pushEnabled = true;
-        } catch (e) {
-            console.error(e);
-        }
-        /* eslint-enable no-console */
-    };
 
     onMount(() => {
         if (!logged(_state.userState)) return;
-        //if device is not safari, access notifications immidietly
-        if (!isSafari) {
-            setupPush();
+        if (!isIphone) {
+            subscribePush().then((value) => (_state.pushEnabled = value));
         }
 
         const data = _state.userState.data;
@@ -91,14 +53,6 @@
 <section class="flex flex-1 flex-col md:flex-row">
     <Navigation />
     <div class="flex w-full flex-1 flex-col p-2">
-        <div class="flex flex-row justify-between">
-            {#if isSafari && !granted}
-                <button onclick={setupPush}
-                    ><Icon onclick={setupPush} name="bi-bell-fill" /> Klikni pro povolení notifikací
-                    (Jabko :))</button
-                >
-            {/if}
-        </div>
         {@render children()}
         <Footer version={data.version} />
     </div>
