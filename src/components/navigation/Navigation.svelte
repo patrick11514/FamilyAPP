@@ -3,6 +3,7 @@
     import { formatUser, SwalAlert } from '$/lib/functions';
     import { Permissions, type Permission } from '$/lib/permissions';
     import { getState, logged } from '$/lib/state.svelte';
+    import { subscribePush, unsubscribePush } from '$/lib/web-push';
     import type { BootstrapIcon } from '$/types/bootstrap_icons';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
@@ -127,6 +128,39 @@
     let permissions = $derived(
         new Permissions(logged(_state.userState) ? _state.userState.data : undefined)
     );
+
+    const togglePush = async () => {
+        if (_state.pushEnabled) {
+            const success = await unsubscribePush();
+            if (success) {
+                _state.pushEnabled = false;
+                SwalAlert({
+                    icon: 'success',
+                    title: 'Oznámení byla úspěšně vypnuta'
+                });
+            } else {
+                SwalAlert({
+                    icon: 'error',
+                    title: 'Nepodařilo se vypnout oznámení'
+                });
+            }
+            return;
+        }
+
+        const enabled = await subscribePush();
+        if (enabled) {
+            _state.pushEnabled = true;
+            SwalAlert({
+                icon: 'success',
+                title: 'Oznámení byla úspěšně zapnuta'
+            });
+        } else {
+            SwalAlert({
+                icon: 'error',
+                title: 'Nepodařilo se zapnout oznámení'
+            });
+        }
+    };
 </script>
 
 <svelte:head>
@@ -161,17 +195,23 @@
         <Title>Uživatelské menu:</Title>
         {#if logged(_state.userState)}
             {@const data = _state.userState.data}
-            <h1 class="font-poppins text-xl font-bold">Přihlášen jako:</h1>
             <h1 class="font-poppins font-bold">
                 {formatUser(data)}
                 {#if data.group}
                     {@const group = data.group}
-                    <Group textColor={group.text_color} backgroundColor={group.bg_color}
-                        >{group.name}</Group
-                    >
+                    <Group textColor={group.text_color} backgroundColor={group.bg_color}>
+                        {group.name}
+                    </Group>
                 {/if}
             </h1>
         {/if}
+        <h1 class="font-poppins font-bold">
+            Oznámení: <Icon
+                onclick={togglePush}
+                name={_state.pushEnabled ? 'bi-bell-fill' : 'bi-bell-slash'}
+                class={_state.pushEnabled ? 'text-green-500' : 'text-red-500'}
+            />
+        </h1>
     </div>
     <hr class="my-4" />
     <div class="flex flex-1 flex-col items-center justify-center gap-2">
