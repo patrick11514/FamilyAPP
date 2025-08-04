@@ -89,7 +89,7 @@ export default [
                 .insertInto('temp_notification_state')
                 .values({
                     current_state: IncidentType.NORMAL,
-                    last_temp: temp,
+                    last_temp: temp.toString(),
                     last_check: now
                 })
                 .execute();
@@ -101,7 +101,7 @@ export default [
             currentIncident,
             previousState.current_state,
             temp,
-            latestTemp.x
+            latestTemp.x.getTime()
         );
 
         if (notificationMessage) {
@@ -124,7 +124,7 @@ export default [
             .updateTable('temp_notification_state')
             .set({
                 current_state: currentIncident,
-                last_temp: temp,
+                last_temp: temp.toString(),
                 last_check: now
             })
             .where('id', '=', previousState.id)

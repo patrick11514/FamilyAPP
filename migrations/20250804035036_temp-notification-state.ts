@@ -22,7 +22,7 @@ export const up = async (conn: Kysely<any>) => {
         .insertInto('temp_notification_state')
         .values({
             current_state: 'NORMAL',
-            last_temp: 30,
+            last_temp: '30.00',
             last_check: new Date()
         })
         .execute();
