@@ -204,9 +204,20 @@
     });
 
     const resetDay = () => {
-        year = today.getFullYear();
-        month = today.getMonth();
-        day = today.getDate();
+        const isAlreadyToday =
+            year === today.getFullYear() &&
+            month === today.getMonth() &&
+            day === today.getDate();
+
+        if (isAlreadyToday) {
+            // Force reload if we're already viewing today
+            loadData(year, month, day);
+        } else {
+            // Set to today's date (will trigger reactive effect)
+            year = today.getFullYear();
+            month = today.getMonth();
+            day = today.getDate();
+        }
     };
 
     const _state = getState();
