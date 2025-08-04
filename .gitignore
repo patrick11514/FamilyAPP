@@ -29,3 +29,6 @@ files
 #deploy files
 logs
 script
+
+# Temperature lock file
+.temp-lock
