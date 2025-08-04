@@ -1,8 +1,8 @@
 import { toDate } from '$/lib/functions';
 import { EnergyFace } from '../energyface/main';
-import { sendNotificationToMultiple, type Cron } from '../functions';
+import { sendNotificationToMultiple, type Cron, asyncExists } from '../functions';
 import { conn } from '../variables';
-import { existsSync, writeFileSync, unlinkSync, readFileSync } from 'fs';
+import fs from 'node:fs/promises';
 import { join } from 'path';
 
 const energyFace = new EnergyFace();
@@ -29,25 +29,25 @@ interface TempLockData {
     timestamp: number;
 }
 
-const readTempLock = (): TempLockData | null => {
-    if (!existsSync(TEMP_LOCK_FILE)) {
+const readTempLock = async (): Promise<TempLockData | null> => {
+    if (!(await asyncExists(TEMP_LOCK_FILE))) {
         return null;
     }
     try {
-        const data = readFileSync(TEMP_LOCK_FILE, 'utf8');
+        const data = await fs.readFile(TEMP_LOCK_FILE, 'utf8');
         return JSON.parse(data);
     } catch {
         return null;
     }
 };
 
-const writeTempLock = (data: TempLockData): void => {
-    writeFileSync(TEMP_LOCK_FILE, JSON.stringify(data));
+const writeTempLock = async (data: TempLockData): Promise<void> => {
+    await fs.writeFile(TEMP_LOCK_FILE, JSON.stringify(data));
 };
 
-const removeTempLock = (): void => {
-    if (existsSync(TEMP_LOCK_FILE)) {
-        unlinkSync(TEMP_LOCK_FILE);
+const removeTempLock = async (): Promise<void> => {
+    if (await asyncExists(TEMP_LOCK_FILE)) {
+        await fs.unlink(TEMP_LOCK_FILE);
     }
 };
 
@@ -73,7 +73,7 @@ export default [
 
         const temp = latestTemp.y;
         const currentIncident = getIncidentType(temp);
-        const lockData = readTempLock();
+        const lockData = await readTempLock();
 
         // If temperature is normal
         if (currentIncident === IncidentType.NONE) {
@@ -94,7 +94,7 @@ export default [
                 });
 
                 // Remove the lock file
-                removeTempLock();
+                await removeTempLock();
             }
             return;
         }
@@ -122,7 +122,7 @@ export default [
             });
 
             // Create or update the lock file
-            writeTempLock({
+            await writeTempLock({
                 state: currentIncident,
                 temp: temp,
                 timestamp: latestTemp.x.getTime()
