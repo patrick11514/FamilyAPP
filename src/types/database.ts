@@ -78,6 +78,13 @@ export interface Shoppinglist {
     user_id: number;
 }
 
+export interface TempNotificationState {
+    current_state: string;
+    id: Generated<number>;
+    last_check: Date;
+    last_temp: Decimal;
+}
+
 export interface User {
     firstname: string;
     id: Generated<number>;
@@ -108,6 +115,7 @@ export interface DB {
     invitation: Invitation;
     present: Present;
     shoppinglist: Shoppinglist;
+    temp_notification_state: TempNotificationState;
     user: User;
     user_group: UserGroup;
     web_push: WebPush;
