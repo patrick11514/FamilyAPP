@@ -80,6 +80,13 @@
             permissions: ['admin.users']
         },
         {
+            name: 'Tester notifikací',
+            path: '/notifications',
+            startsWith: true,
+            icon: 'bi-bell-fill',
+            permissions: ['admin.notifications']
+        },
+        {
             name: 'Seznam změn',
             path: '/changelog',
             icon: 'bi-list',
