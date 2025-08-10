@@ -23,14 +23,21 @@
                 class="divide-primary border-primary flex w-[80%] flex-col gap-2 divide-y-2 rounded-md border-2 p-2"
             >
                 {#each events as event (event.id)}
-                    {@const range = getEventRange(event, new Date())}
+                    {@const today = new Date()}
+                    {@const tomorrow = new Date(today.getTime() + 86400000)}
+                    {@const displayDate = eventIsInDay(today, event)
+                        ? today
+                        : eventIsInDay(tomorrow, event)
+                          ? tomorrow
+                          : event.from}
+                    {@const range = getEventRange(event, displayDate)}
                     <div class="flex flex-col gap-2">
                         <div class="flex justify-between">
-                            <p class="font-bold">{getEventName(event, new Date())}</p>
+                            <p class="font-bold">{getEventName(event, displayDate)}</p>
                             <p>
-                                {#if eventIsInDay(new Date(), event)}
+                                {#if eventIsInDay(today, event)}
                                     Dnes
-                                {:else if eventIsInDay(new Date(new Date().getTime() + 86400000), event)}
+                                {:else if eventIsInDay(tomorrow, event)}
                                     Zítra
                                 {:else}
                                     za {locale(
