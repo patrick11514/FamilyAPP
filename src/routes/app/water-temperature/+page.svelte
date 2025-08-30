@@ -25,6 +25,8 @@
     let lastUpper = $state(0);
     let lastLower = $state(0);
 
+    let topToday = $state(0);
+
     $effect(() => {
         maxDays = calendar.getLastDayOfMonth(new Date(year, month)).getDate();
         if (day > maxDays) {
@@ -82,6 +84,11 @@
 
         lastLower = _lastLower.y;
         lastUpper = _lastUpper.y;
+
+        topToday = [...upper, ...lower].reduce(
+            (max, cur) => (cur.y > max ? cur.y : max),
+            0
+        );
     };
 
     onMount(() => {
@@ -323,6 +330,7 @@
                 minute: '2-digit'
             })}
         </h2>
+        <h2>Nejvíce dnes: {topToday} °C</h2>
         <h2 class="text-red-500">Voda nahoře: {lastUpper} °C</h2>
         <h2 class="text-blue-500">Voda dole: {lastLower} °C</h2>
     </div>
