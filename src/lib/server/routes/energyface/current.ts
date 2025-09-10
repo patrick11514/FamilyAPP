@@ -1,9 +1,9 @@
-import { loggedProcedure } from '../../api';
+import { protectedProcedure } from '../../api';
 import { EnergyFace } from '../../energyface/main';
 
 const energyFace = new EnergyFace();
 
-export default loggedProcedure.GET.query(async () => {
+export default protectedProcedure.GET.query(async () => {
     const now = new Date();
     const year = now.getFullYear();
     const month = now.getMonth(); // Note: getMonth() returns 0-11
