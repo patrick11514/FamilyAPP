@@ -7,7 +7,7 @@ import { join } from 'path';
 
 const energyFace = new EnergyFace();
 
-const MIN_TEMP = 30;
+const MIN_TEMP = 25;
 const MAX_TEMP = 75;
 const TEMP_LOCK_FILE = join(process.cwd(), '.temp-lock');
 
