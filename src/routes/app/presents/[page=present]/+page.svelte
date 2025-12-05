@@ -99,6 +99,28 @@
         });
     };
 
+    const toggleBought = async (id: number, currentBought: number) => {
+        const newBought = currentBought === 1 ? 0 : 1;
+        const response = await API.presents.bought({
+            id,
+            bought: newBought as 0 | 1
+        });
+
+        if (!response.status) {
+            SwalAlert({
+                title: extractError(response.message),
+                icon: 'error'
+            });
+
+            return;
+        }
+
+        const idx = presents.findIndex((present) => present.id === id);
+        if (idx !== -1) {
+            presents[idx] = response.data;
+        }
+    };
+
     const deletePresent = async (id: number) => {
         const confirmation = await SwalAlert({
             toast: false,
@@ -178,6 +200,16 @@
                                     />
                                 {:else if !minePage && present.state === 1 && present.reserved_id === userState.data.id}
                                     <Icon
+                                        onclick={() =>
+                                            toggleBought(present.id, present.bought)}
+                                        name={present.bought === 1
+                                            ? 'bi-cart-check-fill'
+                                            : 'bi-cart'}
+                                        class={present.bought === 1
+                                            ? 'text-green-500'
+                                            : ''}
+                                    />
+                                    <Icon
                                         onclick={() => updateState(present.id, 2)}
                                         name="bi-check-square"
                                     />
@@ -186,6 +218,16 @@
                                         name="bi-gift-fill"
                                     />
                                 {:else if !minePage && present.state === 2 && present.reserved_id === userState.data.id}
+                                    <Icon
+                                        onclick={() =>
+                                            toggleBought(present.id, present.bought)}
+                                        name={present.bought === 1
+                                            ? 'bi-cart-check-fill'
+                                            : 'bi-cart'}
+                                        class={present.bought === 1
+                                            ? 'text-green-500'
+                                            : ''}
+                                    />
                                     <Icon
                                         onclick={() => updateState(present.id, 1)}
                                         name="bi-check-square-fill"
