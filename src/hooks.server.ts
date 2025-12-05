@@ -1,5 +1,6 @@
 import * as cron from 'node-cron';
 import checkWaterTemp from './lib/server/crons/checkWaterTemp';
+import presentsSummary from './lib/server/crons/presentsSummary';
 import { registerCrons } from './lib/server/functions';
 
 if (process.cronsRegistered) {
@@ -7,5 +8,5 @@ if (process.cronsRegistered) {
     cron.getTasks().forEach((task) => task.destroy());
 }
 
-registerCrons([checkWaterTemp]);
+registerCrons([checkWaterTemp, presentsSummary]);
 process.cronsRegistered = true;

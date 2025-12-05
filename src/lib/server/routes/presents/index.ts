@@ -350,7 +350,8 @@ export default [
                 .set({
                     ...data.data,
                     image: fileName,
-                    price: data.data.price?.toString()
+                    price: data.data.price?.toString(),
+                    updated_at: new Date()
                 })
                 .where('id', '=', data.data.id)
                 .execute();

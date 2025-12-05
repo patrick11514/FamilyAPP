@@ -75,7 +75,7 @@ export default loggedProcedure.PATCH.input(
         return {
             status: false,
             code: 500,
-            message: 'Něco se nepovedlo na serveru'
+            message: 'server.error' satisfies ErrorList
         } satisfies ErrorApiResponse;
     }
 });
