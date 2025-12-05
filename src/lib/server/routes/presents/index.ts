@@ -219,16 +219,24 @@ export default {
                     .set({
                         state: input.toState,
                         reserved_id: input.toState === 0 ? null : ctx.id,
+                        // Reset bought to 0 when unclaiming (state 0), undefined keeps the current value
                         bought: input.toState === 0 ? 0 : undefined
                     })
                     .where('id', '=', input.id)
                     .execute();
 
-                const newData = (await conn
+                const newData = await conn
                     .selectFrom('present')
                     .selectAll()
                     .where('id', '=', input.id)
-                    .executeTakeFirst())!;
+                    .executeTakeFirst();
+                if (!newData) {
+                    return {
+                        status: false,
+                        code: 500,
+                        message: 'presents.notFound' satisfies ErrorList
+                    } satisfies ErrorApiResponse;
+                }
                 return {
                     status: true,
                     data: newData

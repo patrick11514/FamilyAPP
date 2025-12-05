@@ -115,8 +115,10 @@
             return;
         }
 
-        const idx = presents.findIndex((present) => present.id === id)!;
-        presents[idx] = response.data;
+        const idx = presents.findIndex((present) => present.id === id);
+        if (idx !== -1) {
+            presents[idx] = response.data;
+        }
     };
 
     const deletePresent = async (id: number) => {

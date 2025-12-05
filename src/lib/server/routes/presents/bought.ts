@@ -52,11 +52,19 @@ export default loggedProcedure.PATCH.input(
             .where('id', '=', input.id)
             .execute();
 
-        const newData = (await conn
+        const newData = await conn
             .selectFrom('present')
             .selectAll()
             .where('id', '=', input.id)
-            .executeTakeFirst())!;
+            .executeTakeFirst();
+
+        if (!newData) {
+            return {
+                status: false,
+                code: 500,
+                message: 'presents.notFound' satisfies ErrorList
+            } satisfies ErrorApiResponse;
+        }
 
         return {
             status: true,
