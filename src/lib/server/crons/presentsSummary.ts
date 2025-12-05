@@ -2,6 +2,15 @@ import { sendNotification, type Cron } from '../functions';
 import { conn } from '../variables';
 
 /**
+ * Present states
+ */
+enum PresentState {
+    AVAILABLE = 0,
+    RESERVED = 1,
+    GIVEN = 2
+}
+
+/**
  * Weekly presents summary cron job
  * Runs every Sunday at 20:00 (8 PM)
  * Sends a notification to each user with a summary of presents changes from the past week:
@@ -17,34 +26,42 @@ export default [
         // Get all users
         const users = await conn.selectFrom('user').select(['id', 'firstname']).execute();
 
-        for (const user of users) {
-            // Get new presents added by other users in the past week
-            const newPresents = await conn
-                .selectFrom('present')
-                .innerJoin('user', 'user.id', 'present.user_id')
-                .select([
-                    'present.id',
-                    'present.name',
-                    'user.firstname as owner_firstname'
-                ])
-                .where('present.user_id', '!=', user.id)
-                .where('present.created_at', '>=', oneWeekAgo)
-                .where('present.state', '!=', 2) // Exclude already given presents
-                .execute();
+        // Get all new presents added in the past week (excluding already given ones)
+        const allNewPresents = await conn
+            .selectFrom('present')
+            .innerJoin('user', 'user.id', 'present.user_id')
+            .select([
+                'present.id',
+                'present.name',
+                'present.user_id',
+                'user.firstname as owner_firstname'
+            ])
+            .where('present.created_at', '>=', oneWeekAgo)
+            .where('present.state', '!=', PresentState.GIVEN)
+            .execute();
 
-            // Get presents that belong to this user and were reserved by others this week
-            const reservedPresents = await conn
-                .selectFrom('present')
-                .innerJoin('user', 'user.id', 'present.reserved_id')
-                .select([
-                    'present.id',
-                    'present.name',
-                    'user.firstname as reserver_firstname'
-                ])
-                .where('present.user_id', '=', user.id)
-                .where('present.reserved_at', '>=', oneWeekAgo)
-                .where('present.state', '>=', 1) // Reserved or given
-                .execute();
+        // Get all presents reserved in the past week
+        const allReservedPresents = await conn
+            .selectFrom('present')
+            .innerJoin('user', 'user.id', 'present.reserved_id')
+            .select([
+                'present.id',
+                'present.name',
+                'present.user_id',
+                'user.firstname as reserver_firstname'
+            ])
+            .where('present.reserved_at', '>=', oneWeekAgo)
+            .where('present.state', '>=', PresentState.RESERVED)
+            .execute();
+
+        for (const user of users) {
+            // Filter new presents for this user (presents by others)
+            const newPresents = allNewPresents.filter((p) => p.user_id !== user.id);
+
+            // Filter reserved presents for this user (their own presents)
+            const reservedPresents = allReservedPresents.filter(
+                (p) => p.user_id === user.id
+            );
 
             // Skip if no changes
             if (newPresents.length === 0 && reservedPresents.length === 0) {
