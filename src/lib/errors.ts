@@ -40,6 +40,9 @@ export const ERRORS = {
         notFound: 'Tato položka nebyla nalezena',
         author: 'Nemáš právo smazat tuto položku',
         bought: 'Někdo již nějakou vybranou položku koupil'
+    },
+    server: {
+        error: 'Něco se nepovedlo na serveru'
     }
 } as const;
 

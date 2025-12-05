@@ -6,14 +6,11 @@
     import { formatUser, SwalAlert } from '$/lib/functions';
     import { getState } from '$/lib/state.svelte';
     import type { Present as PresentDB } from '$/types/database';
+    import { PresentState } from '$/types/types';
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
     import type { Selectable } from 'kysely';
     import { untrack } from 'svelte';
-
-    const PRESENT_OPEN = 0;
-    const PRESENT_RESERVED = 1;
-    const PRESENT_CLOSED = 2;
 
     type Present = Selectable<PresentDB>;
 
@@ -59,20 +56,20 @@
     });
 
     const states = $derived({
-        [PRESENT_OPEN]: 'Volný',
-        [PRESENT_RESERVED]: minePage ? 'Volný' : 'Rezervovaný', // because we don't want to spoil the surprise
-        [PRESENT_CLOSED]: 'Předaný'
+        [PresentState.AVAILABLE]: 'Volný',
+        [PresentState.RESERVED]: minePage ? 'Volný' : 'Rezervovaný', // because we don't want to spoil the surprise
+        [PresentState.GIVEN]: 'Předaný'
     });
     const stateColors = $derived({
-        [PRESENT_OPEN]: 'text-green-500',
-        [PRESENT_RESERVED]: minePage ? 'text-green-500' : 'text-yellow-500',
-        [PRESENT_CLOSED]: 'text-red-500'
+        [PresentState.AVAILABLE]: 'text-green-500',
+        [PresentState.RESERVED]: minePage ? 'text-green-500' : 'text-yellow-500',
+        [PresentState.GIVEN]: 'text-red-500'
     });
 
     const UpdateStates = {
-        0: 'Dárek byl úspěšně vrácen',
-        1: 'Dǎrek byl úspěšně rezervován',
-        2: 'Dárek byl úspěšně předán'
+        [PresentState.AVAILABLE]: 'Dárek byl úspěšně vrácen',
+        [PresentState.RESERVED]: 'Dǎrek byl úspěšně rezervován',
+        [PresentState.GIVEN]: 'Dárek byl úspěšně předán'
     };
 
     const updateState = async (id: number, toState: 0 | 1 | 2) => {
@@ -190,7 +187,7 @@
                                 >Stav: <span
                                     class={stateColors[present.state as 0 | 1 | 2]}
                                     >{states[present.state as 0 | 1 | 2]}</span
-                                >{#if !minePage && present.state === PRESENT_RESERVED && present.reserved_id}
+                                >{#if !minePage && present.state === PresentState.RESERVED && present.reserved_id}
                                     {@const reservedBy = data.users.find(
                                         (user) => user.id === present.reserved_id
                                     )}
@@ -202,12 +199,16 @@
                                 {/if}</span
                             >
                             <div class="flex gap-2 text-xl">
-                                {#if !minePage && present.state === 0}
+                                {#if !minePage && present.state === PresentState.AVAILABLE}
                                     <Icon
-                                        onclick={() => updateState(present.id, 1)}
+                                        onclick={() =>
+                                            updateState(
+                                                present.id,
+                                                PresentState.RESERVED
+                                            )}
                                         name="bi-gift"
                                     />
-                                {:else if !minePage && present.state === 1 && present.reserved_id === userState.data.id}
+                                {:else if !minePage && present.state === PresentState.RESERVED && present.reserved_id === userState.data.id}
                                     <Icon
                                         onclick={() =>
                                             toggleBought(present.id, present.bought)}
@@ -219,14 +220,19 @@
                                             : ''}
                                     />
                                     <Icon
-                                        onclick={() => updateState(present.id, 2)}
+                                        onclick={() =>
+                                            updateState(present.id, PresentState.GIVEN)}
                                         name="bi-check-square"
                                     />
                                     <Icon
-                                        onclick={() => updateState(present.id, 0)}
+                                        onclick={() =>
+                                            updateState(
+                                                present.id,
+                                                PresentState.AVAILABLE
+                                            )}
                                         name="bi-gift-fill"
                                     />
-                                {:else if !minePage && present.state === 2 && present.reserved_id === userState.data.id}
+                                {:else if !minePage && present.state === PresentState.GIVEN && present.reserved_id === userState.data.id}
                                     <Icon
                                         onclick={() =>
                                             toggleBought(present.id, present.bought)}
@@ -238,7 +244,11 @@
                                             : ''}
                                     />
                                     <Icon
-                                        onclick={() => updateState(present.id, 1)}
+                                        onclick={() =>
+                                            updateState(
+                                                present.id,
+                                                PresentState.RESERVED
+                                            )}
                                         name="bi-check-square-fill"
                                     />
                                 {/if}

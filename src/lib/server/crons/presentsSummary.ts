@@ -1,14 +1,6 @@
 import { sendNotification, type Cron } from '../functions';
 import { conn } from '../variables';
-
-/**
- * Present states
- */
-enum PresentState {
-    AVAILABLE = 0,
-    RESERVED = 1,
-    GIVEN = 2
-}
+import { PresentState } from '$/types/types';
 
 /**
  * Daily presents summary cron job
@@ -51,6 +43,7 @@ export default [
                 'present.created_at',
                 'user.firstname as owner_firstname'
             ])
+            .where('present.updated_at', 'is not', null)
             .where('present.updated_at', '>=', oneDayAgo)
             .where('present.state', '!=', PresentState.GIVEN)
             .execute();

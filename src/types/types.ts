@@ -27,3 +27,12 @@ export type DePromise<$Promise> =
     $Promise extends Promise<infer $Type> ? $Type : $Promise;
 
 export type DeArray<$Array> = $Array extends Array<infer $Type> ? $Type : $Array;
+
+/**
+ * Present states
+ */
+export enum PresentState {
+    AVAILABLE = 0,
+    RESERVED = 1,
+    GIVEN = 2
+}
