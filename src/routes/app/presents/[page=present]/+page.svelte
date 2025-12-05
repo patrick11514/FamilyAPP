@@ -190,7 +190,7 @@
                                 >Stav: <span
                                     class={stateColors[present.state as 0 | 1 | 2]}
                                     >{states[present.state as 0 | 1 | 2]}</span
-                                >{#if !minePage && present.state === 1 && present.reserved_id}
+                                >{#if !minePage && present.state === PRESENT_RESERVED && present.reserved_id}
                                     {@const reservedBy = data.users.find(
                                         (user) => user.id === present.reserved_id
                                     )}
