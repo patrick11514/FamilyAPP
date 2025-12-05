@@ -56,6 +56,7 @@ export interface Invitation {
 }
 
 export interface Present {
+    bought: Generated<number>;
     description: Generated<string | null>;
     id: Generated<number>;
     image: Generated<string | null>;

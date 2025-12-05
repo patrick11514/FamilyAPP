@@ -56,7 +56,7 @@
             formData.set('image', files[0]);
         }
 
-        const response = await API.presents.PUT(formData);
+        const response = await API.presents.$.PUT(formData);
 
         if (!response.status) {
             SwalAlert({

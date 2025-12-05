@@ -76,7 +76,7 @@
     };
 
     const updateState = async (id: number, toState: 0 | 1 | 2) => {
-        const response = await API.presents.PATCH({
+        const response = await API.presents.$.PATCH({
             id,
             toState
         });
@@ -99,6 +99,26 @@
         });
     };
 
+    const toggleBought = async (id: number, currentBought: number) => {
+        const newBought = currentBought === 1 ? 0 : 1;
+        const response = await API.presents.bought({
+            id,
+            bought: newBought as 0 | 1
+        });
+
+        if (!response.status) {
+            SwalAlert({
+                title: extractError(response.message),
+                icon: 'error'
+            });
+
+            return;
+        }
+
+        const idx = presents.findIndex((present) => present.id === id)!;
+        presents[idx] = response.data;
+    };
+
     const deletePresent = async (id: number) => {
         const confirmation = await SwalAlert({
             toast: false,
@@ -115,7 +135,7 @@
             return;
         }
 
-        const response = await API.presents.DELETE(id);
+        const response = await API.presents.$.DELETE(id);
 
         if (!response.status) {
             SwalAlert({
@@ -178,6 +198,16 @@
                                     />
                                 {:else if !minePage && present.state === 1 && present.reserved_id === userState.data.id}
                                     <Icon
+                                        onclick={() =>
+                                            toggleBought(present.id, present.bought)}
+                                        name={present.bought === 1
+                                            ? 'bi-cart-check-fill'
+                                            : 'bi-cart'}
+                                        class={present.bought === 1
+                                            ? 'text-green-500'
+                                            : ''}
+                                    />
+                                    <Icon
                                         onclick={() => updateState(present.id, 2)}
                                         name="bi-check-square"
                                     />
@@ -186,6 +216,16 @@
                                         name="bi-gift-fill"
                                     />
                                 {:else if !minePage && present.state === 2 && present.reserved_id === userState.data.id}
+                                    <Icon
+                                        onclick={() =>
+                                            toggleBought(present.id, present.bought)}
+                                        name={present.bought === 1
+                                            ? 'bi-cart-check-fill'
+                                            : 'bi-cart'}
+                                        class={present.bought === 1
+                                            ? 'text-green-500'
+                                            : ''}
+                                    />
                                     <Icon
                                         onclick={() => updateState(present.id, 1)}
                                         name="bi-check-square-fill"
