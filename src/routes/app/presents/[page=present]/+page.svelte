@@ -190,7 +190,16 @@
                                 >Stav: <span
                                     class={stateColors[present.state as 0 | 1 | 2]}
                                     >{states[present.state as 0 | 1 | 2]}</span
-                                ></span
+                                >{#if !minePage && present.state === PRESENT_RESERVED && present.reserved_id}
+                                    {@const reservedBy = data.users.find(
+                                        (user) => user.id === present.reserved_id
+                                    )}
+                                    {#if reservedBy}
+                                        <span class="text-gray-500">
+                                            ({formatUser(reservedBy)})</span
+                                        >
+                                    {/if}
+                                {/if}</span
                             >
                             <div class="flex gap-2 text-xl">
                                 {#if !minePage && present.state === 0}
