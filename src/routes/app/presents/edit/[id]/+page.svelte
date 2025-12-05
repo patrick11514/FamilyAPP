@@ -89,7 +89,7 @@
 
         formData.set('id', pageData.data.id.toString());
 
-        const response = await API.presents.$.POST(formData);
+        const response = await API.presents.POST(formData);
 
         if (!response.status) {
             SwalAlert({

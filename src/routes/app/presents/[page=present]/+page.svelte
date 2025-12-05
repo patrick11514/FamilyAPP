@@ -76,7 +76,7 @@
     };
 
     const updateState = async (id: number, toState: 0 | 1 | 2) => {
-        const response = await API.presents.$.PATCH({
+        const response = await API.presents.PATCH({
             id,
             toState
         });
@@ -137,7 +137,7 @@
             return;
         }
 
-        const response = await API.presents.$.DELETE(id);
+        const response = await API.presents.DELETE(id);
 
         if (!response.status) {
             SwalAlert({
