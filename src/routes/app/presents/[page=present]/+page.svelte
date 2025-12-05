@@ -68,7 +68,7 @@
 
     const UpdateStates = {
         [PresentState.AVAILABLE]: 'Dárek byl úspěšně vrácen',
-        [PresentState.RESERVED]: 'Dǎrek byl úspěšně rezervován',
+        [PresentState.RESERVED]: 'Dárek byl úspěšně rezervován',
         [PresentState.GIVEN]: 'Dárek byl úspěšně předán'
     };
 
