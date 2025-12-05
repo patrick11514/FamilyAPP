@@ -64,9 +64,9 @@ export interface Present {
     link: Generated<string | null>;
     name: string;
     price: Decimal;
-    reserved_at: Generated<Date | null>;
     reserved_id: Generated<number | null>;
     state: Generated<number>;
+    updated_at: Generated<Date | null>;
     user_id: number;
 }
 

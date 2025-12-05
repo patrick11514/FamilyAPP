@@ -8,7 +8,7 @@ export const up = async (conn: Kysely<any>) => {
         .addColumn('created_at', 'timestamp', (col) =>
             col.notNull().defaultTo(sql`current_timestamp()`)
         )
-        .addColumn('reserved_at', 'timestamp', (col) =>
+        .addColumn('updated_at', 'timestamp', (col) =>
             col.modifyFront(sql`NULL`).defaultTo(sql`NULL`)
         )
         .execute();
@@ -16,5 +16,5 @@ export const up = async (conn: Kysely<any>) => {
 
 export const down = async (conn: Kysely<any>) => {
     await conn.schema.alterTable('present').dropColumn('created_at').execute();
-    await conn.schema.alterTable('present').dropColumn('reserved_at').execute();
+    await conn.schema.alterTable('present').dropColumn('updated_at').execute();
 };

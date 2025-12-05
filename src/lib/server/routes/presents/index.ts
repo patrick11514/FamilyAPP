@@ -219,14 +219,7 @@ export default [
                     state: input.toState,
                     reserved_id: input.toState === 0 ? null : ctx.id,
                     // Reset bought to 0 when unclaiming (state 0), undefined keeps the current value
-                    bought: input.toState === 0 ? 0 : undefined,
-                    // Set reserved_at when first reserving (state 0 -> 1), reset to null when unclaiming
-                    reserved_at:
-                        input.toState === 1 && present.state === 0
-                            ? new Date()
-                            : input.toState === 0
-                              ? null
-                              : undefined
+                    bought: input.toState === 0 ? 0 : undefined
                 })
                 .where('id', '=', input.id)
                 .execute();
@@ -357,7 +350,8 @@ export default [
                 .set({
                     ...data.data,
                     image: fileName,
-                    price: data.data.price?.toString()
+                    price: data.data.price?.toString(),
+                    updated_at: new Date()
                 })
                 .where('id', '=', data.data.id)
                 .execute();
