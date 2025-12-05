@@ -57,12 +57,14 @@ export interface Invitation {
 
 export interface Present {
     bought: Generated<number>;
+    created_at: Generated<Date>;
     description: Generated<string | null>;
     id: Generated<number>;
     image: Generated<string | null>;
     link: Generated<string | null>;
     name: string;
     price: Decimal;
+    reserved_at: Generated<Date | null>;
     reserved_id: Generated<number | null>;
     state: Generated<number>;
     user_id: number;
