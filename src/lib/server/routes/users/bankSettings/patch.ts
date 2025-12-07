@@ -19,7 +19,7 @@ export default loggedProcedure.PATCH.input(
                 .string()
                 .nullable()
                 .transform((val) => (val === '' ? null : val))
-                .refine((val) => val === null || /^\d{1,20}$/.test(val), {
+                .refine((val) => val === null || /^\d{2,10}$/.test(val), {
                     message: 'Číslo účtu musí obsahovat pouze číslice'
                 }),
             bank_code: z
