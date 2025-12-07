@@ -5,7 +5,7 @@ import { Kysely } from 'kysely';
 export const up = async (conn: Kysely<any>) => {
     await conn.schema
         .alterTable('user')
-        .addColumn('bank_account_prefix', 'varchar(10)')
+        .addColumn('bank_account_prefix', 'varchar(6)')
         .execute();
 
     await conn.schema
