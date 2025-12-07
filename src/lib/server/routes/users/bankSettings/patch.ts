@@ -12,7 +12,7 @@ export default loggedProcedure.PATCH.input(
                 .string()
                 .nullable()
                 .transform((val) => (val === '' ? null : val))
-                .refine((val) => val === null || /^\d{0,10}$/.test(val), {
+                .refine((val) => val === null || /^\d{1,6}$/.test(val), {
                     message: 'Předčíslí musí obsahovat pouze číslice'
                 }),
             bank_account_number: z
