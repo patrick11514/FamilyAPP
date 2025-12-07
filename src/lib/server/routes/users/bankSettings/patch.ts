@@ -6,9 +6,21 @@ import { conn } from '../../../variables';
 
 export default loggedProcedure.PATCH.input(
     z.object({
-        bank_account_prefix: z.string().nullable(),
-        bank_account_number: z.string().nullable(),
-        bank_code: z.string().nullable()
+        bank_account_prefix: z
+            .string()
+            .regex(/^\d{0,10}$/, 'Předčíslí musí obsahovat pouze číslice')
+            .nullable()
+            .transform((val) => (val === '' ? null : val)),
+        bank_account_number: z
+            .string()
+            .regex(/^\d{1,20}$/, 'Číslo účtu musí obsahovat pouze číslice')
+            .nullable()
+            .transform((val) => (val === '' ? null : val)),
+        bank_code: z
+            .string()
+            .regex(/^\d{4}$/, 'Kód banky musí obsahovat právě 4 číslice')
+            .nullable()
+            .transform((val) => (val === '' ? null : val))
     })
 ).query(async ({ ctx, input }) => {
     try {

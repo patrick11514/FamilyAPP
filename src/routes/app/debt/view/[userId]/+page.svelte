@@ -109,7 +109,7 @@
         const prefix = data.userInfo.bank_account_prefix || '';
 
         // Czech payment QR code format (SPAYD)
-        const qrData = `SPD*1.0*ACC:${prefix ? prefix + '-' : ''}${accountNumber}/${bankCode}*AM:${amount.toFixed(2)}*CC:CZK*MSG:Dluznicek platba`;
+        const qrData = `SPD*1.0*ACC:${prefix ? prefix + '-' : ''}${accountNumber}/${bankCode}*AM:${amount.toFixed(2)}*CC:CZK*MSG:Dlužníček platba`;
 
         try {
             const qrDataUrl = await QRCode.toDataURL(qrData, {
@@ -124,7 +124,9 @@
             // Create download link
             const link = document.createElement('a');
             link.href = qrDataUrl;
-            link.download = `platba_${amount}CZK_${accountNumber}.png`;
+            // Sanitize filename to remove invalid characters
+            const sanitizedAccountNumber = accountNumber.replace(/[^a-zA-Z0-9]/g, '');
+            link.download = `platba_${amount}CZK_${sanitizedAccountNumber}.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
