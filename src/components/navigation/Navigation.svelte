@@ -80,6 +80,11 @@
             permissions: ['admin.users']
         },
         {
+            name: 'Nastavení',
+            path: '/settings',
+            icon: 'bi-gear-fill'
+        },
+        {
             name: 'Seznam změn',
             path: '/changelog',
             icon: 'bi-list',

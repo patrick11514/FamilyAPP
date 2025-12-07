@@ -17,12 +17,21 @@ export const load = (async ({ cookies, params }) => {
         redirect(302, '/app/debt');
     }
 
+    const userInfo = await conn
+        .selectFrom('user')
+        .select([
+            'id',
+            'firstname',
+            'lastname',
+            'bank_account_prefix',
+            'bank_account_number',
+            'bank_code'
+        ])
+        .where('id', '=', userId)
+        .executeTakeFirst();
+
     return {
         data: records,
-        userInfo: (await conn
-            .selectFrom('user')
-            .select(['id', 'firstname', 'lastname'])
-            .where('id', '=', userId)
-            .executeTakeFirst())!
+        userInfo: userInfo!
     };
 }) satisfies PageServerLoad;

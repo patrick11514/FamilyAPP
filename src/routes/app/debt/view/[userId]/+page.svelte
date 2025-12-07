@@ -9,6 +9,7 @@
     import { goto } from '$app/navigation';
     import { page } from '$app/state';
     import type { PageData } from './$types';
+    import QRCode from 'qrcode';
 
     import type { PageProps } from './$types';
 
@@ -92,6 +93,58 @@
         //update
         groupped = groupData(response.data);
     };
+
+    const downloadQR = async () => {
+        if (!data.userInfo.bank_account_number || !data.userInfo.bank_code) {
+            SwalAlert({
+                title: 'Uživatel nemá nastaven bankovní účet',
+                icon: 'error'
+            });
+            return;
+        }
+
+        const amount = total;
+        const accountNumber = data.userInfo.bank_account_number;
+        const bankCode = data.userInfo.bank_code;
+        const prefix = data.userInfo.bank_account_prefix || '';
+
+        // Czech payment QR code format (SPAYD)
+        const qrData = `SPD*1.0*ACC:${prefix ? prefix + '-' : ''}${accountNumber}/${bankCode}*AM:${amount.toFixed(2)}*CC:CZK*MSG:Dluznicek platba`;
+
+        try {
+            const qrDataUrl = await QRCode.toDataURL(qrData, {
+                width: 512,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            });
+
+            // Create download link
+            const link = document.createElement('a');
+            link.href = qrDataUrl;
+            link.download = `platba_${amount}CZK_${accountNumber}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            SwalAlert({
+                title: 'QR kód byl úspěšně stažen',
+                icon: 'success'
+            });
+        } catch (err) {
+            console.error(err);
+            SwalAlert({
+                title: 'Nepodařilo se vygenerovat QR kód',
+                icon: 'error'
+            });
+        }
+    };
+
+    const hasBankAccount = $derived(
+        data.userInfo.bank_account_number && data.userInfo.bank_code
+    );
 </script>
 
 <section class="flex flex-1 flex-col gap-2">
@@ -106,7 +159,16 @@
 
     <div class="flex items-center justify-between">
         <h2>Vybráno celkem: {total} Kč</h2>
-        <Button onclick={confirm} disabled={total === 0} class="w-auto">Povrdit</Button>
+        <div class="flex gap-2">
+            {#if hasBankAccount}
+                <Button onclick={downloadQR} disabled={total === 0} class="w-auto">
+                    Stáhnout QR
+                </Button>
+            {/if}
+            <Button onclick={confirm} disabled={total === 0} class="w-auto"
+                >Potvrdit</Button
+            >
+        </div>
     </div>
 
     <Table>

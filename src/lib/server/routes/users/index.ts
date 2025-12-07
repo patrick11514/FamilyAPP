@@ -4,6 +4,7 @@ import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
 import { z } from 'zod';
 import { permProcedure } from '../../api';
 import { conn } from '../../variables';
+import bankSettings from './bankSettings';
 
 export const USER_PERMISSION = 'admin.users' as Permission;
 
@@ -82,5 +83,9 @@ export default [
                 message: 'Nepovedlo se nastavit skupinu'
             } satisfies ErrorApiResponse;
         }
-    })
+    }),
+    // Sub-route for bankSettings endpoint
+    {
+        bankSettings
+    }
 ];

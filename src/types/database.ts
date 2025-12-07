@@ -82,6 +82,9 @@ export interface Shoppinglist {
 }
 
 export interface User {
+    bank_account_prefix: string | null;
+    bank_account_number: string | null;
+    bank_code: string | null;
     firstname: string;
     id: Generated<number>;
     lastname: string;
