@@ -1,7 +1,7 @@
 import { getCookieData } from '$/lib/server/functions';
+import { conn } from '$/lib/server/variables';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { conn } from '$/lib/server/variables';
 
 export const load = (async ({ cookies, parent }) => {
     const parentData = await parent();
@@ -15,7 +15,7 @@ export const load = (async ({ cookies, parent }) => {
         .where((eb) =>
             eb.or([eb('who', '=', data.data.id), eb('whom', '=', data.data.id)])
         )
-        .orderBy('when desc')
+        .orderBy('when', 'desc')
         .execute();
 
     return {

@@ -1,8 +1,7 @@
-import { error, type RequestHandler } from '@sveltejs/kit';
-import Path from 'node:path';
-import fs from 'node:fs';
 import { FILE_FOLDER } from '$env/static/private';
-import path from 'node:path';
+import { error, type RequestHandler } from '@sveltejs/kit';
+import fs from 'node:fs';
+import { default as Path, default as path } from 'node:path';
 import sharp from 'sharp';
 
 export type ImageExtension = 'jpg' | 'jpeg' | 'png' | 'webp' | 'tiff';
@@ -121,5 +120,5 @@ export const GET = (async ({ params, setHeaders, url }) => {
         'Cache-Control': 'public, max-age=31536000, immutable'
     });
 
-    return new Response(content);
+    return new Response(content as BodyInit);
 }) satisfies RequestHandler;
