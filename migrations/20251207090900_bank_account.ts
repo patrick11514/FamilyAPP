@@ -10,7 +10,7 @@ export const up = async (conn: Kysely<any>) => {
 
     await conn.schema
         .alterTable('user')
-        .addColumn('bank_account_number', 'varchar(20)')
+        .addColumn('bank_account_number', 'varchar(10)')
         .execute();
 
     await conn.schema.alterTable('user').addColumn('bank_code', 'varchar(4)').execute();
