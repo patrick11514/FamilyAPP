@@ -94,6 +94,49 @@
         groupped = groupData(response.data);
     };
 
+    // Function to calculate IBAN check digits
+    const calculateIBANCheckDigits = (countryCode: string, bban: string): string => {
+        // Move country code to end and replace letters with numbers (A=10, B=11, etc.)
+        const rearranged = bban + countryCode + '00';
+        const numericString = rearranged
+            .split('')
+            .map((char) => {
+                const code = char.charCodeAt(0);
+                // If it's a letter (A-Z), convert to number (A=10, B=11, ..., Z=35)
+                if (code >= 65 && code <= 90) {
+                    return (code - 55).toString();
+                }
+                return char;
+            })
+            .join('');
+
+        // Calculate mod 97
+        let remainder = '';
+        for (let i = 0; i < numericString.length; i++) {
+            remainder += numericString[i];
+            if (remainder.length >= 9) {
+                remainder = (parseInt(remainder) % 97).toString();
+            }
+        }
+        const mod = parseInt(remainder) % 97;
+        const checkDigits = (98 - mod).toString().padStart(2, '0');
+        return checkDigits;
+    };
+
+    // Function to generate Czech IBAN
+    const generateCzechIBAN = (
+        accountNumber: string,
+        bankCode: string,
+        prefix: string | null
+    ): string => {
+        // Format: prefix (6 digits) + account number (10 digits) + bank code (4 digits)
+        const paddedPrefix = (prefix || '0').padStart(6, '0');
+        const paddedAccount = accountNumber.padStart(10, '0');
+        const bban = bankCode + paddedPrefix + paddedAccount;
+        const checkDigits = calculateIBANCheckDigits('CZ', bban);
+        return `CZ${checkDigits}${bban}`;
+    };
+
     const downloadQR = async () => {
         if (!data.userInfo.bank_account_number || !data.userInfo.bank_code) {
             SwalAlert({
@@ -106,10 +149,13 @@
         const amount = total;
         const accountNumber = data.userInfo.bank_account_number;
         const bankCode = data.userInfo.bank_code;
-        const prefix = data.userInfo.bank_account_prefix || '';
+        const prefix = data.userInfo.bank_account_prefix || null;
 
-        // Czech payment QR code format (SPAYD)
-        const qrData = `SPD*1.0*ACC:${prefix ? prefix + '-' : ''}${accountNumber}/${bankCode}*AM:${amount.toFixed(2)}*CC:CZK*MSG:Dlužníček platba`;
+        // Generate IBAN from Czech account details
+        const iban = generateCzechIBAN(accountNumber, bankCode, prefix);
+
+        // Czech payment QR code format (SPAYD) with IBAN
+        const qrData = `SPD*1.0*ACC:${iban}*AM:${amount.toFixed(2)}*CC:CZK`;
 
         try {
             const qrDataUrl = await QRCode.toDataURL(qrData, {
