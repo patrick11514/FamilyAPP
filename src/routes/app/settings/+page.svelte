@@ -35,10 +35,10 @@
         }
 
         // Validate account number format if provided
-        if (accountNumber && !/^\d{1,20}$/.test(accountNumber)) {
+        if (accountNumber && !/^\d{2,10}$/.test(accountNumber)) {
             SwalAlert({
                 icon: 'error',
-                title: 'Číslo účtu musí obsahovat pouze číslice (1-20 číslic)'
+                title: 'Číslo účtu musí obsahovat pouze číslice (2-10 číslic)'
             });
             return;
         }
