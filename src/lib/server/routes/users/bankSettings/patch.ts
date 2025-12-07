@@ -10,6 +10,7 @@ export default loggedProcedure.PATCH.input(
         .object({
             bank_account_prefix: z
                 .string()
+                .nullable()
                 .transform((val) => (val === '' ? null : val))
                 .refine((val) => val === null || /^\d{0,10}$/.test(val), {
                     message: 'Předčíslí musí obsahovat pouze číslice'
