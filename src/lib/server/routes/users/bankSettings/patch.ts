@@ -1,3 +1,4 @@
+import type { ErrorList } from '$/lib/errors';
 import type { Response } from '$/types/types';
 import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
 import { z } from 'zod';
@@ -42,7 +43,7 @@ export default loggedProcedure.PATCH.input(
         return {
             status: false,
             code: 500,
-            message: 'Nepovedlo se uložit nastavení účtu'
+            message: 'server.error' satisfies ErrorList
         } satisfies ErrorApiResponse;
     }
 });

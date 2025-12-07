@@ -1,8 +1,8 @@
 <script lang="ts">
-    import { Button, Input, Select } from '$/components/form';
+    import { Button, Entry, Input, Select } from '$/components/form';
     import Title from '$/components/headers/Title.svelte';
-    import { BANK_CODES } from '$/lib/bankCodes';
     import { API } from '$/lib/api';
+    import { BANK_CODES } from '$/lib/bankCodes';
     import { SwalAlert } from '$/lib/functions';
     import { onMount } from 'svelte';
 
@@ -52,24 +52,28 @@
 
         <div class="flex flex-col gap-4">
             <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <Input
-                    type="text"
-                    label="Předčíslí"
-                    bind:value={bankAccountPrefix}
-                    placeholder="např. 19"
-                />
-                <Input
-                    type="text"
-                    label="Číslo účtu"
-                    bind:value={bankAccountNumber}
-                    placeholder="např. 2000145399"
-                />
-                <Select label="Kód banky" bind:value={bankCode}>
-                    <option value="" selected>Vyberte banku</option>
-                    {#each BANK_CODES as bank (bank.code)}
-                        <option value={bank.code}>{bank.code} - {bank.name}</option>
-                    {/each}
-                </Select>
+                <Entry label="Předčíslí">
+                    <Input
+                        type="text"
+                        bind:value={bankAccountPrefix}
+                        placeholder="např. 19"
+                    />
+                </Entry>
+                <Entry label="Číslo účtu">
+                    <Input
+                        type="text"
+                        bind:value={bankAccountNumber}
+                        placeholder="např. 2000145399"
+                    />
+                </Entry>
+                <Entry label="Kód banky">
+                    <Select bind:value={bankCode}>
+                        <option value="" selected>Vyberte banku</option>
+                        {#each BANK_CODES as bank (bank.code)}
+                            <option value={bank.code}>{bank.code} - {bank.name}</option>
+                        {/each}
+                    </Select>
+                </Entry>
             </div>
 
             <div class="text-sm opacity-75">

@@ -43,6 +43,9 @@ export const ERRORS = {
     },
     server: {
         error: 'Něco se nepovedlo na serveru'
+    },
+    users: {
+        notFound: 'Uživatel nenalezen'
     }
 } as const;
 

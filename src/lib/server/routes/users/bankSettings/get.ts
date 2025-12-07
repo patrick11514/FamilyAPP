@@ -1,4 +1,6 @@
+import type { ErrorList } from '$/lib/errors';
 import type { ResponseWithData } from '$/types/types';
+import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
 import { loggedProcedure } from '../../../api';
 import { conn } from '../../../variables';
 
@@ -9,8 +11,16 @@ export default loggedProcedure.GET.query(async ({ ctx }) => {
         .where('id', '=', ctx.id)
         .executeTakeFirst();
 
+    if (!user) {
+        return {
+            status: false,
+            code: 404,
+            message: 'users.notFound' satisfies ErrorList
+        } satisfies ErrorApiResponse;
+    }
+
     return {
         status: true,
-        data: user ?? null
+        data: user
     } satisfies ResponseWithData<typeof user>;
 });
