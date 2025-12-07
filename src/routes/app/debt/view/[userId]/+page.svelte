@@ -129,7 +129,18 @@
         bankCode: string,
         prefix: string | null
     ): string => {
-        // Format: prefix (6 digits) + account number (10 digits) + bank code (4 digits)
+        // Validate inputs
+        if (!accountNumber || !/^\d+$/.test(accountNumber)) {
+            throw new Error('Invalid account number');
+        }
+        if (!bankCode || !/^\d{4}$/.test(bankCode)) {
+            throw new Error('Invalid bank code');
+        }
+        if (prefix && !/^\d+$/.test(prefix)) {
+            throw new Error('Invalid prefix');
+        }
+
+        // Format: bank code (4 digits) + account prefix (6 digits) + account number (10 digits)
         const paddedPrefix = (prefix || '0').padStart(6, '0');
         const paddedAccount = accountNumber.padStart(10, '0');
         const bban = bankCode + paddedPrefix + paddedAccount;
@@ -172,7 +183,8 @@
             link.href = qrDataUrl;
             // Sanitize filename to remove invalid characters
             const sanitizedAccountNumber = accountNumber.replace(/[^a-zA-Z0-9]/g, '');
-            link.download = `platba_${amount}CZK_${sanitizedAccountNumber}.png`;
+            const sanitizedAmount = amount.toFixed(2).replace('.', '_');
+            link.download = `platba_${sanitizedAmount}CZK_${sanitizedAccountNumber}.png`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

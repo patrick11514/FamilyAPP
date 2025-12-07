@@ -20,10 +20,51 @@
     });
 
     const saveSettings = async () => {
+        // Client-side validation
+        const prefix = bankAccountPrefix.trim();
+        const accountNumber = bankAccountNumber.trim();
+        const code = bankCode.trim();
+
+        // Validate prefix format if provided
+        if (prefix && !/^\d{0,10}$/.test(prefix)) {
+            SwalAlert({
+                icon: 'error',
+                title: 'Předčíslí musí obsahovat pouze číslice (max 10)'
+            });
+            return;
+        }
+
+        // Validate account number format if provided
+        if (accountNumber && !/^\d{1,20}$/.test(accountNumber)) {
+            SwalAlert({
+                icon: 'error',
+                title: 'Číslo účtu musí obsahovat pouze číslice (1-20 číslic)'
+            });
+            return;
+        }
+
+        // Validate bank code format if provided
+        if (code && !/^\d{4}$/.test(code)) {
+            SwalAlert({
+                icon: 'error',
+                title: 'Kód banky musí obsahovat právě 4 číslice'
+            });
+            return;
+        }
+
+        // Validate that account number and bank code are provided together
+        if ((accountNumber && !code) || (!accountNumber && code)) {
+            SwalAlert({
+                icon: 'error',
+                title: 'Číslo účtu a kód banky musí být zadány společně'
+            });
+            return;
+        }
+
         const response = await API.users.bankSettings.PATCH({
-            bank_account_prefix: bankAccountPrefix || null,
-            bank_account_number: bankAccountNumber || null,
-            bank_code: bankCode || null
+            bank_account_prefix: prefix || null,
+            bank_account_number: accountNumber || null,
+            bank_code: code || null
         });
 
         if (!response.status) {
