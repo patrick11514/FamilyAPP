@@ -26,10 +26,10 @@
         const code = bankCode.trim();
 
         // Validate prefix format if provided
-        if (prefix && !/^\d{0,10}$/.test(prefix)) {
+        if (prefix && !/^\d{1,6}$/.test(prefix)) {
             SwalAlert({
                 icon: 'error',
-                title: 'Předčíslí musí obsahovat pouze číslice (max 10)'
+                title: 'Předčíslí musí obsahovat pouze číslice (max 6)'
             });
             return;
         }
