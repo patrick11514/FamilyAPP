@@ -10,21 +10,18 @@ export default loggedProcedure.PATCH.input(
         .object({
             bank_account_prefix: z
                 .string()
-                .nullable()
                 .transform((val) => (val === '' ? null : val))
-                .refine((val) => val === null || /^\d{1,6}$/.test(val), {
+                .refine((val) => val === null || /^\d{0,10}$/.test(val), {
                     message: 'Předčíslí musí obsahovat pouze číslice'
                 }),
             bank_account_number: z
                 .string()
-                .nullable()
                 .transform((val) => (val === '' ? null : val))
-                .refine((val) => val === null || /^\d{2,10}$/.test(val), {
+                .refine((val) => val === null || /^\d{1,20}$/.test(val), {
                     message: 'Číslo účtu musí obsahovat pouze číslice'
                 }),
             bank_code: z
                 .string()
-                .nullable()
                 .transform((val) => (val === '' ? null : val))
                 .refine((val) => val === null || /^\d{4}$/.test(val), {
                     message: 'Kód banky musí obsahovat právě 4 číslice'
