@@ -12,8 +12,8 @@ const notificationProcedure = permProcedure([NOTIFICATION_PERMISSION]);
 const send = notificationProcedure.POST.input(
     z.object({
         userId: z.number(),
-        title: z.string(),
-        body: z.string()
+        title: z.string().min(1).trim(),
+        body: z.string().min(1).trim()
     })
 ).query(async ({ input }) => {
     try {

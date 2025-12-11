@@ -16,20 +16,26 @@
     >([]);
 
     const resolveUsers = (userData: (typeof data)['users']) => {
-        if (!userData.status) return;
+        if (!userData.status) {
+            SwalAlert({
+                icon: 'error',
+                title: 'Nepodařilo se načíst seznam uživatelů'
+            });
+            return;
+        }
 
         users = userData.data;
     };
 
     resolveUsers(data.users);
 
-    let selectedUserId = $state<number | null>(null);
+    let selectedUserId = $state<string>('');
     let title = $state('');
     let body = $state('');
     let sending = $state(false);
 
     const sendNotification = async () => {
-        if (!selectedUserId) {
+        if (!selectedUserId || selectedUserId === '') {
             SwalAlert({
                 icon: 'error',
                 title: 'Musíš vybrat uživatele'
@@ -55,30 +61,39 @@
 
         sending = true;
 
-        const response = await API.notifications.send.POST({
-            userId: selectedUserId,
-            title: title.trim(),
-            body: body.trim()
-        });
+        try {
+            const response = await API.notifications.send.POST({
+                userId: Number(selectedUserId),
+                title: title.trim(),
+                body: body.trim()
+            });
 
-        sending = false;
+            if (!response.status) {
+                SwalAlert({
+                    icon: 'error',
+                    title: response.message
+                });
+                return;
+            }
 
-        if (!response.status) {
+            SwalAlert({
+                icon: 'success',
+                title: 'Notifikace úspěšně odeslána'
+            });
+
+            // Reset form
+            selectedUserId = '';
+            title = '';
+            body = '';
+        } catch (err) {
+            console.error(err);
             SwalAlert({
                 icon: 'error',
-                title: response.message
+                title: 'Něco se nepovedlo na serveru :('
             });
-            return;
+        } finally {
+            sending = false;
         }
-
-        SwalAlert({
-            icon: 'success',
-            title: 'Notifikace úspěšně odeslána'
-        });
-
-        // Reset form
-        title = '';
-        body = '';
     };
 </script>
 
@@ -91,9 +106,9 @@
                 Vyberte uživatele:
             </label>
             <Select id="user-select" bind:value={selectedUserId}>
-                <option value={null}>-- Vyberte uživatele --</option>
+                <option value="">-- Vyberte uživatele --</option>
                 {#each users as user (user.id)}
-                    <option value={user.id}>{user.username}</option>
+                    <option value={user.id.toString()}>{user.username}</option>
                 {/each}
             </Select>
         </div>
