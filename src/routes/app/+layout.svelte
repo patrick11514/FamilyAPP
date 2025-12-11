@@ -2,6 +2,7 @@
     import Footer from '$/components/navigation/Footer.svelte';
     import Navigation from '$/components/navigation/Navigation.svelte';
     import { API } from '$/lib/api';
+    import { SwalAlert } from '$/lib/functions';
     import { getState, logged } from '$/lib/state.svelte';
     import { subscribePush } from '$/lib/web-push';
     import { browser } from '$app/environment';
@@ -24,7 +25,18 @@
     onMount(() => {
         if (!logged(_state.userState)) return;
         if (!isIphone) {
-            subscribePush().then((value) => (_state.pushEnabled = value));
+            subscribePush().then((value) => {
+                if (typeof value === 'boolean') {
+                    _state.pushEnabled = value;
+                    return;
+                }
+
+                SwalAlert({
+                    icon: 'error',
+                    title: 'Nepovedlo se povolit notifikace',
+                    text: value
+                });
+            });
         }
 
         const data = _state.userState.data;
