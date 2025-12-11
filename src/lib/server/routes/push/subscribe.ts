@@ -1,13 +1,12 @@
+import type { Response } from '$/types/types';
+import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
 import { z } from 'zod';
 import { loggedProcedure } from '../../api';
 import { conn } from '../../variables';
-import type { Response } from '$/types/types';
-import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
 
 export default loggedProcedure.POST.input(
     z.object({
         endpoint: z.string(),
-        expirationTime: z.number().nullable(),
         keys: z.object({
             p256dh: z.string(),
             auth: z.string()
