@@ -5,6 +5,7 @@ import debt from './debt';
 import energyface from './energyface';
 import groups from './groups';
 import invitation from './invitation';
+import notifications from './notifications';
 import permissions from './permissions';
 import presents from './presents';
 import push from './push';
@@ -22,7 +23,8 @@ export const r = router({
     calendar,
     presents,
     shoppinglist,
-    energyface
+    energyface,
+    notifications
 });
 
 export type AppRouter = typeof r;
