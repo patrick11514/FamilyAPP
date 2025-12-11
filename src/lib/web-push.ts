@@ -5,10 +5,19 @@ import { urlBase64ToUint8Array } from './functions';
 
 const CLIENT_URL = '/webworker/push-worker.js';
 
+export enum Error {
+    NOT_SUPPORTED = 'Váš prohlížeč nepodporuje notifikace',
+    NO_NOTIFICATION = 'Pokud váš systém je IOS, je potřeba aplikaci stáhnout (přidat na plochu)'
+}
+
 export const subscribePush = async () => {
     if (!('serviceWorker' in navigator || 'PushManager' in window)) {
         console.log('Service workers are not supported or push manager is not supported');
-        return false;
+        return Error.NOT_SUPPORTED;
+    }
+
+    if (!('Notification' in window)) {
+        return Error.NO_NOTIFICATION;
     }
 
     try {
@@ -30,7 +39,7 @@ export const subscribePush = async () => {
             });
 
             //eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const result = await API.push.subscribe(subscription as any);
+            const result = await API.push.subscribe(subscription.toJSON() as any);
             if (!result.status) return false;
         }
 

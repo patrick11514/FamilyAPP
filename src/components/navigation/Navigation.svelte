@@ -153,16 +153,23 @@
         }
 
         const enabled = await subscribePush();
-        if (enabled) {
+        if (enabled === true) {
             _state.pushEnabled = true;
             SwalAlert({
                 icon: 'success',
                 title: 'Oznámení byla úspěšně zapnuta'
             });
-        } else {
+        } else if (enabled === false) {
             SwalAlert({
                 icon: 'error',
                 title: 'Nepodařilo se zapnout oznámení'
+            });
+        } else {
+            SwalAlert({
+                icon: 'error',
+                title: 'Nepovedlo se povolit notifikace',
+                text: enabled,
+                timer: 10000
             });
         }
     };
