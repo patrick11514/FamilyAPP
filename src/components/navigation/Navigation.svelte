@@ -198,7 +198,7 @@
 <ClickOutside
     clickoutside={() => (opened = false)}
     class={twMerge(
-        'bg-secondary absolute top-0 left-0 flex min-h-screen w-1/2 min-w-96 flex-col p-2 transition-transform duration-500 md:static md:w-auto md:translate-x-0',
+        'bg-secondary absolute top-0 left-0 z-10 flex min-h-screen w-1/2 min-w-96 flex-col p-2 transition-transform duration-500 md:static md:w-auto md:translate-x-0',
         !opened ? '-translate-x-full' : ''
     )}
 >
