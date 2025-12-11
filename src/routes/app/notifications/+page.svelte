@@ -62,7 +62,7 @@
         sending = true;
 
         try {
-            const response = await API.notifications.send.POST({
+            const response = await API.notifications.send({
                 userId: Number(selectedUserId),
                 title: title.trim(),
                 body: body.trim()
