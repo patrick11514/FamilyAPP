@@ -7,11 +7,11 @@ export const load = (async () => {
         const versionA = a
             .replace('.md', '')
             .split('.')
-            .map((n) => parseInt(n, 10));
+            .map((n) => parseInt(n, 10) || 0);
         const versionB = b
             .replace('.md', '')
             .split('.')
-            .map((n) => parseInt(n, 10));
+            .map((n) => parseInt(n, 10) || 0);
 
         // Compare version numbers semantically
         for (let i = 0; i < Math.max(versionA.length, versionB.length); i++) {
