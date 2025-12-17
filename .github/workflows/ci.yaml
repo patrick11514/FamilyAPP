@@ -58,6 +58,6 @@ jobs:
             - name: Restart Application
               run: |
                   cd /opt/apps/FamilyAPP
-                  pnpm install --prod
+                  pnpm install
                   pnpm run migrate
                   sudo systemctl restart family-app
