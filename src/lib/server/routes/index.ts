@@ -10,6 +10,7 @@ import permissions from './permissions';
 import presents from './presents';
 import push from './push';
 import shoppinglist from './shoppinglist';
+import timetable from './timetable';
 import users from './users';
 
 export const r = router({
@@ -23,6 +24,7 @@ export const r = router({
     calendar,
     presents,
     shoppinglist,
+    timetable,
     energyface,
     notifications
 });

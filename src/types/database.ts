@@ -22,6 +22,18 @@ export interface Calendar {
     user_id: number;
 }
 
+export interface DailyRoutine {
+    day: number;
+    home_arrival_time: Generated<number | null>;
+    id: Generated<number>;
+    transport_evening_time: Generated<number | null>;
+    transport_evening_type: Generated<string | null>;
+    transport_morning_time: Generated<number | null>;
+    transport_morning_type: Generated<string | null>;
+    user_id: number;
+    wake_time: Generated<number | null>;
+}
+
 export interface Debt {
     id: Generated<number>;
     photo: Generated<string | null>;
@@ -81,10 +93,22 @@ export interface Shoppinglist {
     user_id: number;
 }
 
+export interface TimetableEntry {
+    day: number;
+    end_min: number;
+    id: Generated<number>;
+    room: Generated<string | null>;
+    start_min: number;
+    subject: string;
+    title: string;
+    type: string;
+    user_id: number;
+}
+
 export interface User {
-    bank_account_prefix: string | null;
-    bank_account_number: string | null;
-    bank_code: string | null;
+    bank_account_number: Generated<string | null>;
+    bank_account_prefix: Generated<string | null>;
+    bank_code: Generated<string | null>;
     firstname: string;
     id: Generated<number>;
     lastname: string;
@@ -107,6 +131,7 @@ export interface WebPush {
 
 export interface DB {
     calendar: Calendar;
+    daily_routine: DailyRoutine;
     debt: Debt;
     enabled_temp_notifications: EnabledTempNotifications;
     group: Group;
@@ -114,6 +139,7 @@ export interface DB {
     invitation: Invitation;
     present: Present;
     shoppinglist: Shoppinglist;
+    timetable_entry: TimetableEntry;
     user: User;
     user_group: UserGroup;
     web_push: WebPush;
