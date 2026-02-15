@@ -87,12 +87,10 @@
     }
 </script>
 
-<div
-    class="flex min-h-[50px] flex-col items-center justify-center space-y-1 p-1 text-[10px]"
->
+<div class="flex min-h-[50px] flex-col items-center justify-center space-y-1 p-1 text-sm">
     {#if isEditing}
         <div
-            class="bg-secondary border-primary absolute z-50 w-48 rounded-lg border p-3 text-xs shadow-xl"
+            class="bg-secondary border-primary absolute z-50 w-48 rounded-lg border p-3 text-sm shadow-xl"
         >
             <h4 class="border-primary mb-2 border-b pb-1 font-bold">
                 {type === 'morning' ? 'Ráno' : 'Odpoledne'}
@@ -116,7 +114,7 @@
                 <div class="mb-1 flex space-x-1">
                     <button
                         class="flex-1 rounded border p-1 {transportType === 'bus'
-                            ? 'bg-accent border-text text-white'
+                            ? 'border-text bg-blue-600 text-white'
                             : 'bg-background border-primary text-text'}"
                         onclick={() => (transportType = 'bus')}
                         aria-label="Bus"
@@ -125,7 +123,7 @@
                     </button>
                     <button
                         class="flex-1 rounded border p-1 {transportType === 'car'
-                            ? 'bg-accent border-text text-white'
+                            ? 'border-text bg-orange-600 text-white'
                             : 'bg-background border-primary text-text'}"
                         onclick={() => (transportType = 'car')}
                         aria-label="Car"

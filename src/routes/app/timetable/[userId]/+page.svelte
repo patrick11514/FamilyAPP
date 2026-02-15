@@ -34,7 +34,6 @@
         if (res.status) {
             // @ts-expect-error - Kysely types mismatch with strict client types sometimes
             timetable = res.data.timetable;
-            // @ts-expect-error - Kysely types mismatch with strict client types sometimes
             routine = res.data.routine;
             isMe = res.data.isMe;
         }

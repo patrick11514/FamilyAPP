@@ -61,19 +61,19 @@
         <div
             class="bg-secondary border-primary flex items-center justify-between border-b px-6 py-4"
         >
-            <h3 class="text-text text-lg font-bold">
+            <h3 class="text-text text-xl font-bold">
                 {entry ? 'Upravit předmět' : 'Přidat předmět'}
             </h3>
             <button
                 onclick={onClose}
-                class="text-text opacity-50 transition hover:opacity-100"
+                class="text-text icon-lg opacity-50 transition hover:opacity-100"
                 aria-label="Close"
             >
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
 
-        <div class="space-y-4 p-6">
+        <div class="space-y-4 p-6 text-base">
             <!-- Typ: Přednáška vs Cvičení -->
             <div class="flex space-x-4">
                 <button
@@ -101,7 +101,7 @@
             <div class="space-y-3">
                 <div>
                     <!-- svelte-ignore a11y_label_has_associated_control -->
-                    <label class="text-text mb-1 block text-sm font-medium opacity-80"
+                    <label class="text-text mb-1 block text-base font-medium opacity-80"
                         >Zkratka / Název předmětu</label
                     >
                     <input
@@ -113,7 +113,7 @@
 
                 <div>
                     <!-- svelte-ignore a11y_label_has_associated_control -->
-                    <label class="text-text mb-1 block text-sm font-medium opacity-80"
+                    <label class="text-text mb-1 block text-base font-medium opacity-80"
                         >Popis / Typ výuky</label
                     >
                     <input
@@ -125,7 +125,7 @@
 
                 <div>
                     <!-- svelte-ignore a11y_label_has_associated_control -->
-                    <label class="text-text mb-1 block text-sm font-medium opacity-80"
+                    <label class="text-text mb-1 block text-base font-medium opacity-80"
                         >Místnost (volitelné)</label
                     >
                     <input
@@ -139,31 +139,32 @@
             <!-- Time Selection -->
             <div class="space-y-2">
                 <!-- svelte-ignore a11y_label_has_associated_control -->
-                <label class="text-text block text-sm font-medium opacity-80">Čas</label>
+                <label class="text-text block text-base font-medium opacity-80">Čas</label
+                >
 
                 <div class="flex items-center space-x-2">
                     <input
                         type="time"
                         bind:value={startTime}
-                        class="border-primary bg-secondary text-text rounded border p-2"
+                        class="border-primary bg-secondary text-text rounded border p-2 text-base"
                         aria-label="Start time"
                     />
                     <span class="text-text opacity-50">-</span>
                     <input
                         type="time"
                         bind:value={endTime}
-                        class="border-primary bg-secondary text-text rounded border p-2"
+                        class="border-primary bg-secondary text-text rounded border p-2 text-base"
                         aria-label="End time"
                     />
                 </div>
 
-                <div class="text-text mt-2 text-xs font-medium opacity-60">
+                <div class="text-text mt-2 text-sm font-medium opacity-60">
                     Rychlé nastavení:
                 </div>
                 <div class="flex flex-wrap gap-2">
                     {#each TIME_BLOCKS.slice(0, 8) as block, i (i)}
                         <button
-                            class="bg-secondary hover:bg-primary/20 hover:border-primary border-primary text-text rounded border px-2 py-1 text-xs transition"
+                            class="bg-secondary hover:bg-primary/20 hover:border-primary border-primary text-text rounded border px-2 py-1 text-sm transition"
                             onclick={() => setBlock(block.start, block.end)}
                         >
                             {i + 1}. ({block.start})

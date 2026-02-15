@@ -1,6 +1,6 @@
 <script lang="ts">
     import type { DailyRoutine } from '$/types/database';
-    import { TIME_BLOCKS, minToTime, timeToMin } from '$lib/timetableConfig';
+    import { minToTime } from '$lib/timetableConfig';
     import type { Selectable } from 'kysely';
     import EntryModal from './EntryModal.svelte';
     import RoutineControls from './RoutineControls.svelte';
@@ -69,13 +69,13 @@
         <div class="grid min-w-[800px] grid-cols-[50px_repeat(5,1fr)]">
             <!-- Time Column Header -->
             <div
-                class="bg-secondary border-primary text-text border-r border-b p-2 text-center text-xs font-bold opacity-70"
+                class="bg-secondary border-primary text-text border-r border-b p-2 text-center text-base font-bold opacity-70"
             >
                 Čas
             </div>
             {#each days as day, i (i)}
                 <div
-                    class="bg-secondary border-primary text-text group relative border-b p-2 text-center font-bold"
+                    class="bg-secondary border-primary text-text group relative border-b p-2 text-center text-base font-bold"
                 >
                     {day}
                     {#if isMe}
@@ -112,25 +112,13 @@
 
             <!-- Main Timetable Grid -->
             <div class="border-primary bg-background relative h-[800px] border-r">
-                <!-- Time Markers -->
-                {#each TIME_BLOCKS as block (block.start)}
-                    <div
-                        class="border-text text-text absolute w-full border-b border-dashed pl-1 text-[10px] opacity-30"
-                        style={getPositionStyles(
-                            timeToMin(block.start),
-                            timeToMin(block.start)
-                        )}
-                    >
-                        {block.start}
-                    </div>
-                {/each}
                 <!-- Hour Markers -->
                 {#each Array.from({ length: 14 }, (_, i) => i + 7) as hour (hour)}
                     <div
-                        class="border-primary text-text absolute flex w-full justify-center border-t text-[10px] opacity-40"
+                        class="border-primary text-text absolute flex w-full justify-center border-t text-sm opacity-70"
                         style={getPositionStyles(hour * 60, hour * 60)}
                     >
-                        <span class="bg-background -mt-2 px-1">{hour}:00</span>
+                        <span class="bg-background -mt-2.5 px-1">{hour}:00</span>
                     </div>
                 {/each}
             </div>
@@ -153,7 +141,7 @@
                         <!-- svelte-ignore a11y_click_events_have_key_events -->
                         <!-- svelte-ignore a11y_no_static_element_interactions -->
                         <div
-                            class="absolute inset-x-1 z-10 flex cursor-pointer flex-col justify-center overflow-hidden rounded border p-1 text-xs shadow-sm transition hover:scale-[1.02] hover:shadow-md"
+                            class="absolute inset-x-1 z-10 flex cursor-pointer flex-col justify-center overflow-hidden rounded border p-1 text-sm shadow-sm transition hover:scale-[1.02] hover:shadow-md"
                             class:bg-red-900={entry.type === 'lecture'}
                             class:border-red-700={entry.type === 'lecture'}
                             class:text-red-100={entry.type === 'lecture'}
@@ -167,13 +155,13 @@
                             <div class="truncate opacity-75">{entry.title}</div>
                             {#if entry.room}
                                 <div
-                                    class="absolute right-1 bottom-0.5 truncate text-[10px] opacity-60"
+                                    class="absolute right-1 bottom-0.5 truncate text-xs opacity-60"
                                 >
-                                    <i class="bi bi-geo-alt-fill text-[8px]"></i>
+                                    <i class="bi bi-geo-alt-fill text-[10px]"></i>
                                     {entry.room}
                                 </div>
                             {/if}
-                            <div class="mt-0.5 text-[9px] opacity-60">
+                            <div class="mt-0.5 text-xs opacity-60">
                                 {minToTime(entry.start_min)} - {minToTime(entry.end_min)}
                             </div>
                         </div>

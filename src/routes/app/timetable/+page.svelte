@@ -21,8 +21,8 @@
     });
 </script>
 
-<div class="h-full w-full p-4 md:p-8">
-    <h1 class="text-text mb-6 text-3xl font-bold">Rozvrhy</h1>
+<div class="h-full w-full flex-1 p-4 md:p-8">
+    <h1 class="text-text mb-6 text-4xl font-bold">Rozvrhy</h1>
 
     <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {#if loading}
@@ -37,13 +37,13 @@
             >
                 <div class="flex items-center space-x-4">
                     <div
-                        class="bg-primary text-secondary group-hover:bg-accent rounded-full p-3 transition-colors group-hover:text-white"
+                        class="bg-primary text-secondary group-hover:bg-accent rounded-full p-4 transition-colors group-hover:text-white"
                     >
-                        <i class="bi bi-person-lines-fill text-2xl"></i>
+                        <i class="bi bi-person-lines-fill text-3xl"></i>
                     </div>
                     <div>
-                        <h2 class="text-text text-lg font-bold">Můj rozvrh</h2>
-                        <p class="text-text text-sm opacity-70">Upravit a zobrazit</p>
+                        <h2 class="text-text text-xl font-bold">Můj rozvrh</h2>
+                        <p class="text-text text-base opacity-70">Upravit a zobrazit</p>
                     </div>
                 </div>
             </a>
@@ -56,16 +56,16 @@
                 >
                     <div class="flex items-center space-x-4">
                         <div
-                            class="bg-primary/20 text-primary group-hover:bg-accent rounded-full p-3 transition-colors group-hover:text-white"
+                            class="bg-primary/20 text-primary group-hover:bg-accent rounded-full p-4 transition-colors group-hover:text-white"
                         >
-                            <i class="bi bi-calendar3 text-2xl"></i>
+                            <i class="bi bi-calendar3 text-3xl"></i>
                         </div>
                         <div>
-                            <h2 class="text-text text-lg font-bold">
+                            <h2 class="text-text text-xl font-bold">
                                 {u.firstname}
                                 {u.lastname}
                             </h2>
-                            <p class="text-text text-sm opacity-70">@{u.username}</p>
+                            <p class="text-text text-base opacity-70">@{u.username}</p>
                         </div>
                     </div>
                 </a>
