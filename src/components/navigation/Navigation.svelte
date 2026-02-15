@@ -27,11 +27,11 @@
             path: '',
             icon: 'bi-house-fill'
         },
-        /*{
+        {
             name: 'Rozvrhovník',
             path: '/timetable',
             icon: 'bi-calendar2-week'
-        },*/
+        },
         {
             name: 'Dárkovník',
             path: '/presents',

@@ -18,12 +18,15 @@ const dialect = new MysqlDialect({
 });
 
 const conn = new Kysely({ dialect });
+const migrationFolder = path.resolve(process.cwd(), './migrations');
+console.log('Migration folder:', migrationFolder);
+
 const migrator = new Migrator({
     db: conn,
     provider: new FileMigrationProvider({
         fs,
         path,
-        migrationFolder: path.resolve(import.meta.dirname, './migrations')
+        migrationFolder
     })
 });
 
@@ -34,6 +37,18 @@ async function runMigrations() {
         console.error('Migration failed:', result.error);
         process.exit(1);
     }
+
+    result.results?.forEach((it) => {
+        if (it.status === 'Success') {
+            console.log(`migration "${it.migrationName}" was executed successfully`);
+        } else if (it.status === 'Error') {
+            console.error(`failed to execute migration "${it.migrationName}"`);
+        } else {
+            console.log(
+                `migration "${it.migrationName}" executed with status: ${it.status}`
+            );
+        }
+    });
 
     console.log('Migrations applied successfully.');
 }
