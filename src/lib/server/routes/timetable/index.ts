@@ -1,10 +1,10 @@
+import type { DailyRoutine, TimetableEntry } from '$/types/database';
+import type { Response, ResponseWithData } from '$/types/types';
+import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
+import type { Selectable } from 'kysely';
 import { z } from 'zod';
 import { loggedProcedure } from '../../api';
 import { conn } from '../../variables';
-import type { ErrorApiResponse } from '@patrick115/sveltekitapi';
-import type { Response, ResponseWithData } from '$/types/types';
-import type { Selectable } from 'kysely';
-import type { DailyRoutine, TimetableEntry } from '$/types/database';
 
 export default [
     // GET: List all users who have timetable entries (or just all users to be safe?)

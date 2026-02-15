@@ -1,7 +1,7 @@
 <script lang="ts">
     import { API } from '$lib/api';
-    import { onMount } from 'svelte';
     import { getState } from '$lib/state.svelte';
+    import { onMount } from 'svelte';
 
     let users = $state<
         { id: number; username: string; firstname: string; lastname: string }[]

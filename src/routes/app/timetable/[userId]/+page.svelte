@@ -1,10 +1,10 @@
 <script lang="ts">
+    import type { DailyRoutine } from '$/types/database';
     import { page } from '$app/stores';
     import { API } from '$lib/api';
-    import TimetableGrid from './TimetableGrid.svelte';
     import { SwalAlert } from '$lib/functions';
-    import type { DailyRoutine } from '$/types/database';
     import type { Selectable } from 'kysely';
+    import TimetableGrid from './TimetableGrid.svelte';
 
     // Type definition since database.ts uses Generated<T> which is confusing in frontend
     type LocalEntry = {

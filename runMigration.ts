@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 
-import { Migrator, FileMigrationProvider, MysqlDialect, Kysely } from 'kysely';
+import dotenv from 'dotenv';
+import { FileMigrationProvider, Kysely, Migrator, MysqlDialect } from 'kysely';
+import { createPool } from 'mysql2';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-import dotenv from 'dotenv';
-import { createPool } from 'mysql2';
 dotenv.config();
 
 const dialect = new MysqlDialect({

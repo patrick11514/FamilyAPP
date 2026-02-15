@@ -15,6 +15,7 @@ export const up = async (conn: Kysely<any>) => {
         .addColumn('title', 'varchar(100)', (col) => col.notNull())
         .addColumn('type', 'varchar(20)', (col) => col.notNull()) // 'lecture' | 'practice'
         .addColumn('subject', 'varchar(100)', (col) => col.notNull())
+        .addColumn('room', 'varchar(20)')
         .execute();
 
     await conn.schema

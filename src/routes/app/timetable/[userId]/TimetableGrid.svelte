@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { TIME_BLOCKS, minToTime, timeToMin } from '$lib/timetableConfig';
     import type { DailyRoutine } from '$/types/database';
+    import { TIME_BLOCKS, minToTime, timeToMin } from '$lib/timetableConfig';
     import type { Selectable } from 'kysely';
     import EntryModal from './EntryModal.svelte';
     import RoutineControls from './RoutineControls.svelte';
