@@ -166,7 +166,7 @@
                         >
                             <div class="h-0.5 w-full bg-red-500 shadow-lg"></div>
                             <div
-                                class="absolute -left-2 h-3 w-3 rounded-full border-2 border-red-500 bg-red-500 shadow-lg"
+                                class="absolute -left-2 h-3 w-3 rounded-full border-2 border-white bg-red-500 shadow-lg"
                             ></div>
                         </div>
                     {/if}
