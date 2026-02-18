@@ -47,6 +47,28 @@
     let editingEntry = $state<LocalEntry | undefined>(undefined);
     let selectedDay = $state(0);
 
+    // Current time tracking
+    let currentTimeMin = $state(0);
+    let currentDayIndex = $state(0);
+
+    function updateCurrentTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        currentTimeMin = hours * 60 + minutes;
+        // Get day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+        // Convert to our format where 0 = Monday (Po)
+        const dayOfWeek = now.getDay();
+        currentDayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // 0=Mon, 1=Tue, ..., 4=Fri, 5=Sat, 6=Sun
+    }
+
+    // Update current time on mount and every minute
+    $effect(() => {
+        updateCurrentTime();
+        const interval = setInterval(updateCurrentTime, 60000); // Update every minute
+        return () => clearInterval(interval);
+    });
+
     function startAdd(dayIndex: number) {
         if (!isMe) return;
         selectedDay = dayIndex;
@@ -135,6 +157,19 @@
                             style={getPositionStyles(hour * 60, hour * 60)}
                         ></div>
                     {/each}
+
+                    <!-- Current Time Indicator -->
+                    {#if i === currentDayIndex && currentTimeMin >= dayStartMin && currentTimeMin <= dayEndMin}
+                        <div
+                            class="absolute inset-x-0 z-20 flex items-center"
+                            style={getPositionStyles(currentTimeMin, currentTimeMin)}
+                        >
+                            <div class="h-0.5 w-full bg-red-500 shadow-lg"></div>
+                            <div
+                                class="absolute -left-2 h-3 w-3 rounded-full border-2 border-red-500 bg-red-500 shadow-lg"
+                            ></div>
+                        </div>
+                    {/if}
 
                     <!-- Entries -->
                     {#each timetable.filter((e: LocalEntry) => e.day === i) as entry (entry.id ?? entry.start_min)}
