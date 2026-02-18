@@ -59,7 +59,7 @@
         // Get day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
         // Convert to our format where 0 = Monday (Po)
         const dayOfWeek = now.getDay();
-        currentDayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // 0=Mon, 1=Tue, ..., 4=Fri, 5=Sat, 6=Sun
+        currentDayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
     }
 
     // Update current time on mount and every minute
