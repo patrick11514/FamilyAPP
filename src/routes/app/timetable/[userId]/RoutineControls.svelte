@@ -89,92 +89,100 @@
 
 <div class="flex min-h-[50px] flex-col items-center justify-center space-y-1 p-1 text-sm">
     {#if isEditing}
+        <!-- svelte-ignore a11y_click_events_have_key_events -->
+        <!-- svelte-ignore a11y_no_static_element_interactions -->
         <div
-            class="bg-secondary border-primary absolute z-[60] w-48 rounded-lg border p-3 text-sm shadow-xl"
+            class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm"
+            role="dialog"
+            aria-modal="true"
+            onclick={() => (isEditing = false)}
         >
-            <h4 class="border-primary mb-2 border-b pb-1 font-bold">
-                {type === 'morning' ? 'Ráno' : 'Odpoledne'}
-            </h4>
+            <!-- svelte-ignore a11y_click_events_have_key_events -->
+            <!-- svelte-ignore a11y_no_static_element_interactions -->
+            <div
+                class="bg-secondary border-primary w-full max-w-sm rounded-xl border p-5 text-sm shadow-2xl"
+                onclick={(e) => e.stopPropagation()}
+            >
+                <h4 class="border-primary mb-3 border-b pb-2 text-base font-bold">
+                    {type === 'morning' ? 'Ráno' : 'Odpoledne'}
+                </h4>
 
-            {#if type === 'morning'}
+                {#if type === 'morning'}
+                    <div class="mb-2">
+                        <!-- svelte-ignore a11y_label_has_associated_control -->
+                        <label class="text-text mb-0.5 block opacity-70">Budíček</label>
+                        <input
+                            type="time"
+                            bind:value={wakeTime}
+                            class="border-primary bg-background text-text w-full rounded border p-1"
+                        />
+                    </div>
+                {/if}
+
                 <div class="mb-2">
                     <!-- svelte-ignore a11y_label_has_associated_control -->
-                    <label class="text-text mb-0.5 block opacity-70">Budíček</label>
+                    <label class="text-text mb-0.5 block opacity-70">Doprava</label>
+                    <div class="mb-1 flex space-x-1">
+                        <button
+                            class="flex-1 rounded border p-1 {transportType === 'bus'
+                                ? 'border-text bg-blue-600 text-white'
+                                : 'bg-background border-primary text-text'}"
+                            onclick={() => (transportType = 'bus')}
+                            aria-label="Bus"
+                        >
+                            <i class="bi bi-bus-front"></i>
+                        </button>
+                        <button
+                            class="flex-1 rounded border p-1 {transportType === 'car'
+                                ? 'border-text bg-orange-600 text-white'
+                                : 'bg-background border-primary text-text'}"
+                            onclick={() => (transportType = 'car')}
+                            aria-label="Car"
+                        >
+                            <i class="bi bi-car-front"></i>
+                        </button>
+                        <button
+                            class="border-primary bg-background text-text rounded border p-1 opacity-70 hover:text-red-500"
+                            onclick={() => (transportType = null)}
+                            aria-label="Clear transport"
+                        >
+                            <i class="bi bi-x"></i>
+                        </button>
+                    </div>
                     <input
                         type="time"
-                        bind:value={wakeTime}
+                        bind:value={transportTime}
                         class="border-primary bg-background text-text w-full rounded border p-1"
                     />
                 </div>
-            {/if}
 
-            <div class="mb-2">
-                <!-- svelte-ignore a11y_label_has_associated_control -->
-                <label class="text-text mb-0.5 block opacity-70">Doprava</label>
-                <div class="mb-1 flex space-x-1">
+                {#if type === 'evening'}
+                    <div class="mb-2">
+                        <!-- svelte-ignore a11y_label_has_associated_control -->
+                        <label class="text-text mb-0.5 block opacity-70"
+                            >Příchod domů</label
+                        >
+                        <input
+                            type="time"
+                            bind:value={arrivalTime}
+                            class="border-primary bg-background text-text w-full rounded border p-1"
+                        />
+                    </div>
+                {/if}
+
+                <div class="mt-2 flex justify-end space-x-2">
                     <button
-                        class="flex-1 rounded border p-1 {transportType === 'bus'
-                            ? 'border-text bg-blue-600 text-white'
-                            : 'bg-background border-primary text-text'}"
-                        onclick={() => (transportType = 'bus')}
-                        aria-label="Bus"
+                        onclick={() => (isEditing = false)}
+                        class="text-text opacity-70 hover:underline">Zrušit</button
                     >
-                        <i class="bi bi-bus-front"></i>
-                    </button>
                     <button
-                        class="flex-1 rounded border p-1 {transportType === 'car'
-                            ? 'border-text bg-orange-600 text-white'
-                            : 'bg-background border-primary text-text'}"
-                        onclick={() => (transportType = 'car')}
-                        aria-label="Car"
+                        onclick={save}
+                        class="bg-accent hover:bg-opacity-90 rounded px-2 py-1 text-white"
+                        >Uložit</button
                     >
-                        <i class="bi bi-car-front"></i>
-                    </button>
-                    <button
-                        class="border-primary bg-background text-text rounded border p-1 opacity-70 hover:text-red-500"
-                        onclick={() => (transportType = null)}
-                        aria-label="Clear transport"
-                    >
-                        <i class="bi bi-x"></i>
-                    </button>
                 </div>
-                <input
-                    type="time"
-                    bind:value={transportTime}
-                    class="border-primary bg-background text-text w-full rounded border p-1"
-                />
-            </div>
-
-            {#if type === 'evening'}
-                <div class="mb-2">
-                    <!-- svelte-ignore a11y_label_has_associated_control -->
-                    <label class="text-text mb-0.5 block opacity-70">Příchod domů</label>
-                    <input
-                        type="time"
-                        bind:value={arrivalTime}
-                        class="border-primary bg-background text-text w-full rounded border p-1"
-                    />
-                </div>
-            {/if}
-
-            <div class="mt-2 flex justify-end space-x-2">
-                <button
-                    onclick={() => (isEditing = false)}
-                    class="text-text opacity-70 hover:underline">Zrušit</button
-                >
-                <button
-                    onclick={save}
-                    class="bg-accent hover:bg-opacity-90 rounded px-2 py-1 text-white"
-                    >Uložit</button
-                >
             </div>
         </div>
-        <!-- Backdrop -->
-        <div
-            class="fixed inset-0 z-40 bg-black/50"
-            onclick={() => (isEditing = false)}
-            aria-hidden="true"
-        ></div>
     {/if}
 
     <!-- View Mode -->
@@ -198,8 +206,8 @@
                 >
                     <i
                         class="bi {routine.transport_morning_type === 'bus'
-                            ? 'bi-bus-front'
-                            : 'bi-car-front'} text-accent"
+                            ? 'bi-bus-front text-blue-400'
+                            : 'bi-car-front text-orange-400'} text-base"
                     ></i>
                     <span>{formatTime(routine.transport_morning_time)}</span>
                 </div>
@@ -212,8 +220,8 @@
                 >
                     <i
                         class="bi {routine.transport_evening_type === 'bus'
-                            ? 'bi-bus-front'
-                            : 'bi-car-front'} text-accent"
+                            ? 'bi-bus-front text-blue-400'
+                            : 'bi-car-front text-orange-400'} text-base"
                     ></i>
                     <span>{formatTime(routine.transport_evening_time)}</span>
                 </div>

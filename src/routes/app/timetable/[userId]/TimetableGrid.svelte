@@ -102,12 +102,12 @@
                     {day}
                     {#if isMe}
                         <button
-                            class="text-accent hover:text-primary absolute top-1 right-1 opacity-0 transition group-hover:opacity-100"
+                            class="hover:text-primary absolute top-1/2 right-1 -translate-y-1/2 text-white opacity-60 transition hover:opacity-100"
                             onclick={() => startAdd(i)}
                             title="Přidat předmět"
                             aria-label="Add class"
                         >
-                            <i class="bi bi-plus-circle-fill"></i>
+                            <i class="bi bi-plus-circle-fill text-lg"></i>
                         </button>
                     {/if}
                 </div>
