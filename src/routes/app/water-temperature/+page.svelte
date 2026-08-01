@@ -10,7 +10,7 @@
     import Chart from 'chart.js/auto';
     import 'chartjs-adapter-date-fns';
     import { onMount } from 'svelte';
-    import { SvelteDate } from 'svelte/reactivity';
+    import { SvelteDate, SvelteSet } from 'svelte/reactivity';
     import type { PageProps } from './$types';
 
     let { data }: PageProps = $props();
@@ -32,6 +32,11 @@
     let lastLower = $state(0);
 
     let topToday = $state(0);
+
+    let loadedDays = new SvelteSet<string>();
+    let loadingDay = false;
+
+    const dateKey = (y: number, m: number, d: number) => `${y}-${m}-${d}`;
 
     $effect(() => {
         maxDays = calendar.getLastDayOfMonth(new Date(year, month)).getDate();
@@ -72,21 +77,48 @@
 
     let chart: Chart<'line', { x: Date; y: number }[]> | undefined;
 
-    const loadData = async (year: number, month: number, day: number) => {
-        if (!chart) return;
-        const data = await API.energyface.get({ year, month, day });
-        if (!data.status) {
-            SwalAlert({
-                icon: 'error',
-                title: 'Nepodařilo se načíst data'
-            });
+    const loadDayData = async (
+        y: number,
+        m: number,
+        d: number,
+        mode: 'replace' | 'prepend' | 'append'
+    ) => {
+        const key = dateKey(y, m, d);
+        if (loadedDays.has(key) && mode !== 'replace') return;
+        if (loadingDay) return;
+
+        loadingDay = true;
+        const res = await API.energyface.get({ year: y, month: m, day: d });
+        loadingDay = false;
+
+        if (!res.status || !chart) {
+            if (mode === 'replace') {
+                SwalAlert({
+                    icon: 'error',
+                    title: 'Nepodařilo se načíst data'
+                });
+            }
             return;
         }
-        const { lower, upper } = data.data;
-        chart.data.datasets[0].data = lower;
-        chart.data.datasets[1].data = upper;
 
-        chart.update();
+        const { lower, upper } = res.data;
+        loadedDays.add(key);
+
+        if (mode === 'replace') {
+            loadedDays.clear();
+            loadedDays.add(key);
+            chart.data.datasets[0].data = lower;
+            chart.data.datasets[1].data = upper;
+            chart.update();
+        } else if (mode === 'prepend') {
+            chart.data.datasets[0].data = [...lower, ...chart.data.datasets[0].data];
+            chart.data.datasets[1].data = [...upper, ...chart.data.datasets[1].data];
+            chart.update('none');
+        } else if (mode === 'append') {
+            chart.data.datasets[0].data = [...chart.data.datasets[0].data, ...lower];
+            chart.data.datasets[1].data = [...chart.data.datasets[1].data, ...upper];
+            chart.update('none');
+        }
 
         const _lastLower = lower[lower.length - 1];
         const _lastUpper = upper[upper.length - 1];
@@ -180,38 +212,72 @@
                                     pan: {
                                         enabled: true,
                                         mode: 'x',
-                                        onPanComplete: ({ chart: chartInstance }) => {
+                                        onPan: ({ chart: chartInstance }) => {
                                             const xAxis = chartInstance.scales.x;
                                             if (!xAxis) return;
+
                                             const minTime = xAxis.min;
                                             const maxTime = xAxis.max;
 
-                                            const dayStart = new Date(
-                                                year,
-                                                month,
-                                                day,
-                                                0,
-                                                0,
-                                                0,
-                                                0
-                                            ).getTime();
-                                            const dayEnd = new Date(
-                                                year,
-                                                month,
-                                                day,
-                                                23,
-                                                59,
-                                                59,
-                                                999
-                                            ).getTime();
+                                            const ds0 = chartInstance.data.datasets[0]
+                                                ?.data as unknown as
+                                                | { x: Date; y: number }[]
+                                                | undefined;
+                                            if (!ds0 || ds0.length === 0) return;
 
-                                            // If panned past the left edge (earlier than day start)
-                                            if (minTime < dayStart - 30 * 60 * 1000) {
-                                                previousDay();
+                                            const firstPt = ds0[0];
+                                            const lastPt = ds0[ds0.length - 1];
+                                            if (!firstPt || !lastPt) return;
+
+                                            const dataMin = new Date(firstPt.x).getTime();
+                                            const dataMax = new Date(lastPt.x).getTime();
+
+                                            // Seamlessly load previous day when approaching left edge
+                                            if (minTime < dataMin + 4 * 60 * 60 * 1000) {
+                                                const earliestDate = new Date(dataMin);
+                                                const prevDate = new Date(
+                                                    earliestDate.getFullYear(),
+                                                    earliestDate.getMonth(),
+                                                    earliestDate.getDate() - 1
+                                                );
+                                                loadDayData(
+                                                    prevDate.getFullYear(),
+                                                    prevDate.getMonth(),
+                                                    prevDate.getDate(),
+                                                    'prepend'
+                                                );
                                             }
-                                            // If panned past the right edge (later than day end)
-                                            else if (maxTime > dayEnd + 30 * 60 * 1000) {
-                                                nextDay();
+
+                                            // Seamlessly load next day when approaching right edge
+                                            if (maxTime > dataMax - 4 * 60 * 60 * 1000) {
+                                                const latestDate = new Date(dataMax);
+                                                const nextDate = new Date(
+                                                    latestDate.getFullYear(),
+                                                    latestDate.getMonth(),
+                                                    latestDate.getDate() + 1
+                                                );
+                                                if (nextDate <= today) {
+                                                    loadDayData(
+                                                        nextDate.getFullYear(),
+                                                        nextDate.getMonth(),
+                                                        nextDate.getDate(),
+                                                        'append'
+                                                    );
+                                                }
+                                            }
+
+                                            // Update date dropdowns dynamically based on visible center
+                                            const centerDate = new Date(
+                                                (minTime + maxTime) / 2
+                                            );
+                                            if (
+                                                centerDate.getFullYear() !== year ||
+                                                centerDate.getMonth() !== month ||
+                                                centerDate.getDate() !== day
+                                            ) {
+                                                year = centerDate.getFullYear();
+                                                month = centerDate.getMonth();
+                                                day = centerDate.getDate();
                                             }
                                         }
                                     },
@@ -256,7 +322,7 @@
                         }
                     });
 
-                    loadData(year, month, day);
+                    loadDayData(year, month, day, 'replace');
                 }
             });
         } else if (activeTab !== 'chart' && chart) {
@@ -298,23 +364,17 @@
                 day = today.getDate();
                 return;
             }
-            loadData(year, month, day);
+            if (!loadedDays.has(dateKey(year, month, day))) {
+                loadDayData(year, month, day, 'replace');
+            }
         }
     });
 
     const resetDay = () => {
-        const isAlreadyToday =
-            year === today.getFullYear() &&
-            month === today.getMonth() &&
-            day === today.getDate();
-
-        if (isAlreadyToday) {
-            loadData(year, month, day);
-        } else {
-            year = today.getFullYear();
-            month = today.getMonth();
-            day = today.getDate();
-        }
+        year = today.getFullYear();
+        month = today.getMonth();
+        day = today.getDate();
+        loadDayData(year, month, day, 'replace');
     };
 
     const resetZoom = () => {
