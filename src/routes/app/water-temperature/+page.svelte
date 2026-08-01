@@ -35,6 +35,7 @@
 
     let loadedDays = new SvelteSet<string>();
     let loadingDay = false;
+    let panThrottleTimer: ReturnType<typeof setTimeout> | null = null;
 
     const dateKey = (y: number, m: number, d: number) => `${y}-${m}-${d}`;
 
@@ -138,6 +139,72 @@
         );
     };
 
+    const checkAndLoadAdjacentDays = (chartInstance: Chart) => {
+        const xAxis = chartInstance.scales.x;
+        if (!xAxis) return;
+
+        const minTime = xAxis.min;
+        const maxTime = xAxis.max;
+
+        const ds0 = chartInstance.data.datasets[0]?.data as unknown as
+            | { x: Date; y: number }[]
+            | undefined;
+        if (!ds0 || ds0.length === 0) return;
+
+        const firstPt = ds0[0];
+        const lastPt = ds0[ds0.length - 1];
+        if (!firstPt || !lastPt) return;
+
+        const dataMin = new Date(firstPt.x).getTime();
+        const dataMax = new Date(lastPt.x).getTime();
+
+        // Load previous day when approaching left edge
+        if (minTime < dataMin + 2 * 60 * 60 * 1000) {
+            const earliestDate = new Date(dataMin);
+            const prevDate = new Date(
+                earliestDate.getFullYear(),
+                earliestDate.getMonth(),
+                earliestDate.getDate() - 1
+            );
+            loadDayData(
+                prevDate.getFullYear(),
+                prevDate.getMonth(),
+                prevDate.getDate(),
+                'prepend'
+            );
+        }
+
+        // Load next day when approaching right edge
+        if (maxTime > dataMax - 2 * 60 * 60 * 1000) {
+            const latestDate = new Date(dataMax);
+            const nextDate = new Date(
+                latestDate.getFullYear(),
+                latestDate.getMonth(),
+                latestDate.getDate() + 1
+            );
+            if (nextDate <= today) {
+                loadDayData(
+                    nextDate.getFullYear(),
+                    nextDate.getMonth(),
+                    nextDate.getDate(),
+                    'append'
+                );
+            }
+        }
+
+        // Update date selector dropdowns dynamically based on visible center
+        const centerDate = new Date((minTime + maxTime) / 2);
+        if (
+            centerDate.getFullYear() !== year ||
+            centerDate.getMonth() !== month ||
+            centerDate.getDate() !== day
+        ) {
+            year = centerDate.getFullYear();
+            month = centerDate.getMonth();
+            day = centerDate.getDate();
+        }
+    };
+
     $effect(() => {
         if (browser && activeTab === 'chart' && canvas && !chart) {
             import('chartjs-plugin-zoom').then((module) => {
@@ -213,72 +280,21 @@
                                         enabled: true,
                                         mode: 'x',
                                         onPan: ({ chart: chartInstance }) => {
-                                            const xAxis = chartInstance.scales.x;
-                                            if (!xAxis) return;
-
-                                            const minTime = xAxis.min;
-                                            const maxTime = xAxis.max;
-
-                                            const ds0 = chartInstance.data.datasets[0]
-                                                ?.data as unknown as
-                                                | { x: Date; y: number }[]
-                                                | undefined;
-                                            if (!ds0 || ds0.length === 0) return;
-
-                                            const firstPt = ds0[0];
-                                            const lastPt = ds0[ds0.length - 1];
-                                            if (!firstPt || !lastPt) return;
-
-                                            const dataMin = new Date(firstPt.x).getTime();
-                                            const dataMax = new Date(lastPt.x).getTime();
-
-                                            // Seamlessly load previous day when approaching left edge
-                                            if (minTime < dataMin + 4 * 60 * 60 * 1000) {
-                                                const earliestDate = new Date(dataMin);
-                                                const prevDate = new Date(
-                                                    earliestDate.getFullYear(),
-                                                    earliestDate.getMonth(),
-                                                    earliestDate.getDate() - 1
-                                                );
-                                                loadDayData(
-                                                    prevDate.getFullYear(),
-                                                    prevDate.getMonth(),
-                                                    prevDate.getDate(),
-                                                    'prepend'
-                                                );
-                                            }
-
-                                            // Seamlessly load next day when approaching right edge
-                                            if (maxTime > dataMax - 4 * 60 * 60 * 1000) {
-                                                const latestDate = new Date(dataMax);
-                                                const nextDate = new Date(
-                                                    latestDate.getFullYear(),
-                                                    latestDate.getMonth(),
-                                                    latestDate.getDate() + 1
-                                                );
-                                                if (nextDate <= today) {
-                                                    loadDayData(
-                                                        nextDate.getFullYear(),
-                                                        nextDate.getMonth(),
-                                                        nextDate.getDate(),
-                                                        'append'
+                                            if (!panThrottleTimer) {
+                                                panThrottleTimer = setTimeout(() => {
+                                                    panThrottleTimer = null;
+                                                    checkAndLoadAdjacentDays(
+                                                        chartInstance
                                                     );
-                                                }
+                                                }, 250);
                                             }
-
-                                            // Update date dropdowns dynamically based on visible center
-                                            const centerDate = new Date(
-                                                (minTime + maxTime) / 2
-                                            );
-                                            if (
-                                                centerDate.getFullYear() !== year ||
-                                                centerDate.getMonth() !== month ||
-                                                centerDate.getDate() !== day
-                                            ) {
-                                                year = centerDate.getFullYear();
-                                                month = centerDate.getMonth();
-                                                day = centerDate.getDate();
+                                        },
+                                        onPanComplete: ({ chart: chartInstance }) => {
+                                            if (panThrottleTimer) {
+                                                clearTimeout(panThrottleTimer);
+                                                panThrottleTimer = null;
                                             }
+                                            checkAndLoadAdjacentDays(chartInstance);
                                         }
                                     },
                                     zoom: {
