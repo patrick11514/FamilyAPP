@@ -228,7 +228,9 @@
                     stroke="#fca5a5"
                     stroke-width="3"
                     stroke-dasharray="8,8"
-                    class={liveData.pumpActive ? 'animate-flow' : ''}
+                    class={liveData.pumpActive || liveData.pumpMode === 'ON'
+                        ? 'animate-flow'
+                        : ''}
                 />
 
                 <!-- Cold Return Pipe (Boiler Bottom -> Pump -> Solar Inlet) -->
@@ -246,7 +248,9 @@
                     stroke="#93c5fd"
                     stroke-width="3"
                     stroke-dasharray="8,8"
-                    class={liveData.pumpActive ? 'animate-flow-reverse' : ''}
+                    class={liveData.pumpActive || liveData.pumpMode === 'ON'
+                        ? 'animate-flow-reverse'
+                        : ''}
                 />
 
                 <!-- Solar Circulation Pump (OUT2) -->
@@ -256,16 +260,24 @@
                         cy="0"
                         r="24"
                         fill="#1e293b"
-                        stroke={liveData.pumpActive ? '#22c55e' : '#64748b'}
+                        stroke={liveData.pumpActive || liveData.pumpMode === 'ON'
+                            ? '#22c55e'
+                            : '#64748b'}
                         stroke-width="3"
                     />
                     <circle cx="0" cy="0" r="18" fill="#0f172a" />
 
                     <!-- Spinning Impeller Blades (Precise rotation around 0,0) -->
-                    <g class={liveData.pumpActive ? 'animate-spin-impeller' : ''}>
+                    <g
+                        class={liveData.pumpActive || liveData.pumpMode === 'ON'
+                            ? 'animate-spin-impeller'
+                            : ''}
+                    >
                         <path
                             d="M 0 0 L 0 -12 M 0 0 L 10 6 M 0 0 L -10 6"
-                            stroke={liveData.pumpActive ? '#4ade80' : '#94a3b8'}
+                            stroke={liveData.pumpActive || liveData.pumpMode === 'ON'
+                                ? '#4ade80'
+                                : '#94a3b8'}
                             stroke-width="4"
                             stroke-linecap="round"
                         />

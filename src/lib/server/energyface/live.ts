@@ -29,7 +29,22 @@ const parseTemp = (val: unknown): number => {
 
 const parser = new XMLParser();
 
-const getLocalWebSocketData = (ip: string): Promise<EnergyFaceLiveData | null> => {
+const getCloudXmlData = async () => {
+    const url = `https://energyface.eu/Data/${ENERGYFACE_ID}/IN.xml?t=${Date.now()}`;
+    try {
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        const xmlText = await response.text();
+        const parsed = parser.parse(xmlText);
+        return parsed?.datafeeder ?? null;
+    } catch {
+        return null;
+    }
+};
+
+const getLocalWebSocketData = (
+    ip: string
+): Promise<Partial<EnergyFaceLiveData> | null> => {
     return new Promise((resolve) => {
         try {
             const ws = new WebSocket(`ws://${ip}:81/`);
@@ -61,18 +76,15 @@ const getLocalWebSocketData = (ip: string): Promise<EnergyFaceLiveData | null> =
 
                     const pumpActive = cidlaData[22] === '1';
 
-                    // Parse exact pump mode (PO2) from Nastaveni index 16
                     const po2Val = parseInt(nastaveniData[16] || '0', 10);
                     let pumpMode: PumpMode = 'AUTO';
                     if (po2Val === 1) pumpMode = 'ON';
                     else if (po2Val === 2) pumpMode = 'OFF';
 
-                    // Parse Wi-Fi signal percentage from Nastaveni index 55
-                    const wifiSignal = parseInt(nastaveniData[55] || '100', 10);
+                    const wifiSignal = parseInt(nastaveniData[55] || '0', 10);
 
                     resolve({
                         id: String(ENERGYFACE_ID),
-                        uptime: 'Lokální Wi-Fi',
                         lastDate,
                         lastTime,
                         solarTemp,
@@ -82,7 +94,7 @@ const getLocalWebSocketData = (ip: string): Promise<EnergyFaceLiveData | null> =
                         pumpActive,
                         pumpMode,
                         pwmSpeed: 0,
-                        wifiSignal: isNaN(wifiSignal) ? 100 : wifiSignal,
+                        wifiSignal: isNaN(wifiSignal) ? 0 : wifiSignal,
                         statusError: cidlaData[25] || 'V pořádku'
                     });
                 }
@@ -101,8 +113,8 @@ const getLocalWebSocketData = (ip: string): Promise<EnergyFaceLiveData | null> =
             }, 2500);
 
             ws.onopen = () => {
-                ws.send('l'); // Schema sensors
-                ws.send('O'); // Settings & modes
+                ws.send('l');
+                ws.send('O');
             };
 
             ws.onmessage = (event) => {
@@ -177,60 +189,65 @@ const sendLocalWebSocketCommand = (ip: string, mode: PumpMode): Promise<boolean>
 };
 
 export const getEnergyFaceLive = async (): Promise<EnergyFaceLiveData | null> => {
-    const localIp = env.ENERGYFACE_LOCAL_IP || '10.10.10.90';
+    const localIp = env.ENERGYFACE_LOCAL_IP;
 
     if (localIp) {
         const localData = await getLocalWebSocketData(localIp);
         if (localData) {
-            return localData;
+            // Fetch cloud IN.xml for uptime (cas) and wifiSignal if missing from local WebSocket
+            const cloudData = await getCloudXmlData();
+            const uptime = cloudData?.cas ? String(cloudData.cas) : 'Lokální Wi-Fi';
+            const wifiSignal =
+                localData.wifiSignal && localData.wifiSignal > 0
+                    ? localData.wifiSignal
+                    : parseInt(String(cloudData?.PRS1 ?? 0), 10);
+
+            return {
+                id: localData.id ?? String(ENERGYFACE_ID),
+                uptime,
+                lastDate: localData.lastDate ?? '',
+                lastTime: localData.lastTime ?? '',
+                solarTemp: localData.solarTemp ?? 0,
+                solarPipeTemp: localData.solarPipeTemp ?? 0,
+                boilerTopTemp: localData.boilerTopTemp ?? 0,
+                boilerBottomTemp: localData.boilerBottomTemp ?? 0,
+                pumpActive: localData.pumpActive ?? false,
+                pumpMode: localData.pumpMode ?? 'AUTO',
+                pwmSpeed: localData.pwmSpeed ?? 0,
+                wifiSignal: isNaN(wifiSignal) ? 0 : wifiSignal,
+                statusError: localData.statusError ?? 'V pořádku'
+            };
         }
     }
 
-    // Cloud fallback to EnergyFace.eu if local network is unreachable
-    const url = `https://energyface.eu/Data/${ENERGYFACE_ID}/IN.xml?t=${Date.now()}`;
-    try {
-        const response = await fetch(url);
-        if (!response.ok) {
-            console.error(`EnergyFace XML fetch failed: ${response.statusText}`);
-            return null;
-        }
-        const xmlText = await response.text();
-        const parsed = parser.parse(xmlText);
-        const data = parsed?.datafeeder;
+    // Cloud fallback to EnergyFace.eu if local IP is not set or unreachable
+    const data = await getCloudXmlData();
+    if (!data) return null;
 
-        if (!data) {
-            console.error('Invalid EnergyFace XML structure');
-            return null;
-        }
+    const po2Val = parseInt(String(data.PO2 ?? 0), 10);
+    let pumpMode: PumpMode = 'AUTO';
+    if (po2Val === 1) pumpMode = 'ON';
+    else if (po2Val === 2) pumpMode = 'OFF';
 
-        const po2Val = parseInt(String(data.PO2 ?? 0), 10);
-        let pumpMode: PumpMode = 'AUTO';
-        if (po2Val === 1) pumpMode = 'ON';
-        else if (po2Val === 2) pumpMode = 'OFF';
-
-        return {
-            id: String(data.ID ?? ENERGYFACE_ID),
-            uptime: String(data.cas ?? 'N/A'),
-            lastDate: String(data.LastDate ?? ''),
-            lastTime: String(data.LastTime ?? ''),
-            solarTemp: parseTemp(data.T_K ?? data.T_K1),
-            solarPipeTemp: parseTemp(data.T_D7 ?? data.Term3),
-            boilerTopTemp: parseTemp(data.T_D1 ?? data.Term1),
-            boilerBottomTemp: parseTemp(data.T_D8 ?? data.Term2),
-            pumpActive: String(data.O2 ?? '0') === '1',
-            pumpMode,
-            pwmSpeed: parseInt(String(data.PWM1 ?? 0), 10),
-            wifiSignal: parseInt(String(data.PRS1 ?? 0), 10),
-            statusError: String(data.error ?? 'V pořádku')
-        };
-    } catch (err) {
-        console.error('Error fetching EnergyFace live feed:', err);
-        return null;
-    }
+    return {
+        id: String(data.ID ?? ENERGYFACE_ID),
+        uptime: String(data.cas ?? 'N/A'),
+        lastDate: String(data.LastDate ?? ''),
+        lastTime: String(data.LastTime ?? ''),
+        solarTemp: parseTemp(data.T_K ?? data.T_K1),
+        solarPipeTemp: parseTemp(data.T_D7 ?? data.Term3),
+        boilerTopTemp: parseTemp(data.T_D1 ?? data.Term1),
+        boilerBottomTemp: parseTemp(data.T_D8 ?? data.Term2),
+        pumpActive: String(data.O2 ?? '0') === '1',
+        pumpMode,
+        pwmSpeed: parseInt(String(data.PWM1 ?? 0), 10),
+        wifiSignal: parseInt(String(data.PRS1 ?? 0), 10),
+        statusError: String(data.error ?? 'V pořádku')
+    };
 };
 
 export const setEnergyFacePumpMode = async (mode: PumpMode): Promise<boolean> => {
-    const localIp = env.ENERGYFACE_LOCAL_IP || '10.10.10.90';
+    const localIp = env.ENERGYFACE_LOCAL_IP;
 
     if (localIp) {
         const localSuccess = await sendLocalWebSocketCommand(localIp, mode);
