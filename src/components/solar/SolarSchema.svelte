@@ -557,7 +557,7 @@
             </div>
 
             <!-- Stats & Diagnostics Grid -->
-            <div class="grid grid-cols-2 gap-2 text-xs">
+            <div class="grid grid-cols-1 gap-2 text-xs sm:grid-cols-3">
                 <div
                     class="flex flex-col justify-between rounded-xl border border-white/10 bg-white/5 p-3"
                 >
@@ -567,18 +567,6 @@
                     >
                         <Icon name="bi-wifi" class="text-sky-400" />
                         <span>{liveData.wifiSignal} %</span>
-                    </div>
-                </div>
-
-                <div
-                    class="flex flex-col justify-between rounded-xl border border-white/10 bg-white/5 p-3"
-                >
-                    <span class="text-gray-400">PWM Výkon</span>
-                    <div
-                        class="mt-1 flex items-center gap-2 text-base font-bold text-white"
-                    >
-                        <Icon name="bi-speedometer2" class="text-amber-400" />
-                        <span>{liveData.pwmSpeed} %</span>
                     </div>
                 </div>
 

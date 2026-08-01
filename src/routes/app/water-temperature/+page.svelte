@@ -15,7 +15,8 @@
 
     let { data }: PageProps = $props();
 
-    let activeTab = $state<'schema' | 'chart' | 'cooling'>('schema');
+    type TabType = 'schema' | 'chart' | 'cooling';
+    let activeTab = $state<TabType>('schema');
 
     let canvas = $state<HTMLCanvasElement>();
     const calendar = new Calendar();
@@ -36,6 +37,12 @@
         maxDays = calendar.getLastDayOfMonth(new Date(year, month)).getDate();
         if (day > maxDays) {
             day = maxDays;
+        }
+    });
+
+    $effect(() => {
+        if (browser) {
+            localStorage.setItem('water_temp_tab', activeTab);
         }
     });
 
@@ -225,6 +232,18 @@
     });
 
     onMount(() => {
+        const urlTab = new URLSearchParams(window.location.search).get(
+            'tab'
+        ) as TabType | null;
+        const storedTab = localStorage.getItem('water_temp_tab') as TabType | null;
+        const validTabs: TabType[] = ['schema', 'chart', 'cooling'];
+
+        if (urlTab && validTabs.includes(urlTab)) {
+            activeTab = urlTab;
+        } else if (storedTab && validTabs.includes(storedTab)) {
+            activeTab = storedTab;
+        }
+
         window.addEventListener('keydown', handleKeys);
         return () => {
             window.removeEventListener('keydown', handleKeys);
