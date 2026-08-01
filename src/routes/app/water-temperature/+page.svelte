@@ -16,7 +16,7 @@
     let { data }: PageProps = $props();
 
     type TabType = 'schema' | 'chart' | 'cooling';
-    let activeTab = $state<TabType>('schema');
+    let activeTab = $state<TabType>('chart');
 
     let canvas = $state<HTMLCanvasElement>();
     const calendar = new Calendar();
@@ -179,7 +179,41 @@
                                 zoom: {
                                     pan: {
                                         enabled: true,
-                                        mode: 'x'
+                                        mode: 'x',
+                                        onPanComplete: ({ chart: chartInstance }) => {
+                                            const xAxis = chartInstance.scales.x;
+                                            if (!xAxis) return;
+                                            const minTime = xAxis.min;
+                                            const maxTime = xAxis.max;
+
+                                            const dayStart = new Date(
+                                                year,
+                                                month,
+                                                day,
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            ).getTime();
+                                            const dayEnd = new Date(
+                                                year,
+                                                month,
+                                                day,
+                                                23,
+                                                59,
+                                                59,
+                                                999
+                                            ).getTime();
+
+                                            // If panned past the left edge (earlier than day start)
+                                            if (minTime < dayStart - 30 * 60 * 1000) {
+                                                previousDay();
+                                            }
+                                            // If panned past the right edge (later than day end)
+                                            else if (maxTime > dayEnd + 30 * 60 * 1000) {
+                                                nextDay();
+                                            }
+                                        }
                                     },
                                     zoom: {
                                         wheel: {
@@ -242,6 +276,8 @@
             activeTab = urlTab;
         } else if (storedTab && validTabs.includes(storedTab)) {
             activeTab = storedTab;
+        } else {
+            activeTab = 'chart';
         }
 
         window.addEventListener('keydown', handleKeys);
@@ -366,18 +402,6 @@
             class="flex flex-wrap items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1"
         >
             <button
-                onclick={() => (activeTab = 'schema')}
-                class="flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-all"
-                class:bg-amber-500={activeTab === 'schema'}
-                class:text-slate-950={activeTab === 'schema'}
-                class:text-gray-300={activeTab !== 'schema'}
-                class:hover:text-white={activeTab !== 'schema'}
-            >
-                <Icon name="bi-diagram-3-fill" />
-                <span>Schéma & Řízení</span>
-            </button>
-
-            <button
                 onclick={() => (activeTab = 'chart')}
                 class="flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-all"
                 class:bg-amber-500={activeTab === 'chart'}
@@ -387,6 +411,18 @@
             >
                 <Icon name="bi-graph-up" />
                 <span>Graf historie</span>
+            </button>
+
+            <button
+                onclick={() => (activeTab = 'schema')}
+                class="flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-all"
+                class:bg-amber-500={activeTab === 'schema'}
+                class:text-slate-950={activeTab === 'schema'}
+                class:text-gray-300={activeTab !== 'schema'}
+                class:hover:text-white={activeTab !== 'schema'}
+            >
+                <Icon name="bi-diagram-3-fill" />
+                <span>Schéma & Řízení</span>
             </button>
 
             <button

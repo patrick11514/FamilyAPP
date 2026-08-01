@@ -115,22 +115,12 @@
             </div>
         </div>
     {:else if liveData}
-        <!-- Interactive Vector Schematic SVG -->
+        <!-- Vector Schematic SVG -->
         <div
             class="relative overflow-hidden rounded-xl border border-white/5 bg-slate-950/60 p-4 md:p-6"
         >
             <svg viewBox="0 0 800 480" class="h-auto w-full drop-shadow-md">
                 <defs>
-                    <!-- Pipe Glows -->
-                    <filter id="glow-red" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="3" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-                    <filter id="glow-amber" x="-20%" y="-20%" width="140%" height="140%">
-                        <feGaussianBlur stdDeviation="4" result="blur" />
-                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                    </filter>
-
                     <!-- Tank Gradient -->
                     <linearGradient id="tankGradient" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="0%" stop-color="#ef4444" stop-opacity="0.85" />
@@ -146,55 +136,14 @@
                     </linearGradient>
                 </defs>
 
-                <!-- Roof Structure -->
-                <polygon points="60,110 280,30 290,30 70,110" fill="#334155" />
-                <polygon points="60,110 280,30 280,35 60,115" fill="#475569" />
-
-                <!-- Sun rays effect -->
-                <g class="animate-pulse opacity-70">
-                    <circle
-                        cx="100"
-                        cy="40"
-                        r="22"
-                        fill="#fbbf24"
-                        filter="url(#glow-amber)"
-                    />
-                    <line
-                        x1="100"
-                        y1="10"
-                        x2="100"
-                        y2="2"
-                        stroke="#fbbf24"
-                        stroke-width="3"
-                        stroke-linecap="round"
-                    />
-                    <line
-                        x1="130"
-                        y1="40"
-                        x2="138"
-                        y2="40"
-                        stroke="#fbbf24"
-                        stroke-width="3"
-                        stroke-linecap="round"
-                    />
-                    <line
-                        x1="122"
-                        y1="18"
-                        x2="128"
-                        y2="12"
-                        stroke="#fbbf24"
-                        stroke-width="3"
-                        stroke-linecap="round"
-                    />
-                </g>
-
-                <!-- Solar Collector Unit -->
-                <g transform="translate(100, 50) rotate(-20)">
+                <!-- Solar Collector Unit (Neat Position) -->
+                <g transform="translate(80, 50)">
+                    <!-- Collector Frame -->
                     <rect
                         x="0"
                         y="0"
-                        width="160"
-                        height="90"
+                        width="180"
+                        height="95"
                         rx="8"
                         fill="url(#solarGradient)"
                         stroke="#f97316"
@@ -202,59 +151,71 @@
                     />
                     <!-- Solar Grid Lines -->
                     <line
-                        x1="32"
+                        x1="36"
                         y1="0"
-                        x2="32"
-                        y2="90"
+                        x2="36"
+                        y2="95"
                         stroke="#38bdf8"
                         stroke-width="1"
                         stroke-dasharray="2,2"
-                        opacity="0.6"
+                        opacity="0.5"
                     />
                     <line
-                        x1="64"
+                        x1="72"
                         y1="0"
-                        x2="64"
-                        y2="90"
+                        x2="72"
+                        y2="95"
                         stroke="#38bdf8"
                         stroke-width="1"
                         stroke-dasharray="2,2"
-                        opacity="0.6"
+                        opacity="0.5"
                     />
                     <line
-                        x1="96"
+                        x1="108"
                         y1="0"
-                        x2="96"
-                        y2="90"
+                        x2="108"
+                        y2="95"
                         stroke="#38bdf8"
                         stroke-width="1"
                         stroke-dasharray="2,2"
-                        opacity="0.6"
+                        opacity="0.5"
                     />
                     <line
-                        x1="128"
+                        x1="144"
                         y1="0"
-                        x2="128"
-                        y2="90"
+                        x2="144"
+                        y2="95"
                         stroke="#38bdf8"
                         stroke-width="1"
                         stroke-dasharray="2,2"
-                        opacity="0.6"
+                        opacity="0.5"
                     />
-                    <!-- Internal Pipe Coil -->
-                    <path
-                        d="M 15 15 Q 145 15 145 45 Q 15 45 15 75 H 145"
-                        fill="none"
-                        stroke="#ef4444"
-                        stroke-width="3"
-                        opacity="0.8"
+                    <!-- Mounting Stand Support -->
+                    <rect x="20" y="95" width="140" height="6" fill="#475569" rx="2" />
+                    <line
+                        x1="40"
+                        y1="101"
+                        x2="40"
+                        y2="120"
+                        stroke="#64748b"
+                        stroke-width="4"
+                        stroke-linecap="round"
+                    />
+                    <line
+                        x1="140"
+                        y1="101"
+                        x2="140"
+                        y2="120"
+                        stroke="#64748b"
+                        stroke-width="4"
+                        stroke-linecap="round"
                     />
                 </g>
 
                 <!-- Pipes Circuit -->
-                <!-- Hot Supply Pipe (Solar -> Tank Top) -->
+                <!-- Hot Supply Pipe (Solar Outlet -> Boiler Top) -->
                 <path
-                    d="M 230 75 L 530 75 L 530 160"
+                    d="M 260 80 L 510 80 L 510 160"
                     fill="none"
                     stroke="#ef4444"
                     stroke-width="6"
@@ -262,7 +223,7 @@
                     stroke-linejoin="round"
                 />
                 <path
-                    d="M 230 75 L 530 75 L 530 160"
+                    d="M 260 80 L 510 80 L 510 160"
                     fill="none"
                     stroke="#fca5a5"
                     stroke-width="3"
@@ -270,9 +231,9 @@
                     class={liveData.pumpActive ? 'animate-flow' : ''}
                 />
 
-                <!-- Cold Return Pipe (Tank Bottom -> Pump -> Solar) -->
+                <!-- Cold Return Pipe (Boiler Bottom -> Pump -> Solar Inlet) -->
                 <path
-                    d="M 530 380 L 530 420 L 160 420 L 160 120"
+                    d="M 510 380 L 510 410 L 140 410 L 140 145"
                     fill="none"
                     stroke="#3b82f6"
                     stroke-width="6"
@@ -280,7 +241,7 @@
                     stroke-linejoin="round"
                 />
                 <path
-                    d="M 530 380 L 530 420 L 160 420 L 160 120"
+                    d="M 510 380 L 510 410 L 140 410 L 140 145"
                     fill="none"
                     stroke="#93c5fd"
                     stroke-width="3"
@@ -289,7 +250,7 @@
                 />
 
                 <!-- Solar Circulation Pump (OUT2) -->
-                <g transform="translate(330, 420)">
+                <g transform="translate(330, 410)">
                     <circle
                         cx="0"
                         cy="0"
@@ -300,12 +261,8 @@
                     />
                     <circle cx="0" cy="0" r="18" fill="#0f172a" />
 
-                    <!-- Spinning Impeller Blades -->
-                    <g
-                        class={liveData.pumpActive
-                            ? 'animate-spin-fast origin-center'
-                            : ''}
-                    >
+                    <!-- Spinning Impeller Blades (Precise rotation around 0,0) -->
+                    <g class={liveData.pumpActive ? 'animate-spin-impeller' : ''}>
                         <path
                             d="M 0 0 L 0 -12 M 0 0 L 10 6 M 0 0 L -10 6"
                             stroke={liveData.pumpActive ? '#4ade80' : '#94a3b8'}
@@ -315,8 +272,8 @@
                     </g>
                 </g>
 
-                <!-- Water Boiler Tank (Akumulační nádoba) -->
-                <g transform="translate(500, 130)">
+                <!-- Water Boiler Tank (Clean Buffer) -->
+                <g transform="translate(480, 130)">
                     <rect
                         x="0"
                         y="0"
@@ -336,48 +293,29 @@
                         fill="none"
                         stroke="white"
                         stroke-dasharray="4,4"
-                        opacity="0.25"
+                        opacity="0.2"
                     />
-
-                    <!-- Internal Heat Exchanger Coil -->
-                    <path
-                        d="M -25 30 H 130 C 145 30 145 60 130 60 H 30 C 15 60 15 90 30 90 H 130 C 145 90 145 120 130 120 H 30 C 15 120 15 150 30 150 H -25"
-                        fill="none"
-                        stroke="#f87171"
-                        stroke-width="4"
-                        opacity="0.9"
-                    />
-
-                    <!-- Tank Labels -->
-                    <text
-                        x="80"
-                        y="35"
-                        text-anchor="middle"
-                        fill="white"
-                        font-size="14"
-                        font-weight="bold">BOJLER (AKU)</text
-                    >
                 </g>
 
-                <!-- Temperature Sensor Badges (SVG HTML ForeignObjects or SVG Text) -->
+                <!-- Temperature Sensor Badges -->
                 <!-- Solar Collector Temp Badge -->
-                <g transform="translate(200, 20)">
+                <g transform="translate(110, 15)">
                     <rect
                         x="0"
                         y="0"
-                        width="110"
-                        height="34"
+                        width="120"
+                        height="32"
                         rx="8"
                         fill="#0f172a"
                         stroke="#f97316"
                         stroke-width="2"
                     />
-                    <text x="10" y="22" fill="#fb923c" font-size="11" font-weight="bold"
+                    <text x="10" y="21" fill="#fb923c" font-size="11" font-weight="bold"
                         >Kolektor</text
                     >
                     <text
-                        x="100"
-                        y="22"
+                        x="110"
+                        y="21"
                         text-anchor="end"
                         fill="white"
                         font-size="13"
@@ -386,11 +324,11 @@
                 </g>
 
                 <!-- Solar Pipe Temp Badge -->
-                <g transform="translate(360, 365)">
+                <g transform="translate(340, 355)">
                     <rect
                         x="0"
                         y="0"
-                        width="105"
+                        width="115"
                         height="32"
                         rx="8"
                         fill="#0f172a"
@@ -401,7 +339,7 @@
                         >Potrubí</text
                     >
                     <text
-                        x="95"
+                        x="105"
                         y="20"
                         text-anchor="end"
                         fill="white"
@@ -410,12 +348,12 @@
                     >
                 </g>
 
-                <!-- Boiler Top Temp Badge -->
-                <g transform="translate(670, 160)">
+                <!-- Boiler Top Temp Badge (Spacious to prevent text collision) -->
+                <g transform="translate(650, 160)">
                     <rect
                         x="0"
                         y="0"
-                        width="115"
+                        width="145"
                         height="36"
                         rx="8"
                         fill="#0f172a"
@@ -426,21 +364,21 @@
                         >Bojler nahoře</text
                     >
                     <text
-                        x="105"
+                        x="135"
                         y="22"
                         text-anchor="end"
                         fill="#f87171"
-                        font-size="14"
+                        font-size="13"
                         font-weight="bold">{liveData.boilerTopTemp} °C</text
                     >
                 </g>
 
-                <!-- Boiler Bottom Temp Badge -->
-                <g transform="translate(670, 320)">
+                <!-- Boiler Bottom Temp Badge (Spacious to prevent text collision) -->
+                <g transform="translate(650, 320)">
                     <rect
                         x="0"
                         y="0"
-                        width="115"
+                        width="145"
                         height="36"
                         rx="8"
                         fill="#0f172a"
@@ -451,19 +389,19 @@
                         >Bojler dole</text
                     >
                     <text
-                        x="105"
+                        x="135"
                         y="22"
                         text-anchor="end"
                         fill="#60a5fa"
-                        font-size="14"
+                        font-size="13"
                         font-weight="bold">{liveData.boilerBottomTemp} °C</text
                     >
                 </g>
 
-                <!-- Pump Label Badge -->
-                <g transform="translate(260, 450)">
+                <!-- Pump Label Badge (Moved down with top margin from pump image) -->
+                <g transform="translate(240, 460)">
                     <text
-                        x="70"
+                        x="90"
                         y="0"
                         text-anchor="middle"
                         fill="#cbd5e1"
@@ -615,6 +553,14 @@
             stroke-dashoffset: 32;
         }
     }
+    @keyframes spin-center {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
 
     .animate-flow {
         animation: flow 1s linear infinite;
@@ -622,7 +568,8 @@
     .animate-flow-reverse {
         animation: flow-reverse 1s linear infinite;
     }
-    .animate-spin-fast {
-        animation: spin 1.2s linear infinite;
+    .animate-spin-impeller {
+        transform-origin: 0px 0px;
+        animation: spin-center 1.2s linear infinite;
     }
 </style>
