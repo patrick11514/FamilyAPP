@@ -29,15 +29,19 @@ const parseTemp = (val: unknown): number => {
 
 const parser = new XMLParser();
 
-const getCloudXmlData = async () => {
+const getCloudXmlData = async (): Promise<Record<string, unknown> | null> => {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 1000);
     const url = `https://energyface.eu/Data/${ENERGYFACE_ID}/IN.xml?t=${Date.now()}`;
     try {
-        const response = await fetch(url);
+        const response = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
         if (!response.ok) return null;
         const xmlText = await response.text();
         const parsed = parser.parse(xmlText);
         return parsed?.datafeeder ?? null;
     } catch {
+        clearTimeout(timeoutId);
         return null;
     }
 };
@@ -211,9 +215,15 @@ export const getEnergyFaceLive = async (): Promise<EnergyFaceLiveData | null> =>
     const localIp = env.ENERGYFACE_LOCAL_IP;
 
     if (localIp) {
-        const localData = await getLocalWebSocketData(localIp);
+        const [localRes, cloudRes] = await Promise.allSettled([
+            getLocalWebSocketData(localIp),
+            getCloudXmlData()
+        ]);
+
+        const localData = localRes.status === 'fulfilled' ? localRes.value : null;
+        const cloudData = cloudRes.status === 'fulfilled' ? cloudRes.value : null;
+
         if (localData) {
-            const cloudData = await getCloudXmlData();
             const uptime = cloudData?.cas ? String(cloudData.cas) : 'Lokální Wi-Fi';
             const wifiSignal =
                 localData.wifiSignal && localData.wifiSignal > 0

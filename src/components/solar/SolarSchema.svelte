@@ -49,8 +49,11 @@
         if (!liveData || updatingMode) return;
 
         const previousMode = liveData.pumpMode;
-        // 1. Instant optimistic UI switch
-        liveData.pumpMode = mode;
+        // 1. Instant optimistic UI switch with full object reassignment for Svelte 5 signal reactivity
+        liveData = {
+            ...liveData,
+            pumpMode: mode
+        };
         userOverrideUntil = Date.now() + 10000;
 
         updatingMode = true;
@@ -63,9 +66,13 @@
                 title: `Režim čerpadla byl nastaven na ${mode}`,
                 timer: 1500
             });
+            await loadLiveData();
         } else {
             // Revert optimistic update if call failed
-            liveData.pumpMode = previousMode;
+            liveData = {
+                ...liveData,
+                pumpMode: previousMode
+            };
             userOverrideUntil = 0;
             SwalAlert({
                 icon: 'error',
