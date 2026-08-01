@@ -161,18 +161,37 @@ const sendLocalWebSocketCommand = (ip: string, mode: PumpMode): Promise<boolean>
 
             const cmd = mode === 'AUTO' ? 'b13' : mode === 'ON' ? 'b14' : 'b15';
 
+            const sendCmd = () => {
+                try {
+                    ws.send(cmd);
+                } catch {
+                    /* ignore */
+                }
+            };
+
             ws.onopen = () => {
-                ws.send(cmd);
-                resolved = true;
-                clearTimeout(timeout);
-                setTimeout(() => {
-                    try {
-                        ws.close();
-                    } catch {
-                        /* ignore */
+                sendCmd();
+            };
+
+            ws.onmessage = (event) => {
+                const msg = String(event.data || '');
+                if (msg === 'Connected') {
+                    sendCmd();
+                    setTimeout(sendCmd, 100);
+                } else if (msg.startsWith('Nastaveni#') || msg.startsWith('EFx20#')) {
+                    if (!resolved) {
+                        resolved = true;
+                        clearTimeout(timeout);
+                        setTimeout(() => {
+                            try {
+                                ws.close();
+                            } catch {
+                                /* ignore */
+                            }
+                        }, 100);
+                        resolve(true);
                     }
-                }, 100);
-                resolve(true);
+                }
             };
 
             ws.onerror = () => {
@@ -194,7 +213,6 @@ export const getEnergyFaceLive = async (): Promise<EnergyFaceLiveData | null> =>
     if (localIp) {
         const localData = await getLocalWebSocketData(localIp);
         if (localData) {
-            // Fetch cloud IN.xml for uptime (cas) and wifiSignal if missing from local WebSocket
             const cloudData = await getCloudXmlData();
             const uptime = cloudData?.cas ? String(cloudData.cas) : 'Lokální Wi-Fi';
             const wifiSignal =
@@ -220,7 +238,6 @@ export const getEnergyFaceLive = async (): Promise<EnergyFaceLiveData | null> =>
         }
     }
 
-    // Cloud fallback to EnergyFace.eu if local IP is not set or unreachable
     const data = await getCloudXmlData();
     if (!data) return null;
 
@@ -256,7 +273,6 @@ export const setEnergyFacePumpMode = async (mode: PumpMode): Promise<boolean> =>
         }
     }
 
-    // Cloud fallback
     const customValue = mode === 'AUTO' ? 0 : mode === 'ON' ? 1 : 2;
     const url = `https://energyface.eu/EspOUT.php?ID=${ENERGYFACE_ID}&Custom=OUT2=${customValue}`;
     try {
