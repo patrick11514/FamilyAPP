@@ -26,19 +26,34 @@
     let loading = $state(true);
     let updatingMode = $state(false);
     let timer: ReturnType<typeof setInterval>;
+    let userOverrideUntil = 0;
 
     const loadLiveData = async () => {
         const res = await API.energyface.live();
         if (res.status && res.data) {
-            liveData = res.data;
+            // Preserve optimistic user mode selection for 10s after click
+            if (liveData && Date.now() < userOverrideUntil) {
+                const optimisticMode = liveData.pumpMode;
+                liveData = {
+                    ...res.data,
+                    pumpMode: optimisticMode
+                };
+            } else {
+                liveData = res.data;
+            }
         }
         loading = false;
     };
 
     const changePumpMode = async (mode: PumpMode) => {
-        if (!liveData || liveData.pumpMode === mode || updatingMode) return;
-        updatingMode = true;
+        if (!liveData || updatingMode) return;
 
+        const previousMode = liveData.pumpMode;
+        // 1. Instant optimistic UI switch
+        liveData.pumpMode = mode;
+        userOverrideUntil = Date.now() + 10000;
+
+        updatingMode = true;
         const res = await API.energyface.control({ mode });
         updatingMode = false;
 
@@ -46,10 +61,12 @@
             SwalAlert({
                 icon: 'success',
                 title: `Režim čerpadla byl nastaven na ${mode}`,
-                timer: 2000
+                timer: 1500
             });
-            await loadLiveData();
         } else {
+            // Revert optimistic update if call failed
+            liveData.pumpMode = previousMode;
+            userOverrideUntil = 0;
             SwalAlert({
                 icon: 'error',
                 title: 'Nepodařilo se změnit režim čerpadla',
@@ -438,18 +455,27 @@
                         >
                         <span
                             class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-bold"
-                            class:bg-emerald-500-20={liveData.pumpActive}
-                            class:text-emerald-400={liveData.pumpActive}
-                            class:bg-slate-700={!liveData.pumpActive}
-                            class:text-slate-300={!liveData.pumpActive}
+                            class:bg-emerald-500-20={liveData.pumpActive ||
+                                liveData.pumpMode === 'ON'}
+                            class:text-emerald-400={liveData.pumpActive ||
+                                liveData.pumpMode === 'ON'}
+                            class:bg-slate-700={!liveData.pumpActive &&
+                                liveData.pumpMode !== 'ON'}
+                            class:text-slate-300={!liveData.pumpActive &&
+                                liveData.pumpMode !== 'ON'}
                         >
                             <span
                                 class="h-2 w-2 rounded-full"
-                                class:bg-emerald-400={liveData.pumpActive}
-                                class:animate-ping={liveData.pumpActive}
-                                class:bg-slate-400={!liveData.pumpActive}
+                                class:bg-emerald-400={liveData.pumpActive ||
+                                    liveData.pumpMode === 'ON'}
+                                class:animate-ping={liveData.pumpActive ||
+                                    liveData.pumpMode === 'ON'}
+                                class:bg-slate-400={!liveData.pumpActive &&
+                                    liveData.pumpMode !== 'ON'}
                             ></span>
-                            {liveData.pumpActive ? 'ČERPADLO BĚŽÍ' : 'ČERPADLO STOJÍ'}
+                            {liveData.pumpActive || liveData.pumpMode === 'ON'
+                                ? 'ČERPADLO BĚŽÍ'
+                                : 'ČERPADLO STOJÍ'}
                         </span>
                     </div>
                     <p class="mt-1 text-xs text-gray-400">
