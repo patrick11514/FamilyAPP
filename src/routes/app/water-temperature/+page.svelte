@@ -16,7 +16,29 @@
     let { data }: PageProps = $props();
 
     type TabType = 'schema' | 'chart' | 'cooling';
-    let activeTab = $state<TabType>('chart');
+
+    const normalizeTab = (raw: string | null): TabType | null => {
+        if (!raw) return null;
+        const val = raw.toLowerCase().trim();
+        if (val === 'schema' || val === 'scheme') return 'schema';
+        if (val === 'chart' || val === 'graph' || val === 'graf') return 'chart';
+        if (val === 'cooling' || val === 'chlazeni') return 'cooling';
+        return null;
+    };
+
+    const getInitialTab = (): TabType => {
+        if (browser) {
+            const urlTab = normalizeTab(
+                new URLSearchParams(window.location.search).get('tab')
+            );
+            if (urlTab) return urlTab;
+            const storedTab = normalizeTab(localStorage.getItem('water_temp_tab'));
+            if (storedTab) return storedTab;
+        }
+        return 'chart';
+    };
+
+    let activeTab = $state<TabType>(getInitialTab());
 
     let canvas = $state<HTMLCanvasElement>();
     const calendar = new Calendar();
@@ -49,6 +71,11 @@
     $effect(() => {
         if (browser) {
             localStorage.setItem('water_temp_tab', activeTab);
+            const url = new URL(window.location.href);
+            if (url.searchParams.get('tab') !== activeTab) {
+                url.searchParams.set('tab', activeTab);
+                window.history.replaceState({}, '', url.toString());
+            }
         }
     });
 
@@ -348,20 +375,6 @@
     });
 
     onMount(() => {
-        const urlTab = new URLSearchParams(window.location.search).get(
-            'tab'
-        ) as TabType | null;
-        const storedTab = localStorage.getItem('water_temp_tab') as TabType | null;
-        const validTabs: TabType[] = ['schema', 'chart', 'cooling'];
-
-        if (urlTab && validTabs.includes(urlTab)) {
-            activeTab = urlTab;
-        } else if (storedTab && validTabs.includes(storedTab)) {
-            activeTab = storedTab;
-        } else {
-            activeTab = 'chart';
-        }
-
         window.addEventListener('keydown', handleKeys);
         return () => {
             window.removeEventListener('keydown', handleKeys);
