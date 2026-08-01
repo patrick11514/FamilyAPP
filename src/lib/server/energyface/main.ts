@@ -26,13 +26,17 @@ export class EnergyFace {
         const paddedDevice = deviceId;
         const url = `https://energyface.eu/Data/${ENERGYFACE_ID}/GrafData/${year}/${paddedMonth}/${paddedDay}_${paddedDevice}.json`;
         const data = await fetchData(url, schema);
-        //parse data
-        const today = new Date(year, month, day);
-        today.setHours(0, 0, 0, 0);
+
         return data?.map((entry) => {
+            const hours = Math.floor(entry.x);
+            const remainderMins = (entry.x - hours) * 100;
+            const minutes = Math.floor(remainderMins + 0.0001);
+            const seconds = Math.round((remainderMins - minutes) * 60);
+
+            const timestamp = new Date(year, month, day, hours, minutes, seconds);
             return {
                 y: entry.y,
-                x: new Date(today.getTime() + entry.x * 60 * 60 * 1000)
+                x: timestamp
             };
         });
     }

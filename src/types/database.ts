@@ -129,6 +129,20 @@ export interface WebPush {
     userId: number;
 }
 
+export interface SolarCooling {
+    active_override: Generated<string | null>;
+    down_temp: Generated<Decimal>;
+    enabled: Generated<number>;
+    freeze_target_temp: Generated<Decimal>;
+    freeze_temp: Generated<Decimal>;
+    id: Generated<number>;
+    last_action: Generated<string | null>;
+    last_action_at: Generated<Date | null>;
+    max_temp: Generated<Decimal>;
+    overheat_temp: Generated<Decimal>;
+    updated_at: Generated<Date | null>;
+}
+
 export interface DB {
     calendar: Calendar;
     daily_routine: DailyRoutine;
@@ -139,6 +153,7 @@ export interface DB {
     invitation: Invitation;
     present: Present;
     shoppinglist: Shoppinglist;
+    solar_cooling: SolarCooling;
     timetable_entry: TimetableEntry;
     user: User;
     user_group: UserGroup;

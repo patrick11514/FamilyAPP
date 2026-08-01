@@ -1,9 +1,12 @@
 <script lang="ts">
     import MonthSelector from '$/components/form/MonthSelector.svelte';
     import Icon from '$/components/Icon.svelte';
+    import SolarCoolingControls from '$/components/solar/SolarCoolingControls.svelte';
+    import SolarSchema from '$/components/solar/SolarSchema.svelte';
     import { API } from '$/lib/api';
     import { Calendar, SwalAlert } from '$/lib/functions';
     import { getState } from '$/lib/state.svelte';
+    import { browser } from '$app/environment';
     import Chart from 'chart.js/auto';
     import 'chartjs-adapter-date-fns';
     import { onMount } from 'svelte';
@@ -12,7 +15,9 @@
 
     let { data }: PageProps = $props();
 
-    let canvas: HTMLCanvasElement;
+    let activeTab = $state<'schema' | 'chart' | 'cooling'>('schema');
+
+    let canvas = $state<HTMLCanvasElement>();
     const calendar = new Calendar();
 
     const today = new Date();
@@ -50,6 +55,7 @@
     };
 
     const handleKeys = (ev: KeyboardEvent) => {
+        if (activeTab !== 'chart') return;
         if (ev.key === 'ArrowLeft') {
             previousDay();
         } else if (ev.key === 'ArrowRight') {
@@ -57,7 +63,7 @@
         }
     };
 
-    let chart: Chart<'line', { x: Date; y: number }[]>;
+    let chart: Chart<'line', { x: Date; y: number }[]> | undefined;
 
     const loadData = async (year: number, month: number, day: number) => {
         if (!chart) return;
@@ -77,13 +83,15 @@
 
         const _lastLower = lower[lower.length - 1];
         const _lastUpper = upper[upper.length - 1];
-        const lastDate = new Date(
-            _lastLower.x > _lastUpper.x ? _lastLower.x : _lastUpper.x
-        );
-        lastUpdate.setHours(lastDate.getHours(), lastDate.getMinutes(), 0, 0);
+        if (_lastLower && _lastUpper) {
+            const lastDate = new Date(
+                _lastLower.x > _lastUpper.x ? _lastLower.x : _lastUpper.x
+            );
+            lastUpdate.setHours(lastDate.getHours(), lastDate.getMinutes(), 0, 0);
 
-        lastLower = _lastLower.y;
-        lastUpper = _lastUpper.y;
+            lastLower = _lastLower.y;
+            lastUpper = _lastUpper.y;
+        }
 
         topToday = [...upper, ...lower].reduce(
             (max, cur) => (cur.y > max ? cur.y : max),
@@ -91,123 +99,152 @@
         );
     };
 
+    $effect(() => {
+        if (browser && activeTab === 'chart' && canvas && !chart) {
+            import('chartjs-plugin-zoom').then((module) => {
+                if (!chart && canvas) {
+                    Chart.register(module.default);
+                    const baseConfig = {
+                        lineTension: 0.3,
+                        pointRadius: 0,
+                        fill: false
+                    };
+
+                    chart = new Chart(canvas, {
+                        type: 'line',
+                        data: {
+                            datasets: [
+                                {
+                                    label: 'Voda dole',
+                                    data: [],
+                                    borderColor: 'oklch(62.3% 0.214 259.815)',
+                                    backgroundColor: 'oklch(62.3% 0.214 259.815)',
+                                    ...baseConfig
+                                },
+                                {
+                                    label: 'Voda nahoře',
+                                    data: [],
+                                    borderColor: 'oklch(63.7% 0.237 25.331)',
+                                    backgroundColor: 'oklch(63.7% 0.237 25.331)',
+                                    ...baseConfig
+                                }
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                x: {
+                                    type: 'time',
+                                    time: {
+                                        unit: 'minute',
+                                        displayFormats: {
+                                            minute: 'HH:mm',
+                                            hour: 'HH:mm'
+                                        },
+                                        tooltipFormat: 'HH:mm'
+                                    },
+                                    ticks: {
+                                        color: 'white',
+                                        font: {
+                                            size: 14,
+                                            weight: 'bold'
+                                        }
+                                    }
+                                },
+                                y: {
+                                    ticks: {
+                                        color: 'white',
+                                        font: {
+                                            size: 14
+                                        }
+                                    }
+                                }
+                            },
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            animation: {
+                                duration: 0
+                            },
+                            plugins: {
+                                zoom: {
+                                    pan: {
+                                        enabled: true,
+                                        mode: 'x'
+                                    },
+                                    zoom: {
+                                        wheel: {
+                                            enabled: true
+                                        },
+                                        pinch: {
+                                            enabled: true
+                                        },
+                                        mode: 'x'
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: (ctx) =>
+                                            `${ctx.dataset.label}: ${ctx.formattedValue} °C`
+                                    },
+                                    titleFont: {
+                                        size: 16
+                                    },
+                                    bodyFont: {
+                                        size: 14
+                                    },
+                                    footerFont: {
+                                        size: 12
+                                    },
+                                    backgroundColor: '#222',
+                                    titleColor: '#fff',
+                                    bodyColor: '#fff',
+                                    footerColor: '#ccc'
+                                },
+                                legend: {
+                                    labels: {
+                                        color: 'white',
+                                        font: {
+                                            size: 14
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+
+                    loadData(year, month, day);
+                }
+            });
+        } else if (activeTab !== 'chart' && chart) {
+            chart.destroy();
+            chart = undefined;
+        }
+    });
+
     onMount(() => {
         window.addEventListener('keydown', handleKeys);
-
-        const baseConfig = {
-            lineTension: 0.3,
-            pointRadius: 0,
-            fill: false
-        };
-
-        chart = new Chart(canvas, {
-            type: 'line',
-            data: {
-                datasets: [
-                    {
-                        label: 'Voda dole',
-                        data: [],
-                        borderColor: 'oklch(62.3% 0.214 259.815)',
-                        backgroundColor: 'oklch(62.3% 0.214 259.815)',
-                        ...baseConfig
-                    },
-                    {
-                        label: 'Voda nahoře',
-                        data: [],
-                        borderColor: 'oklch(63.7% 0.237 25.331)',
-                        backgroundColor: 'oklch(63.7% 0.237 25.331)',
-                        ...baseConfig
-                    }
-                ]
-            },
-            options: {
-                scales: {
-                    x: {
-                        type: 'time',
-                        time: {
-                            unit: 'minute',
-                            displayFormats: {
-                                minute: 'HH:mm',
-                                hour: 'HH:mm'
-                            },
-                            tooltipFormat: 'HH:mm'
-                        },
-                        ticks: {
-                            color: 'white',
-                            font: {
-                                size: 14,
-                                weight: 'bold'
-                            }
-                        }
-                    },
-                    y: {
-                        ticks: {
-                            color: 'white',
-                            font: {
-                                size: 14
-                            }
-                        }
-                    }
-                },
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: {
-                    mode: 'index',
-                    intersect: false
-                },
-                animation: {
-                    duration: 0
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: (ctx) =>
-                                `${ctx.dataset.label}: ${ctx.formattedValue} °C`
-                        },
-                        titleFont: {
-                            size: 16
-                        },
-                        bodyFont: {
-                            size: 14
-                        },
-                        footerFont: {
-                            size: 12
-                        },
-                        backgroundColor: '#222', // optional: darker tooltip
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
-                        footerColor: '#ccc'
-                    },
-                    legend: {
-                        labels: {
-                            color: 'white',
-                            font: {
-                                size: 14
-                            }
-                        }
-                    }
-                }
-            }
-        });
-
-        loadData(year, month, day);
-
         return () => {
             window.removeEventListener('keydown', handleKeys);
-
-            chart.destroy();
+            if (chart) {
+                chart.destroy();
+            }
         };
     });
 
     $effect(() => {
-        const date = new Date(year, month, day);
-        if (date > today) {
-            year = today.getFullYear();
-            month = today.getMonth();
-            day = today.getDate();
-            return;
+        if (activeTab === 'chart') {
+            const date = new Date(year, month, day);
+            if (date > today) {
+                year = today.getFullYear();
+                month = today.getMonth();
+                day = today.getDate();
+                return;
+            }
+            loadData(year, month, day);
         }
-        loadData(year, month, day);
     });
 
     const resetDay = () => {
@@ -217,14 +254,16 @@
             day === today.getDate();
 
         if (isAlreadyToday) {
-            // Force reload if we're already viewing today
             loadData(year, month, day);
         } else {
-            // Set to today's date (will trigger reactive effect)
             year = today.getFullYear();
             month = today.getMonth();
             day = today.getDate();
         }
+    };
+
+    const resetZoom = () => {
+        chart?.resetZoom();
     };
 
     const _state = getState();
@@ -298,43 +337,149 @@
     };
 </script>
 
-<section class="flex flex-1 flex-col">
-    <div class="flex w-full gap-2 text-2xl">
-        <Icon
-            onclick={toggleNotifications}
-            name={subscribed ? 'bi-bell-fill' : 'bi-bell'}
-            class="mr-auto"
-        />
-        <Icon onclick={previousDay} name="bi-chevron-left" />
-        <select bind:value={year}>
-            <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
-            {#each Array.from({ length: 10 }) as _, i (i)}
-                {@const y = year - 5 + i}
-                <option value={y}>{y}</option>
-            {/each}
-        </select>
-        <MonthSelector bind:value={month} />
-        <select bind:value={day}>
-            <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
-            {#each Array.from({ length: maxDays }) as _, i (i)}
-                <option value={i + 1}>{i + 1}</option>
-            {/each}
-        </select>
-        <Icon onclick={nextDay} name="bi-chevron-right" />
-        <Icon name="bi-arrow-counterclockwise" onclick={resetDay} class="ml-auto" />
+<section class="flex flex-1 flex-col gap-4">
+    <!-- Top Action Bar & Tab Switcher -->
+    <div
+        class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3"
+    >
+        <!-- Sub-tabs -->
+        <div
+            class="flex flex-wrap items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1"
+        >
+            <button
+                onclick={() => (activeTab = 'schema')}
+                class="flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-all"
+                class:bg-amber-500={activeTab === 'schema'}
+                class:text-slate-950={activeTab === 'schema'}
+                class:text-gray-300={activeTab !== 'schema'}
+                class:hover:text-white={activeTab !== 'schema'}
+            >
+                <Icon name="bi-diagram-3-fill" />
+                <span>Schéma & Řízení</span>
+            </button>
+
+            <button
+                onclick={() => (activeTab = 'chart')}
+                class="flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-all"
+                class:bg-amber-500={activeTab === 'chart'}
+                class:text-slate-950={activeTab === 'chart'}
+                class:text-gray-300={activeTab !== 'chart'}
+                class:hover:text-white={activeTab !== 'chart'}
+            >
+                <Icon name="bi-graph-up" />
+                <span>Graf historie</span>
+            </button>
+
+            <button
+                onclick={() => (activeTab = 'cooling')}
+                class="flex items-center gap-2 rounded-lg px-3.5 py-1.5 text-sm font-semibold transition-all"
+                class:bg-amber-500={activeTab === 'cooling'}
+                class:text-slate-950={activeTab === 'cooling'}
+                class:text-gray-300={activeTab !== 'cooling'}
+                class:hover:text-white={activeTab !== 'cooling'}
+            >
+                <Icon name="bi-snow" />
+                <span>Chlazení</span>
+            </button>
+        </div>
+
+        <!-- Quick Actions (Notifications) -->
+        <div class="flex items-center gap-2">
+            <button
+                onclick={toggleNotifications}
+                title={subscribed ? 'Odhlásit z notifikací' : 'Přihlásit k notifikacím'}
+                class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 text-sm font-medium text-gray-200 transition-all hover:bg-white/10"
+            >
+                <Icon
+                    name={subscribed ? 'bi-bell-fill' : 'bi-bell'}
+                    class={subscribed ? 'text-amber-400' : 'text-gray-400'}
+                />
+                <span class="hidden sm:inline"
+                    >{subscribed ? 'Notifikace aktivní' : 'Zapnout notifikace'}</span
+                >
+            </button>
+        </div>
     </div>
-    <div class="mx-auto flex flex-col text-2xl font-bold">
-        <h2>
-            Poslední aktualizace: {lastUpdate.toLocaleString('cs-CZ', {
-                hour: '2-digit',
-                minute: '2-digit'
-            })}
-        </h2>
-        <h2>Nejvíce dnes: {topToday} °C</h2>
-        <h2 class="text-red-500">Voda nahoře: {lastUpper} °C</h2>
-        <h2 class="text-blue-500">Voda dole: {lastLower} °C</h2>
-    </div>
-    <div class="flex-1">
-        <canvas bind:this={canvas}></canvas>
-    </div>
+
+    <!-- Active Tab Content -->
+    {#if activeTab === 'schema'}
+        <SolarSchema />
+    {:else if activeTab === 'cooling'}
+        <SolarCoolingControls />
+    {:else if activeTab === 'chart'}
+        <div class="flex flex-1 flex-col gap-4">
+            <div class="flex w-full items-center gap-2 text-xl font-medium">
+                <Icon
+                    onclick={previousDay}
+                    name="bi-chevron-left"
+                    class="cursor-pointer p-1 hover:text-amber-400"
+                />
+                <select
+                    bind:value={year}
+                    class="rounded-lg border border-white/10 bg-slate-900 px-2 py-1 text-sm text-white"
+                >
+                    <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
+                    {#each Array.from({ length: 10 }) as _, i (i)}
+                        {@const y = year - 5 + i}
+                        <option value={y}>{y}</option>
+                    {/each}
+                </select>
+                <MonthSelector bind:value={month} />
+                <select
+                    bind:value={day}
+                    class="rounded-lg border border-white/10 bg-slate-900 px-2 py-1 text-sm text-white"
+                >
+                    <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
+                    {#each Array.from({ length: maxDays }) as _, i (i)}
+                        <option value={i + 1}>{i + 1}</option>
+                    {/each}
+                </select>
+                <Icon
+                    onclick={nextDay}
+                    name="bi-chevron-right"
+                    class="cursor-pointer p-1 hover:text-amber-400"
+                />
+                <Icon
+                    name="bi-zoom-out"
+                    onclick={resetZoom}
+                    class="ml-auto cursor-pointer p-1 hover:text-amber-400"
+                    title="Obnovit přiblížení"
+                />
+                <Icon
+                    name="bi-arrow-counterclockwise"
+                    onclick={resetDay}
+                    class="cursor-pointer p-1 hover:text-amber-400"
+                    title="Dnešní den"
+                />
+            </div>
+
+            <div class="mx-auto flex flex-col items-center gap-1 text-center font-bold">
+                <h2 class="text-sm text-gray-400">
+                    Poslední aktualizace: {lastUpdate.toLocaleString('cs-CZ', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    })}
+                </h2>
+                <div class="flex flex-wrap justify-center gap-4 text-lg">
+                    <span class="text-white"
+                        >Nejvíce dnes: <strong class="text-amber-400"
+                            >{topToday} °C</strong
+                        ></span
+                    >
+                    <span class="text-red-400"
+                        >Voda nahoře: <strong>{lastUpper} °C</strong></span
+                    >
+                    <span class="text-blue-400"
+                        >Voda dole: <strong>{lastLower} °C</strong></span
+                    >
+                </div>
+            </div>
+
+            <div
+                class="min-h-[350px] flex-1 rounded-xl border border-white/10 bg-slate-950/40 p-2"
+            >
+                <canvas bind:this={canvas}></canvas>
+            </div>
+        </div>
+    {/if}
 </section>
