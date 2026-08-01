@@ -49,6 +49,11 @@
     $effect(() => {
         if (browser) {
             localStorage.setItem('water_temp_tab', activeTab);
+            const url = new URL(window.location.href);
+            if (url.searchParams.get('tab') !== activeTab) {
+                url.searchParams.set('tab', activeTab);
+                window.history.replaceState({}, '', url.toString());
+            }
         }
     });
 

@@ -34,6 +34,59 @@ const getLocalWebSocketData = (ip: string): Promise<EnergyFaceLiveData | null> =
         try {
             const ws = new WebSocket(`ws://${ip}:81/`);
             let resolved = false;
+            let cidlaData: string[] | null = null;
+            let nastaveniData: string[] | null = null;
+
+            const checkAndResolve = () => {
+                if (cidlaData && nastaveniData && !resolved) {
+                    resolved = true;
+                    clearTimeout(timeout);
+                    try {
+                        ws.close();
+                    } catch {
+                        /* ignore */
+                    }
+
+                    const now = new Date();
+                    const lastDate = now.toLocaleDateString('cs-CZ');
+                    const lastTime = now.toLocaleTimeString('cs-CZ', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+
+                    const solarTemp = parseTemp(cidlaData[3]);
+                    const boilerTopTemp = parseTemp(cidlaData[5]);
+                    const boilerBottomTemp = parseTemp(cidlaData[11]);
+                    const solarPipeTemp = parseTemp(cidlaData[12]);
+
+                    const pumpActive = cidlaData[22] === '1';
+
+                    // Parse exact pump mode (PO2) from Nastaveni index 16
+                    const po2Val = parseInt(nastaveniData[16] || '0', 10);
+                    let pumpMode: PumpMode = 'AUTO';
+                    if (po2Val === 1) pumpMode = 'ON';
+                    else if (po2Val === 2) pumpMode = 'OFF';
+
+                    // Parse Wi-Fi signal percentage from Nastaveni index 55
+                    const wifiSignal = parseInt(nastaveniData[55] || '100', 10);
+
+                    resolve({
+                        id: String(ENERGYFACE_ID),
+                        uptime: 'Lokální Wi-Fi',
+                        lastDate,
+                        lastTime,
+                        solarTemp,
+                        solarPipeTemp,
+                        boilerTopTemp,
+                        boilerBottomTemp,
+                        pumpActive,
+                        pumpMode,
+                        pwmSpeed: 0,
+                        wifiSignal: isNaN(wifiSignal) ? 100 : wifiSignal,
+                        statusError: cidlaData[25] || 'V pořádku'
+                    });
+                }
+            };
 
             const timeout = setTimeout(() => {
                 if (!resolved) {
@@ -48,56 +101,18 @@ const getLocalWebSocketData = (ip: string): Promise<EnergyFaceLiveData | null> =
             }, 2500);
 
             ws.onopen = () => {
-                ws.send('l');
+                ws.send('l'); // Schema sensors
+                ws.send('O'); // Settings & modes
             };
 
             ws.onmessage = (event) => {
                 const msg = String(event.data || '');
                 if (msg.startsWith('Cidla#')) {
-                    if (!resolved) {
-                        resolved = true;
-                        clearTimeout(timeout);
-                        try {
-                            ws.close();
-                        } catch {
-                            /* ignore */
-                        }
-
-                        const parts = msg.split('#');
-                        const now = new Date();
-                        const lastDate = now.toLocaleDateString('cs-CZ');
-                        const lastTime = now.toLocaleTimeString('cs-CZ', {
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        });
-
-                        const solarTemp = parseTemp(parts[3]);
-                        const boilerTopTemp = parseTemp(parts[5]);
-                        const boilerBottomTemp = parseTemp(parts[11]);
-                        const solarPipeTemp = parseTemp(parts[12]);
-
-                        const pumpActive = parts[22] === '1';
-                        const po2Val = parseInt(parts[23] || '0', 10);
-                        let pumpMode: PumpMode = 'AUTO';
-                        if (po2Val === 1) pumpMode = 'ON';
-                        else if (po2Val === 2) pumpMode = 'OFF';
-
-                        resolve({
-                            id: String(ENERGYFACE_ID),
-                            uptime: 'Lokální Wi-Fi (0 ms)',
-                            lastDate,
-                            lastTime,
-                            solarTemp,
-                            solarPipeTemp,
-                            boilerTopTemp,
-                            boilerBottomTemp,
-                            pumpActive,
-                            pumpMode,
-                            pwmSpeed: 0,
-                            wifiSignal: 100,
-                            statusError: parts[25] || 'V pořádku'
-                        });
-                    }
+                    cidlaData = msg.split('#');
+                    checkAndResolve();
+                } else if (msg.startsWith('Nastaveni#')) {
+                    nastaveniData = msg.split('#');
+                    checkAndResolve();
                 }
             };
 
@@ -195,7 +210,7 @@ export const getEnergyFaceLive = async (): Promise<EnergyFaceLiveData | null> =>
 
         return {
             id: String(data.ID ?? ENERGYFACE_ID),
-            uptime: String(data.cas ?? ''),
+            uptime: String(data.cas ?? 'N/A'),
             lastDate: String(data.LastDate ?? ''),
             lastTime: String(data.LastTime ?? ''),
             solarTemp: parseTemp(data.T_K ?? data.T_K1),
